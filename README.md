@@ -3,7 +3,10 @@
 Preview version of OTClientV8, it's v0.95 beta, version v1.0 with all tutorial will be released soon
 It's based on https://github.com/edubart/otclient. It's not backward compatible
 
-## Quick Start
+# DISCORD
+OTClientV8 discord channel: https://discord.gg/DExGSs
+
+# Quick Start
 
 Open `init.lua` and edit:
 
