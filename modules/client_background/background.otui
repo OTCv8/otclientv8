@@ -1,0 +1,24 @@
+Panel
+  id: background
+  image-source: /images/background
+  image-smooth: true
+  image-fixed-ratio: true
+  anchors.top: topMenu.bottom
+  anchors.left: parent.left
+  anchors.right: parent.right
+  anchors.bottom: parent.bottom
+  margin-top: 1
+  focusable: false
+
+  UILabel
+    id: clientVersionLabel
+    background-color: #00000099
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    text-align: center
+    text-auto-resize: false
+    width: 220
+    height: 90
+    padding: 2
+    color: #ffffff
+    font: terminus-14px-bold

@@ -1,0 +1,106 @@
+ComboBoxPopupScrollMenuButton < UIButton
+  height: 23
+  font: verdana-11px-antialised
+  text-align: left
+  text-offset: 4 0
+  color: #dfdfdf
+  background-color: alpha
+  margin: 1
+
+  $hover !disabled:
+    color: #dfdfdf
+    background-color: #355d89
+
+  $disabled:
+    color: #dfdfdf88
+
+ComboBoxPopupScrollMenu < UIPopupScrollMenu
+  image-source: /images/ui/combobox_square
+  image-clip: 0 69 91 23
+  image-border: 1
+
+ComboBoxPopupMenuButton < UIButton
+  height: 23
+  font: verdana-11px-antialised
+  text-align: left
+  text-offset: 4 0
+  color: #dfdfdf
+  background-color: alpha
+  margin: 1
+
+  $hover !disabled:
+    color: #dfdfdf
+    background-color: #355d89
+
+  $disabled:
+    color: #dfdfdf88
+
+ComboBoxPopupMenu < UIPopupMenu
+  image-source: /images/ui/combobox_square
+  image-clip: 0 69 91 23
+  image-border: 1
+
+ComboBox < UIComboBox
+  font: verdana-11px-antialised
+  color: #dfdfdf
+  size: 91 23
+  text-offset: 3 0
+  text-align: left
+  image-source: /images/ui/combobox_square
+  image-border: 3
+  image-border-right: 19
+  image-clip: 0 0 91 23
+
+  $hover !disabled:
+    image-clip: 0 23 91 23
+
+  $on:
+    image-clip: 0 46 91 23
+
+  $disabled:
+    color: #dfdfdf88
+    opacity: 0.8
+
+ComboBoxRoundedPopupScrollMenuButton < UIButton
+  height: 23
+  font: verdana-11px-antialised
+  text-align: left
+  text-offset: 4 0
+  color: #dfdfdf
+  background-color: alpha
+
+  $hover !disabled:
+    color: #ffffff
+    background-color: #355d89
+
+  $disabled:
+    color: #dfdfdf88
+
+ComboBoxRoundedPopupScrollMenu < UIPopupScrollMenu
+  image-source: /images/ui/combobox_rounded
+  image-clip: 0 69 91 23
+  image-border: 3
+
+ComboBoxRoundedPopupMenuButton < UIButton
+  height: 23
+  font: verdana-11px-antialised
+  text-align: left
+  text-offset: 4 0
+  color: #dfdfdf
+  background-color: alpha
+
+  $hover !disabled:
+    color: #ffffff
+    background-color: #355d89
+
+  $disabled:
+    color: #dfdfdf88
+
+ComboBoxRoundedPopupMenu < UIPopupMenu
+  image-source: /images/ui/combobox_rounded
+  image-clip: 0 69 91 23
+  image-border: 3
+
+ComboBoxRounded < ComboBox
+  image-source: /images/ui/combobox_rounded
+  image-border: 3

@@ -1,0 +1,148 @@
+BattleIcon < UICheckBox
+  size: 20 20
+  image-color: white
+  image-rect: 0 0 20 20
+
+  $hover !disabled:
+    color: #cccccc
+
+  $!checked:
+    image-clip: 0 0 20 20
+
+  $hover !checked:
+    image-clip: 0 40 20 20
+
+  $checked:
+    image-clip: 0 20 20 20
+
+  $hover checked:
+    image-clip: 0 60 20 20
+
+  $disabled:
+    image-color: #ffffff88
+
+BattlePlayers < BattleIcon
+  image-source: /images/game/battle/battle_players
+
+BattleNPCs < BattleIcon
+  image-source: /images/game/battle/battle_npcs
+
+BattleMonsters < BattleIcon
+  image-source: /images/game/battle/battle_monsters
+
+BattleSkulls < BattleIcon
+  image-source: /images/game/battle/battle_skulls
+
+BattleParty < BattleIcon
+  image-source: /images/game/battle/battle_party
+
+MiniWindow
+  id: battleWindow
+  !text: tr('Battle')
+  height: 166
+  icon: /images/topbuttons/battle
+  @onClose: modules.game_battle.onMiniWindowClose()
+  &save: true
+
+  Panel
+    id: filterPanel
+    margin-top: 26
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: miniwindowScrollBar.left
+    height: 45
+
+    Panel
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      height: 20
+      width: 120
+      layout:
+        type: horizontalBox
+        spacing: 5
+
+      BattlePlayers
+        id: hidePlayers
+        !tooltip: tr('Hide players')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleNPCs
+        id: hideNPCs
+        !tooltip: tr('Hide Npcs')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleMonsters
+        id: hideMonsters
+        !tooltip: tr('Hide monsters')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleSkulls
+        id: hideSkulls
+        !tooltip: tr('Hide non-skull players')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+      BattleParty
+        id: hideParty
+        !tooltip: tr('Hide party members')
+        @onCheckChange: modules.game_battle.checkCreatures()
+
+    Panel
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      height: 20
+      margin-top: 6
+
+      ComboBox
+        id: sortTypeBox
+        width: 90
+        anchors.top: parent.top
+        anchors.left: prev.right
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-left: -31
+
+      ComboBox
+        id: sortOrderBox
+        width: 60
+        anchors.top: parent.top
+        anchors.left: prev.right
+        margin-left: 4
+
+  Panel
+    height: 18
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: miniwindowScrollBar.left
+    margin-top: 4
+
+    UIWidget
+      id: toggleFilterButton
+      anchors.top: prev.top
+      width: 21
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/ui/arrow_vertical
+      image-rect: 0 0 21 12
+      image-clip: 21 0 21 12
+      @onClick: modules.game_battle.toggleFilterPanel()
+      phantom: false
+
+  HorizontalSeparator
+    anchors.top: prev.top
+    anchors.left: parent.left
+    anchors.right: miniwindowScrollBar.left
+    margin-right: 1
+    margin-top: 11
+
+  MiniWindowContents
+    anchors.top: prev.bottom
+    margin-top: 6
+
+    Panel
+      id: battlePanel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-top: 5
+      padding-right: 5
+      layout:
+        type: verticalBox

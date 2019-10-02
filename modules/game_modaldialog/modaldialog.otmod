@@ -1,0 +1,10 @@
+Module
+  name: game_modaldialog
+  description: Show and process modal dialogs
+  author: Summ
+  website: https://github.com/edubart/otclient
+  sandboxed: true
+  dependencies: [ game_interface ]
+  scripts: [ modaldialog ]
+  @onLoad: init()
+  @onUnload: terminate()

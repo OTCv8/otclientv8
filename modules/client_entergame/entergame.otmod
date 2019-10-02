@@ -1,0 +1,9 @@
+Module
+  name: client_entergame
+  description: Manages enter game and character list windows
+  author: edubart & otclient.ovh
+  website: https://github.com/edubart/otclient
+  scripts: [ entergame, characterlist ]
+  @onLoad: EnterGame.init() CharacterList.init()
+  @onUnload: EnterGame.terminate() CharacterList.terminate()
+  

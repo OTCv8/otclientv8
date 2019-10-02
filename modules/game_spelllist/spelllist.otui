@@ -1,0 +1,326 @@
+SpellListLabel < Label
+  font: verdana-11px-monochrome
+  background-color: alpha
+  text-offset: 42 3
+  focusable: true
+  height: 36
+  image-clip: 0 0 32 32
+  image-size: 32 32
+  image-offset: 2 2
+  image-source: /images/game/spells/defaultspells
+
+  $focus:
+    background-color: #ffffff22
+    color: #ffffff
+
+SpellInfoLabel < Label
+  width: 70
+  font: verdana-11px-monochrome
+  text-align: right
+  margin-left: 10
+  margin-top: 5
+
+SpellInfoValueLabel < Label
+  text-align: left
+  width: 190
+  margin-left: 10
+  margin-top: 5
+
+FilterButton < Button
+  width: 64
+  anchors.left: prev.right
+  anchors.top: spellList.bottom
+  @onClick: toggleFilter(self)
+  margin: 5 0 0 6
+  color: #630000
+  $on:
+    color: green
+
+MainWindow
+  id: spelllistWindow
+  !text: tr('Spell List')
+  size: 550 400
+  @onEscape: toggle()
+
+  TextList
+    id: spellList
+    vertical-scrollbar: spellsScrollBar
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: next.top
+    margin-bottom: 10
+    padding: 1
+    width: 210
+    focusable: false
+
+  Button
+    id: buttonCancel
+    !text: tr('Close')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: toggle()
+
+  VerticalScrollBar
+    id: spellsScrollBar
+    anchors.top: spellList.top
+    anchors.bottom: spellList.bottom
+    anchors.right: spellList.right
+    step: 50
+    pixels-scroll: true
+
+  SpellInfoLabel
+    id: labelName
+    anchors.left: spellList.right
+    anchors.top: spellList.top
+    !text: tr('Name') .. ':'
+
+  Label
+    anchors.left: parent.left
+    anchors.top: spellList.bottom
+    !text: tr('Filters') .. ':'
+    margin-top: 8
+
+  FilterButton
+    id: buttonFilterLevel
+    !text: tr('Level')
+    !tooltip: tr('Hide spells for higher exp. levels')
+
+  FilterButton
+    id: buttonFilterVocation
+    !text: tr('Vocation')
+    !tooltip: tr('Hide spells for other vocations')
+
+  SpellInfoLabel
+    id: labelFormula
+    anchors.left: spellList.right
+    anchors.top: labelName.bottom
+    !text: tr('Formula') .. ':'
+
+
+  SpellInfoLabel
+    id: labelVocation
+    anchors.left: spellList.right
+    anchors.top: labelFormula.bottom
+    !text: tr('Vocation') .. ':'
+
+  SpellInfoLabel
+    id: labelGroup
+    anchors.left: spellList.right
+    anchors.top: labelVocation.bottom
+    !text: tr('Group') .. ':'
+
+  SpellInfoLabel
+    id: labelType
+    anchors.left: spellList.right
+    anchors.top: labelGroup.bottom
+    !text: tr('Type') .. ':'
+
+  SpellInfoLabel
+    id: labelCooldown
+    anchors.left: spellList.right
+    anchors.top: labelType.bottom
+    !text: tr('Cooldown') .. ':'
+
+  SpellInfoLabel
+    id: labelLevel
+    anchors.left: spellList.right
+    anchors.top: labelCooldown.bottom
+    !text: tr('Level') .. ':'
+
+  SpellInfoLabel
+    id: labelMana
+    anchors.left: spellList.right
+    anchors.top: labelLevel.bottom
+    !text: tr('Mana') .. ' / ' .. tr('Soul') .. ':'
+
+  SpellInfoLabel
+    id: labelPremium
+    anchors.left: spellList.right
+    anchors.top: labelMana.bottom
+    !text: tr('Premium') .. ':'
+
+  SpellInfoLabel
+    id: labelDescription
+    anchors.left: spellList.right
+    anchors.top: labelPremium.bottom
+    !text: tr('Description') .. ':'
+
+  SpellInfoValueLabel
+    id: labelNameValue
+    anchors.left: labelName.right
+    anchors.top: spellList.top
+
+  SpellInfoValueLabel
+    id: labelFormulaValue
+    anchors.left: labelFormula.right
+    anchors.top: labelNameValue.bottom
+
+  SpellInfoValueLabel
+    id: labelVocationValue
+    anchors.left: labelVocation.right
+    anchors.top: labelFormulaValue.bottom
+
+  SpellInfoValueLabel
+    id: labelGroupValue
+    anchors.left: labelGroup.right
+    anchors.top: labelVocationValue.bottom
+
+  SpellInfoValueLabel
+    id: labelTypeValue
+    anchors.left: labelType.right
+    anchors.top: labelGroupValue.bottom
+
+  SpellInfoValueLabel
+    id: labelCooldownValue
+    anchors.left: labelCooldown.right
+    anchors.top: labelTypeValue.bottom
+
+  SpellInfoValueLabel
+    id: labelLevelValue
+    anchors.left: labelLevel.right
+    anchors.top: labelCooldownValue.bottom
+
+  SpellInfoValueLabel
+    id: labelManaValue
+    anchors.left: labelMana.right
+    anchors.top: labelLevelValue.bottom
+
+  SpellInfoValueLabel
+    id: labelPremiumValue
+    anchors.left: labelPremium.right
+    anchors.top: labelManaValue.bottom
+
+  SpellInfoValueLabel
+    id: labelDescriptionValue
+    anchors.left: labelDescription.right
+    anchors.top: labelPremiumValue.bottom
+
+  Label
+    id: labelVocationFilter
+    anchors.top: labelPremium.bottom
+    anchors.left: spellList.right
+    width: 70
+    font: verdana-11px-monochrome
+    !text: tr('Vocation')
+    margin-top: 30
+    margin-left: 20
+
+  CheckBox
+    id: vocationBoxAny
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-left: 3
+    !text: tr('Any')
+    width: 75
+
+  CheckBox
+    id: vocationBoxSorcerer
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Sorcerer')
+    width: 75
+
+  CheckBox
+    id: vocationBoxDruid
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Druid')
+    width: 75
+
+  CheckBox
+    id: vocationBoxPaladin
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Paladin')
+    width: 75
+
+  CheckBox
+    id: vocationBoxKnight
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Knight')
+    width: 75
+
+  Label
+    id: labelGroupFilter
+    anchors.top: labelPremium.bottom
+    anchors.left: labelVocationFilter.right
+    width: 70
+    font: verdana-11px-monochrome
+    !text: tr('Group')
+    margin-top: 30
+    margin-left: 20
+
+  CheckBox
+    id: groupBoxAny
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-left: 3
+    !text: tr('Any')
+    width: 75
+
+  CheckBox
+    id: groupBoxAttack
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Attack')
+    width: 75
+
+  CheckBox
+    id: groupBoxHealing
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Healing')
+    width: 75
+
+  CheckBox
+    id: groupBoxSupport
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Support')
+    width: 75
+
+  Label
+    id: labelPremiumFilter
+    anchors.top: labelPremium.bottom
+    anchors.left: labelGroupFilter.right
+    width: 70
+    font: verdana-11px-monochrome
+    !text: tr('Premium')
+    margin-top: 30
+    margin-left: 20
+
+  CheckBox
+    id: premiumBoxAny
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-left: 3
+    !text: tr('Any')
+    width: 75
+
+  CheckBox
+    id: premiumBoxNo
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('No')
+    width: 75
+
+  CheckBox
+    id: premiumBoxYes
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    !text: tr('Yes')
+    width: 75
