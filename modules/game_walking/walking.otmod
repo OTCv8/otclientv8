@@ -1,0 +1,8 @@
+Module
+  name: game_walking
+  description: Control walking and turns
+  author: otclient.ovh
+  website: http://otclient.ovh
+  scripts: [ walking ]
+  @onLoad: init()
+  @onUnload: terminate()

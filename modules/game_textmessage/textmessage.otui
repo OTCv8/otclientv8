@@ -1,0 +1,41 @@
+TextMessageLabel < UILabel
+  font: verdana-11px-rounded
+  text-align: center
+  text-wrap: true
+  text-auto-resize: true
+  margin-bottom: 2
+  visible: false
+
+Panel
+  anchors.fill: gameMapPanel
+  anchors.bottom: gameBottomPanel.top
+  focusable: false
+
+  Panel
+    id: centerTextMessagePanel
+    layout:
+      type: verticalBox
+      fit-children: true
+    width: 360
+    anchors.centerIn: parent
+
+    TextMessageLabel
+      id: highCenterLabel
+    TextMessageLabel
+      id: middleCenterLabel
+    TextMessageLabel
+      id: lowCenterLabel
+
+  TextMessageLabel
+    id: privateLabel
+    anchors.top: parent.top
+    anchors.bottom: centerTextMessagePanel.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    text-auto-resize: false
+    width: 275
+
+  TextMessageLabel
+    id: statusLabel
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right

@@ -1,0 +1,47 @@
+NewsLabel < Label
+  text-wrap: false
+  text-auto-resize: true
+  text-align: center
+  font: terminus-14px-bold
+  
+NewsText < Label
+  text-wrap: true
+  text-auto-resize: true
+  text-align: left
+  margin-bottom: 10
+
+NewsImage < Label
+  text-wrap: true
+  margin-bottom: 5
+  text-align: center
+
+StaticWindow
+  anchors.left: parent.left
+  anchors.top: topMenu.bottom
+  anchors.bottom: parent.bottom    
+  margin-top: 10
+  margin-left: 20
+  margin-bottom: 10
+  id: newsPanelHolder
+  width: 300        
+  !text: tr('News')
+  
+  ScrollablePanel
+    id: newsPanel
+    layout:
+      type: verticalBox
+    vertical-scrollbar: newsScroll      
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top    
+    anchors.bottom: parent.bottom 
+    padding-right: 10
+    margin-right: 10
+
+  VerticalScrollBar
+    id: newsScroll
+    anchors.top: newsPanel.top
+    anchors.bottom: newsPanel.bottom
+    anchors.left: newsPanel.right
+    step: 14
+    pixels-scroll: true

@@ -1,0 +1,10 @@
+Module
+  name: client_terminal
+  description: Terminal for executing lua functions
+  author: edubart
+  website: https://github.com/edubart/otclient
+  scripts: [ terminal ]
+  sandboxed: true
+  reloadable: false
+  @onLoad: init()
+  @onUnload: terminate()

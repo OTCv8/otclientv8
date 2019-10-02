@@ -1,0 +1,115 @@
+TerminalLabel < UILabel
+  font: terminus-10px
+  text-wrap: true
+  text-auto-resize: true
+  phantom: true
+
+TerminalSelectText < UITextEdit
+  font: terminus-10px
+  text-wrap: true
+  text-align: bottomLeft
+  editable: false
+  change-cursor-image: false
+  cursor-visible: false
+  selection-color: black
+  selection-background-color: white
+  color: alpha
+  focusable: false
+  auto-scroll: false
+
+UIWindow
+  id: terminalWindow
+  background-color: #000000
+  opacity: 0.85
+  clipping: true
+  anchors.fill: parent
+  border: 0 white
+  $on:
+    border: 1 black
+
+  Label
+    id: titleBar
+    !text: tr('Terminal')
+    border: 1 black
+    color: white
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    background-color: #ffffff11
+    text-align: left
+    text-offset: 4 0
+    height: 18
+    visible: false
+
+  ScrollablePanel
+    id: terminalBuffer
+    focusable: false
+    anchors.left: parent.left
+    anchors.right: terminalScroll.left
+    anchors.top: terminalScroll.top
+    anchors.bottom: commandTextEdit.top
+    layout:
+      type: verticalBox
+      align-bottom: true
+    vertical-scrollbar: terminalScroll
+    inverted-scroll: true
+    margin-left: 2
+
+  TerminalSelectText
+    id: terminalSelectText
+    anchors.fill: terminalBuffer
+    focusable: false
+
+  VerticalScrollBar
+    id: terminalScroll
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    step: 48
+    pixels-scroll: true
+
+  UILabel
+    id: commandSymbolLabel
+    size: 12 12
+    fixed-size: true
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    margin-left: 2
+    font: terminus-10px
+    text: >
+
+  UITextEdit
+    id: commandTextEdit
+    background: #aaaaaa11
+    border-color: #aaaaaa88
+    &baseHeight: 12
+    anchors.bottom: parent.bottom
+    anchors.left: commandSymbolLabel.right
+    anchors.right: terminalScroll.left
+    margin-left: 1
+    padding-left: 2
+    font: terminus-10px
+    selection-color: black
+    selection-background-color: white
+    border-width-left: 0
+    border-width-top: 0
+    multiline: false
+
+    $on:
+      border-width-left: 1
+      border-width-top: 1
+      multiline: true
+
+  ResizeBorder
+    id: bottomResizeBorder
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    enabled: false
+
+  ResizeBorder
+    id: rightResizeBorder
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    enabled: false
