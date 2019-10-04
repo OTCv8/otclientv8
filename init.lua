@@ -1,6 +1,6 @@
 -- CONFIG
 APP_NAME = "otclientv8" -- important, change it, it's name for config dir and files in appdata
-APP_VERSION = 1337      -- client version for updater and login to indentify outdated client
+APP_VERSION = 1337      -- client version for updater and login to identify outdated client
 
 -- If you don't use updater or other service, set it to updater = ""
 Services = {
@@ -16,9 +16,11 @@ Services = {
 Servers = {
   OTClientV8 = "http://otclient.ovh/api/login.php",
   OTClientV8proxy = "http://otclient.ovh/api/login.php?proxy=1",
-  OTClientV8c = "otclient.ovh:7171:1099"
+  OTClientV8classic = "otclient.ovh:7171:1099",
+  OTClientV8cwithfeatures = "otclient.ovh:7171:1099:25:30:80:90",
+  OTClientV8Test = "http://otclient.ovh/api/login2.php"
 }
-ALLOW_CUSTOM_SERVERS = true -- if true it will show option ANOTHER on server list
+ALLOW_CUSTOM_SERVERS = true -- if true it shows option ANOTHER on server list
 -- CONFIG END
 
 -- print first terminal message

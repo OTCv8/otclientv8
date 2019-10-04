@@ -8,13 +8,13 @@ HTTP = {
 function HTTP.get(url, callback)
   local operation = g_http.get(url, HTTP.timeout)
   HTTP.operations[operation] = {type="get", url=url, callback=callback}  
-  return opreation
+  return operation
 end
 
 function HTTP.getJSON(url, callback)
   local operation = g_http.get(url, HTTP.timeout)
   HTTP.operations[operation] = {type="get", json=true, url=url, callback=callback}  
-  return opreation
+  return operation
 end
 
 function HTTP.post(url, data, callback)
@@ -23,7 +23,7 @@ function HTTP.post(url, data, callback)
   end
   local operation = g_http.post(url, data, HTTP.timeout)
   HTTP.operations[operation] = {type="post", url=url, callback=callback}
-  return opreation
+  return operation
 end
 
 function HTTP.postJSON(url, data, callback)
@@ -32,13 +32,13 @@ function HTTP.postJSON(url, data, callback)
   end
   local operation = g_http.post(url, data, HTTP.timeout)
   HTTP.operations[operation] = {type="post", json=true, url=url, callback=callback}
-  return opreation
+  return operation
 end
 
 function HTTP.download(url, file, callback, progressCallback)
   local operation = g_http.download(url, file, HTTP.timeout)
   HTTP.operations[operation] = {type="download", url=url, file=file, callback=callback, progressCallback=progressCallback}  
-  return opreation
+  return operation
 end
 
 function HTTP.downloadImage(url, callback)
@@ -52,7 +52,7 @@ function HTTP.downloadImage(url, callback)
   HTTP.imageId = HTTP.imageId + 1
   local operation = g_http.download(url, file, HTTP.timeout)
   HTTP.operations[operation] = {type="image", url=url, file=file, callback=callback}  
-  return opreation
+  return operation
 end
 
 function HTTP.progress(operationId)
@@ -155,3 +155,4 @@ connect(g_http,
     onDownload = HTTP.onDownload,
     onDownloadProgress = HTTP.onDownloadProgress
   })
+ 

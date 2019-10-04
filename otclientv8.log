@@ -1,0 +1,21 @@
+GPU ANGLE (Intel(R) UHD Graphics 620 Direct3D9Ex vs_3_0 ps_3_0)
+OpenGL OpenGL ES 2.0 (ANGLE 2.1.a502c749b249)
+== application started at Oct 03 2019 06:05:49
+OTClientV8 0.95 beta rev 0 (alpha) made by otclient.ovh built on Oct  3 2019 for arch x86
+GPU ANGLE (Intel(R) UHD Graphics 620 Direct3D9Ex vs_3_0 ps_3_0)
+OpenGL OpenGL ES 2.0 (ANGLE 2.1.a502c749b249)
+== application started at Oct 03 2019 06:18:44
+OTClientV8 0.95 beta rev 0 (alpha) made by otclient.ovh built on Oct  3 2019 for arch x86
+ERROR: protected lua call failed: attempt to call a boolean value
+GPU Intel(R) UHD Graphics 620
+OpenGL 4.5.0 - Build 24.20.100.6287
+== application started at Oct 03 2019 06:22:12
+OTClientV8 0.95 beta rev 0 (alpha) made by otclient.ovh built on Oct  2 2019 for arch x86
+[Atlas] Texture size is: 4096x4096 (max: 16384x16384)
+Exiting application..
+GPU Intel(R) UHD Graphics 620
+OpenGL 4.5.0 - Build 24.20.100.6287
+== application started at Oct 03 2019 06:49:55
+OTClientV8 0.95 beta rev 0 (alpha) made by otclient.ovh built on Oct  2 2019 for arch x86
+[Atlas] Texture size is: 4096x4096 (max: 16384x16384)
+Exiting application..

@@ -1,5 +1,5 @@
 -- BETA VERSION, net tested yet
--- Insteuction: 
+-- Instruction: 
 -- creaturescripts.xml      <event type="extendedopcode" name="Shop" script="shop.lua" />
 -- and in login.lua         player:registerEvent("Shop")
 -- create sql table shop_history

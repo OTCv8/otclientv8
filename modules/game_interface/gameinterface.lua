@@ -862,13 +862,13 @@ function refreshViewMode()
 
     modules.client_topmenu.getTopMenu():setImageColor('white')
     gameBottomPanel:setImageColor('white')
-    g_game.changeMapAwareRange(20, 16)
+    g_game.changeMapAwareRange(19, 15)
   
     if modules.game_console then
       modules.game_console.switchMode(false)
     end
   else
-    g_game.changeMapAwareRange(30, 20)
+    g_game.changeMapAwareRange(29, 19)
     gameMapPanel:fill('parent')
     gameRootPanel:fill('parent')
     gameMapPanel:setKeepAspectRatio(false)
