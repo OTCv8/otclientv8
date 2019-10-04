@@ -283,7 +283,7 @@ function walk(dir)
     dir = nextWalkDir
   end
 
-  local toPos = player:getNewPreWalkingPosition(true)
+  local toPos = player:getPrewalkingPosition(true)
   if dir == North then
     toPos.y = toPos.y - 1
   elseif dir == East then
@@ -324,11 +324,7 @@ function walk(dir)
 
   local preWalked = false
   if toTile and toTile:isWalkable() then
-    if g_game.getFeature(GameNewWalking) then
-      player:newPreWalk(dir)
-    else
-      player:preWalk(dir)
-    end
+    player:preWalk(dir)
     preWalked = true
   else
     local playerTile = player:getTile()
@@ -339,8 +335,7 @@ function walk(dir)
     end
   end
   
-  g_game.callOnWalk(dir)
-  g_game.forceWalk(dir, preWalked)  
+  g_game.walk(dir, preWalked)  
   
   if not firstStep and lastWalkDir ~= dir then
     walkLock = g_clock.millis() + g_settings.getNumber('walkTurnDelay')    

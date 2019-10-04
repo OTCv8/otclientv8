@@ -208,6 +208,7 @@ function enableChat(temporarily)
   
   if temporarily then
     local quickFunc = function()
+      if not g_game.isOnline() then return end
       g_keyboard.unbindKeyDown("Enter")
       g_keyboard.unbindKeyDown("Escape")
       disableChat(temporarily)
@@ -233,6 +234,7 @@ function disableChat()
   consoleTextEdit:setText("")
 
   local quickFunc = function()
+    if not g_game.isOnline() then return end
     if consoleToggleChat:isChecked() then
       consoleToggleChat:setChecked(false)
     end

@@ -214,7 +214,6 @@ function EnterGame.init()
   local server = g_settings.get('server')
   local host = g_settings.get('host')
   local clientVersion = g_settings.get('client-version')
-  local hdSprites = g_settings.getBoolean('hdSprites', false)
 
   if serverSelector:isOption(server) then
     serverSelector:setCurrentOption(server, false)
@@ -230,11 +229,7 @@ function EnterGame.init()
   enterGame:getChildById('accountPasswordTextEdit'):setText(password)
   enterGame:getChildById('accountNameTextEdit'):setText(account)
   rememberPasswordBox:setChecked(#account > 0)
-  
-  if enterGame.hdSprites then
-    enterGame.hdSprites:setChecked(hdSprites)
-  end
-  
+    
   g_keyboard.bindKeyDown('Ctrl+G', EnterGame.openWindow)
 
   if g_game.isOnline() then
@@ -361,7 +356,6 @@ function EnterGame.doLogin()
   G.password = enterGame:getChildById('accountPasswordTextEdit'):getText()
   --G.authenticatorToken = enterGame:getChildById('authenticatorTokenTextEdit'):getText()
   G.authenticatorToken = ""
-  G.hdSprites = enterGame.hdSprites and enterGame.hdSprites:isChecked()
   G.stayLogged = true
   G.server = serverSelector:getText():trim()
   G.host = serverHostTextEdit:getText()
@@ -374,7 +368,6 @@ function EnterGame.doLogin()
   g_settings.set('host', G.host)
   g_settings.set('server', G.server)
   g_settings.set('client-version', G.clientVersion)
-  g_settings.set('hdSprites', G.hdSprites)
   g_settings.save()
 
   if G.host:find("http") ~= nil then
@@ -398,10 +391,6 @@ function EnterGame.doLogin()
     data = {G.clientVersion .. "/Tibia.dat", ""},
     sprites = {G.clientVersion .. "/Tibia.spr", ""},
   }
-  
-  if G.hdSprites then
-    things.sprites_hd = {G.clientVersion .. "/Tibia_hd.spr", ""}
-  end
   
   local incorrectThings = validateThings(things)
   if #incorrectThings > 0 then
@@ -432,10 +421,12 @@ function EnterGame.doLogin()
   g_game.setProtocolVersion(g_game.getClientProtocolVersion(G.clientVersion))
   g_game.setCustomProtocolVersion(0)
   g_game.chooseRsa(G.host)
-  g_game.setCustomOs(2) -- windows
+  -- g_game.setCustomOs(2) -- windows, optional
 
-  -- you can add custom features here
-  g_game.enableFeature(GameBot)
+  -- extra features from init.lua
+  for i = 4, #server_params do
+    g_game.enableFeature(tonumber(server_params[i]))
+  end
   
   -- proxies
   if g_proxy then
@@ -443,7 +434,7 @@ function EnterGame.doLogin()
   end
   
   if modules.game_things.isLoaded() then
-    g_logger.info("Connection to: " .. server_ip .. ":" .. server_port)
+    g_logger.info("Connecting to: " .. server_ip .. ":" .. server_port)
     protocolLogin:login(server_ip, server_port, G.account, G.password, G.authenticatorToken, G.stayLogged)
   else
     loadBox:destroy()
@@ -467,7 +458,6 @@ function EnterGame.doLoginHttp()
     account = G.account,
     password = G.password,
     token = G.authenticatorToken,
-    hdSprites = G.hdSprites,
     version = APP_VERSION,
     uid = G.UUID
   }          
