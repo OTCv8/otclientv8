@@ -1,6 +1,6 @@
 # OTClientV8
 
-Preview version of OTClientV8, it's v0.95 beta, version v1.0 with all tutorial will be released soon.
+Preview version of OTClientV8, version v1.0 with tutorials will be released soon.
 It's based on https://github.com/edubart/otclient and it's not backward compatible.
 
 # DISCORD
@@ -28,8 +28,8 @@ OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 - Removed a lot of useless and outdated things
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 
-# And hundreds of smaller features, optimizations and bug fixes!
-# Check out directory `tutorials` to see how active and use features
+### And hundreds of smaller features, optimizations and bug fixes!
+### Check out directory `tutorials` to see how active and use features
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
 
