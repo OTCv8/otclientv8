@@ -7,12 +7,12 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 
 # FEATURES
-- Rewrited and optimized rendering (60 fps on 11 years old computer)
+- Rewritten and optimized rendering (60 fps on 11 years old computer)
 - Better DirectX9 and DirectX11 support
 - Adaptive rendering (automated graphics optimizations)
-- Rewrited light rendering
-- Rewrited path finding and auto walking
-- Rewrited walking system
+- Rewritten light rendering
+- Rewritten path finding and auto walking
+- Rewritten walking system
 - HTTP lua API with JSON support
 - Auto updater
 - New filesystem
@@ -29,7 +29,7 @@ OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 
 ### And hundreds of smaller features, optimizations and bug fixes!
-### Check out directory `tutorials` to see how active and use features
+### Check out directory `tutorials` to see how activate and use features
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
 
@@ -64,7 +64,8 @@ Services = {
 Servers = {
   OTClientV8 = "http://otclient.ovh/api/login.php",
   OTClientV8proxy = "http://otclient.ovh/api/login.php?proxy=1",
-  OTClientV8c = "otclient.ovh:7171:1099"
+  OTClientV8classic = "otclient.ovh:7171:1099",
+  OTClientV8cwithfeatures = "otclient.ovh:7171:1099:25:30:80:90",
 }
 ALLOW_CUSTOM_SERVERS = true -- if true it will show option ANOTHER on server list
 -- CONFIG END
