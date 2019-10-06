@@ -40,11 +40,14 @@ local defaultOptions = {
   turnDelay = 30,
   hotkeyDelay = 30,
   
+  ignoreServerDirection = true,
+  realDirection = false,
+  
   wsadWalking = false,
   walkFirstStepDelay = 200,
   walkTurnDelay = 100,
   walkStairsDelay = 50,
-  walkTeleportDelay = 200
+  walkTeleportDelay = 200  
 }
 
 local optionsWindow
@@ -292,6 +295,12 @@ function setOption(key, value, force)
     if modules.game_console and modules.game_console.consoleToggleChat:isChecked() ~= value then
       modules.game_console.consoleToggleChat:setChecked(value)
     end
+  elseif key == 'ignoreServerDirection' then
+    g_game.ignoreServerDirection(value)
+  elseif key == 'realDirection' then
+    g_game.showRealDirection(value)
+  elseif key == 'hotkeyDelay' then
+    generalPanel:getChildById('hotkeyDelayLabel'):setText(tr('Hotkey delay: %s ms', value))  
   elseif key == 'walkFirstStepDelay' then
     generalPanel:getChildById('walkFirstStepDelayLabel'):setText(tr('Walk delay after first step: %s ms', value))  
   elseif key == 'walkTurnDelay' then

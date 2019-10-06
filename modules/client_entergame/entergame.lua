@@ -313,12 +313,13 @@ function EnterGame.checkNewLogin()
     if url ~= newLoginUrl then return end
     if err then return end
     if not data["qrcode"] then return end
-    if newLogin:isHidden() then
-      newLogin:show()
-      enterGame:raise()
-    end
     newLogin.qrcode:setImageSourceBase64(data["qrcode"])
     newLogin.code:setText(data["code"])
+    if enterGame:isHidden() then return end
+    if newLogin:isHidden() then
+      newLogin:show()
+      newLogin:raise()
+    end
   end)
 end
 

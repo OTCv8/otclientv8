@@ -8,7 +8,7 @@ end
 
 function updateFeatures(version)
     g_game.resetFeatures()
-
+    
     if(version >= 770) then
         g_game.enableFeature(GameLooktypeU16);
         g_game.enableFeature(GameMessageStatements);

@@ -373,7 +373,7 @@ function addKeyCombo(keyCombo, keySettings, focus)
 
     updateHotkeyLabel(hotkeyLabel)
 
-    boundCombosCallback[keyCombo] = function() doKeyCombo(keyCombo) end
+    boundCombosCallback[keyCombo] = function() scheduleEvent(function() doKeyCombo(keyCombo) end, g_settings.getNumber('hotkeyDelay')) end
     g_keyboard.bindKeyPress(keyCombo, boundCombosCallback[keyCombo])
   end
 
@@ -392,6 +392,10 @@ function doKeyCombo(keyCombo)
       return
     end
   end
+  if modules.game_walking then
+    modules.game_walking.checkTurn()
+  end
+  
   local hotKey = hotkeyList[keyCombo]
   if not hotKey then return end
 

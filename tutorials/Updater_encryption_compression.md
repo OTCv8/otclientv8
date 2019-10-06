@@ -25,6 +25,7 @@ type data.zip >> otclient_gl.exe
 type data.zip >> otclient_dx.exe
 ```
 It will append data.zip archive to .exe file, `type` is windows equivalent of linux `cat`.
+
 9. Remove data.zip, send otclient_gl.exe, otclient_dx.exe, libEGL.dll, libGLESv2.dll and d3dcompiler_46.dll to players.
 
 ### WARNING: When using data.zip (also inside .exe), all files must be encrypted, otherwise otclient won't start (will display decryption error)
