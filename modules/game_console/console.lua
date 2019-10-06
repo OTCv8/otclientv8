@@ -202,6 +202,7 @@ function enableChat(temporarily)
 
   consoleTextEdit:setVisible(true)
   consoleTextEdit:setText("")
+  consoleTextEdit:focus()
 
   g_keyboard.unbindKeyDown("Space")
   g_keyboard.unbindKeyDown("Enter")

@@ -26,6 +26,36 @@ Panel
     !text: tr('Enable smart walking')
     !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
 
+  OptionCheckBox
+    id: ignoreServerDirection
+    !text: tr('Ignore server direction')
+    !tooltip: tr('Doesn\'t change direction when walk is canceled')
+
+  OptionCheckBox
+    id: realDirection
+    !text: tr('Show real direction')
+    !tooltip: tr('Shows real creature direction while it\'s walking')
+
+  Label
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    id: hotkeyDelayLabel
+    margin-top: 10
+    !tooltip: tr('Give you some time to make a turn while walking if you press many keys simultaneously')
+    @onSetup: |
+      local value = modules.client_options.getOption('hotkeyDelay')
+      self:setText(tr('Hotkey delay: %s ms', value))
+
+  OptionScrollbar
+    id: hotkeyDelay
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 3
+    minimum: 5
+    maximum: 50
+
   Label
     anchors.top: prev.bottom
     anchors.left: parent.left
