@@ -10,11 +10,10 @@ HTTP.post(url, data, callback)
 HTTP.postJSON(url, data, callback) -- data should be a table {} and website should return json
 HTTP.download(url, file, downloadCallback, progressCallback) -- progressCallback can be null
 HTTP.downloadImage(url, downloadImageCallback)
-HTTP.progress(operationId) -- return -1 on error or number from 0 to 100
 HTTP.cancel(operationId)
 ```
 
-Each function, except `cancel` and `progress` return operationId, you can use it to cancel or get progress of http request.
+Each function, except `cancel` return operationId, you can use it to cancel http request.
 Those functions came from `modules/corelib/http.lua` and they use more advanced g_http API.
 Files from download are available in virtual "/downloads" directory. Downloading of images is using cache based on url (so if you change image it won't refresh until restart or change url).
 
