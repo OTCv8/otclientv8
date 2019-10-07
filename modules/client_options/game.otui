@@ -27,11 +27,6 @@ Panel
     !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
 
   OptionCheckBox
-    id: ignoreServerDirection
-    !text: tr('Ignore server direction')
-    !tooltip: tr('Doesn\'t change direction when walk is canceled')
-
-  OptionCheckBox
     id: realDirection
     !text: tr('Show real direction')
     !tooltip: tr('Shows real creature direction while it\'s walking')

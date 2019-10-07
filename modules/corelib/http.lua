@@ -55,10 +55,6 @@ function HTTP.downloadImage(url, callback)
   return operation
 end
 
-function HTTP.progress(operationId)
-  return g_http.getProgress(operationId)
-end
-
 function HTTP.cancel(operationId)
   return g_http.cancel(operationId)
 end

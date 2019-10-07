@@ -10,6 +10,7 @@ walkLock = 0
 lastWalk = 0
 lastTurn = 0
 lastTurnDirection = 0
+lastStop = 0
 turnKeys = {}
 
 function init()
@@ -263,10 +264,14 @@ function walk(dir)
   end
 
   if player:isAutoWalking() or player:isServerWalking() then
-    if player:isAutoWalking() then
-      player:stopAutoWalk()
+    if lastStop + 100 < g_clock.millis() then
+      lastStop = g_clock.millis()
+      if player:isAutoWalking() then
+        player:stopAutoWalk()
+      end
+      g_game.stop()
     end
-    g_game.stop()
+    return
   end
   
   if player:isWalkLocked() then

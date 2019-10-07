@@ -295,8 +295,8 @@ function setOption(key, value, force)
     if modules.game_console and modules.game_console.consoleToggleChat:isChecked() ~= value then
       modules.game_console.consoleToggleChat:setChecked(value)
     end
-  elseif key == 'ignoreServerDirection' then
-    g_game.ignoreServerDirection(value)
+  --elseif key == 'ignoreServerDirection' then
+  --  g_game.ignoreServerDirection(value)
   elseif key == 'realDirection' then
     g_game.showRealDirection(value)
   elseif key == 'hotkeyDelay' then
