@@ -1,0 +1,104 @@
+BotButton < Button
+  margin-top: 2
+
+BotSwitch < Button
+  margin-top: 2
+  image-color: green
+  $!on:
+    image-color: red
+    
+BotLabel < Label
+  margin-top: 2
+  text-auto-resize: true
+  text-align: center
+  text-wrap: true
+    
+BotPanel < Panel
+  margin-top: 2
+  layout:
+    type: verticalBox
+    fit-children: true
+
+BotSeparator < HorizontalSeparator
+  margin-top: 5
+  margin-bottom: 3
+    
+MiniWindow
+  id: botWindow
+  !text: tr('Bot')
+  height: 200
+  icon: /images/topbuttons/bot
+  @onClose: modules.game_bot.onMiniWindowClose()
+  &save: true
+
+  MiniWindowContents   
+    margin-left: 5
+    margin-right: 5
+
+    ComboBox
+      id: config
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 5
+      margin-right: 90
+      text-offset: 3 0
+      
+    Button
+      id: editConfig
+      anchors.top: prev.top
+      anchors.left: prev.right
+      anchors.right: parent.right
+      !text: tr('Edit')
+      @onClick: modules.game_bot.editConfig()
+      margin-left: 5
+      margin-right: 45
+
+    Button
+      id: enableButton
+      anchors.top: prev.top
+      anchors.left: prev.right
+      anchors.right: parent.right
+      @onClick: modules.game_bot.toggleBot()
+      margin-left: 5
+    
+    Label
+      id: statusLabel
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 5
+      text-auto-resize: true
+      !text: tr('Status: waiting')
+      text-align: center
+      text-wrap: true
+      
+    HorizontalSeparator
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 5
+
+    Panel
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      id: messages
+      layout:
+        type: verticalBox
+        fit-children: true
+
+    HorizontalSeparator
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 5
+
+    Panel
+      anchors.top: prev.bottom
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      id: botPanel
+      layout:
+        type: verticalBox

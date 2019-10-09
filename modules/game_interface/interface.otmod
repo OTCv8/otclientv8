@@ -32,5 +32,6 @@ Module
     - game_unjustifiedpoints
     - game_walking
     - game_shop
+    - game_bot
   @onLoad: init()
   @onUnload: terminate()

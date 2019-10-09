@@ -9,6 +9,9 @@ end
 function updateFeatures(version)
     g_game.resetFeatures()
     
+    -- you can add custom features here, list of them in modules\gamelib\const.lua
+    g_game.getFeature(GameBot)
+    
     if(version >= 770) then
         g_game.enableFeature(GameLooktypeU16);
         g_game.enableFeature(GameMessageStatements);
