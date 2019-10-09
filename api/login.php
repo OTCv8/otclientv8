@@ -12,6 +12,7 @@ $serverIp = "otclient.ovh";
 $serverPort = 7172; // GAME PORT (7172 usually)
 
 $version = 1099;
+$otc_version = 1337; // APP_VERSION, from init.lua
 
 $maxLogins = 10; // 0 or null to disable
 $blockTime = 60; // after too many logins, in seconds
@@ -96,6 +97,10 @@ $data = file_get_contents("php://input");
 $data = json_decode($data);
 if(empty($data)) {
 	http_response_code(400);
+}
+
+if($data->version != $otc_version) {
+    die(json_encode(array("error" => "Outdated client, please update!")));
 }
 
 if($data->quick == 1) { 

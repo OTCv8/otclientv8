@@ -156,6 +156,7 @@ GameIngameStore = 73
 GameIngameStoreHighlights = 74
 GameIngameStoreServiceType = 75
 GameAdditionalSkills = 76
+GameDistanceEffectU16 = 77
 
 GameExtendedOpcode = 80
 
