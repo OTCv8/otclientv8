@@ -334,6 +334,9 @@ end
 function onVipStateChange(id, state)
   local vipList = vipWindow:getChildById('contentsPanel')
   local label = vipList:getChildById('vip' .. id)
+  if not label then
+    return
+  end
   local name = label:getText()
   local description = label:getTooltip()
   local iconId = label.iconId
