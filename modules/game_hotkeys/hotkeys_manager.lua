@@ -402,7 +402,7 @@ end
 
 function prepareKeyCombo(keyCombo)
     local hotKey = hotkeyList[keyCombo]
-    if keyCombo:lower():find("ctrl") and not hotKey or (hotKey.itemId == nil and (not hotKey.value or #hotKey.value == 0)) then
+    if keyCombo:lower():find("ctrl") or not hotKey or (hotKey.itemId == nil and (not hotKey.value or #hotKey.value == 0)) then
       keyCombo = keyCombo:gsub("Ctrl%+", "")
       keyCombo = keyCombo:gsub("ctrl%+", "")
       hotKey = hotkeyList[keyCombo]
