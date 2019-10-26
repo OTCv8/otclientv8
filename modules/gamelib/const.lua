@@ -159,6 +159,7 @@ GameAdditionalSkills = 76
 GameDistanceEffectU16 = 77
 
 GameExtendedOpcode = 80
+GameMinimapLimitedToSingleFloor = 81
 
 GameNewWalking = 90
 GameSlowerManualWalking = 91

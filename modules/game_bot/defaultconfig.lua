@@ -25,9 +25,6 @@ macro(5000, "macro send link", "f5", function()
 end)
 
 macro(1000, "flag tiles", function()
-  local staticText = StaticText.create()
-  staticText:addMessage("t", 9, "xDDD")
-  local tile = player:getTile()
   tile:setText("Hello =)", "red")
 end)
 
