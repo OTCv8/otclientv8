@@ -17,7 +17,7 @@ local errorOccured = false
 local statusLabel = nil
 local compiledConfig = nil
 local configTab = nil
-local tabs = {"macros", "hotkeys", "callbacks", "other"}
+local tabs = {"main", "macros", "hotkeys", "callbacks", "other"}
 local mainTab = nil
 local activeTab = nil
 local editorText = {"", ""}
@@ -31,6 +31,8 @@ function init()
   connect(rootWidget, { onKeyDown = botKeyDown,
                         onKeyUp = botKeyUp,
                         onKeyPress = botKeyPress })
+                        
+  connect(Tile, { onAddThing = botAddThing, onRemoveThing = botRemoveThing })
   
   botConfigFile = g_configs.create("/bot.otml")
   local config = botConfigFile:get("config")
@@ -103,6 +105,8 @@ function terminate()
                         onKeyPress = botKeyPress })
 
   disconnect(g_game, { onGameStart = online, onGameEnd = offline, onTalk = botOnTalk})
+  
+  disconnect(Tile, { onAddThing = botAddThing, onRemoveThing = botRemoveThing })
 
   removeEvent(executeEvent)
   removeEvent(checkMsgsEvent)
@@ -130,7 +134,7 @@ function online()
   botButton:show()
   updateEnabled()
   if botConfig.enabled then
-    refreshConfig()
+    scheduleEvent(refreshConfig, 1)
   else 
     clearConfig()
   end
@@ -263,6 +267,7 @@ function refreshConfig()
     return
   end
   errorOccured = false
+  g_game.enableTileThingLuaCallback(false)
   local status, result = pcall(function() return executeBot(config.script, config.storage, botPanel, botMsgCallback) end)
   if not status then    
     errorOccured = true
@@ -274,7 +279,7 @@ function refreshConfig()
 end
 
 function executeConfig()
-  executeEvent = scheduleEvent(executeConfig, 20)    
+  executeEvent = scheduleEvent(executeConfig, 25)   
   if compiledConfig == nil then
     return
   end
@@ -359,12 +364,22 @@ function botOnTalk(name, level, mode, text, channelId, pos)
   return false  
 end
 
-function botOnGet(oprationId, url, err, data)
+function botAddThing(tile, thing, asd)
   if compiledConfig == nil then return false end
-  local status, result = pcall(function() compiledConfig.callbacks.onGet(oprationId, url, err, data) end)
+  local status, result = pcall(function() compiledConfig.callbacks.onAddThing(tile, thing) end)
   if not status then    
     errorOccured = true
     statusLabel:setText(tr("Error: " .. result))
   end
-  return false  
+  return false 
+end
+
+function botRemoveThing(tile, thing)
+  if compiledConfig == nil then return false end
+  local status, result = pcall(function() compiledConfig.callbacks.onRemoveThing(tile, thing) end)
+  if not status then    
+    errorOccured = true
+    statusLabel:setText(tr("Error: " .. result))
+  end
+  return false
 end

@@ -28,7 +28,7 @@ Panel
 
   OptionCheckBox
     id: realDirection
-    !text: tr('Show real direction')
+    !text: tr('Show real direction (ignore walk direction)')
     !tooltip: tr('Shows real creature direction while it\'s walking')
 
   Label

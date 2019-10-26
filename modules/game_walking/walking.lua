@@ -360,6 +360,7 @@ function walk(dir)
   
   lastWalkDir = dir
   lastWalk = g_clock.millis()
+  return true
 end
 
 function turn(dir, repeated)
