@@ -279,10 +279,11 @@ end
 function onUseWith(clickedWidget, mousePosition)
   if clickedWidget:getClassName() == 'UIGameMap' then
     local tile = clickedWidget:getTile(mousePosition)
-    if tile then
-      if selectedThing:isFluidContainer() then
+    if tile then      
+      if selectedThing:isFluidContainer() or selectedThing:isMultiUse() then
         g_game.useWith(selectedThing, tile:getTopMultiUseThing(), selectedSubtype)
       else
+        print("normal")
         g_game.useWith(selectedThing, tile:getTopUseThing(), selectedSubtype)
       end
     end

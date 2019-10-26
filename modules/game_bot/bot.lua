@@ -8,7 +8,6 @@ configEditorText = nil
 configList = nil
 botPanel = nil
 local botMessages = nil
-local showingDocumentation = false
 local configCopy = ""
 local enableButton = nil
 local executeEvent = nil
@@ -144,6 +143,16 @@ function online()
   end
 end
 
+function offline()
+  botButton:hide()
+  configWindow:hide()
+  clearConfig()
+  removeEvent(executeEvent)
+  removeEvent(checkMsgsEvent)
+  executeEvent = nil
+  checkMsgsEvent = nil
+end
+
 function toggleBot()
   botConfig.enabled = not botConfig.enabled
   if botConfig.enabled then
@@ -176,7 +185,6 @@ function editConfig()
   configEditorText:setEditable(true)
   activeTab = mainTab
   configTab:selectTab(mainTab)
-  showingDocumentation = false
 end
 
 local function split2(str, delimiter)

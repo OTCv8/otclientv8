@@ -9,7 +9,7 @@ ConfigTabBarPanel < MoveableTabBarPanel
 
 MainWindow
   id: configWindow
-  size: 650 500
+  size: 650 497
   !text: tr("Config editor")
 
   Label

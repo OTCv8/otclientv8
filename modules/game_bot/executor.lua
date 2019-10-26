@@ -155,6 +155,7 @@ function executeBot(config, storage, panel, msgCallback)
       hotkey = hotkey,
       switch = switch
     })
+    return context._macros[#context._macros]
   end
   
   -- hotkey(keys, callback)
@@ -184,6 +185,7 @@ function executeBot(config, storage, panel, msgCallback)
       switch = switch,
       single = false
     }
+    return context._hotkeys[keys]
   end
   
   -- singlehotkey(keys, callback)
@@ -213,6 +215,7 @@ function executeBot(config, storage, panel, msgCallback)
       switch = switch,
       single = true
     }
+    return context._hotkeys[keys]
   end  
   
   -- schedule(timeout, callback)
@@ -283,7 +286,7 @@ function executeBot(config, storage, panel, msgCallback)
     end)
   end
   
-  -- delay(duration)
+  -- delay(duration) -- block execution of current macro/hotkey/callback for x milliseconds
   context.delay = function(duration)
     if not context._currentExecution then
       return context.error("Invalid usage of delay function, it should be used inside callbacks")
