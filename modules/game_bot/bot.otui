@@ -13,15 +13,21 @@ BotLabel < Label
   text-align: center
   text-wrap: true
     
+BotItem < UIItem  
+  virtual: true
+  size: 32 32
+  border: 1 black
+  &selectable: true
+  
+BotSeparator < HorizontalSeparator
+  margin-top: 5
+  margin-bottom: 3
+  
 BotPanel < Panel
   margin-top: 2
   layout:
     type: verticalBox
     fit-children: true
-
-BotSeparator < HorizontalSeparator
-  margin-top: 5
-  margin-bottom: 3
     
 MiniWindow
   id: botWindow
@@ -33,7 +39,7 @@ MiniWindow
 
   MiniWindowContents   
     margin-left: 5
-    margin-right: 5
+    margin-right: 3
 
     ComboBox
       id: config
