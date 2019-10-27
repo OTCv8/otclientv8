@@ -55,7 +55,7 @@ MainWindow
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     width: 150
-    @onClick: scheduleEvent(function() g_platform.openUrl("https://github.com/OTCv8/otclient_bot") end, 50)
+    @onClick: scheduleEvent(function() g_platform.openUrl("https://github.com/OTCv8/otclientv8_bot") end, 50)
 
   Button
     id: okButton

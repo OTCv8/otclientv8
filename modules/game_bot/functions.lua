@@ -8,7 +8,7 @@ function setupFunctions(context)
   context.hp = function() return context.player:getHealth() end
   context.mana = function() return context.player:getMana() end
   context.hppercent = function() return context.player:getHealthPercent() end
-  context.manapercent = function() return context.player:getManaPercent() end
+  context.manapercent = function() if context.player:getMaxMana() <= 1 then return 100 else return math.floor(context.player:getMana() * 100 / context.player:getMaxMana()) end end
   context.maxhp = function() return context.player:getMaxHealth() end
   context.maxmana = function() return context.player:getMaxMana() end
   context.hpmax = function() return context.player:getMaxHealth() end

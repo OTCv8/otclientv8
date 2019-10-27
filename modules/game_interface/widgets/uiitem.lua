@@ -24,6 +24,13 @@ function UIItem:onDrop(widget, mousePos, forced)
 
   local item = widget.currentDragThing
   if not item or not item:isItem() then return false end
+  
+  if self.selectable then
+    if self.onItemChange then
+      self.onItemChange(self, item)
+    end
+    return
+  end
 
   local toPos = self.position
 
@@ -93,7 +100,7 @@ function UIItem:onMouseRelease(mousePosition, mouseButton)
 end
 
 function UIItem:canAcceptDrop(widget, mousePos)
-  if self:isVirtual() or not self:isDraggable() then return false end
+  if not self.selectable and (self:isVirtual() or not self:isDraggable()) then return false end
   if not widget or not widget.currentDragThing then return false end
 
   local children = rootWidget:recursiveGetChildrenByPos(mousePos)

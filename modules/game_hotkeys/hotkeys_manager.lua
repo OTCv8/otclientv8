@@ -36,7 +36,6 @@ useRadioGroup = nil
 currentHotkeys = nil
 boundCombosCallback = {}
 hotkeysList = {}
-lastHotkeyTime = g_clock.millis()
 hotkeyConfigs = {}
 currentConfig = 1
 configValueChanged = false
@@ -182,8 +181,9 @@ function load(forceDefaults)
 end
 
 function unload()
+  local gameRootPanel = modules.game_interface.getRootPanel()
   for keyCombo,callback in pairs(boundCombosCallback) do
-    g_keyboard.unbindKeyPress(keyCombo, callback)
+    g_keyboard.unbindKeyPress(keyCombo, callback, gameRootPanel)
   end
   boundCombosCallback = {}
   currentHotkeys:destroyChildren()
@@ -373,21 +373,21 @@ function addKeyCombo(keyCombo, keySettings, focus)
 
     updateHotkeyLabel(hotkeyLabel)
 
-    
+    local gameRootPanel = modules.game_interface.getRootPanel()
     if keyCombo:lower():find("ctrl") then
       if boundCombosCallback[keyCombo] then
-        g_keyboard.unbindKeyPress(keyCombo, boundCombosCallback[keyCombo])      
+        g_keyboard.unbindKeyPress(keyCombo, boundCombosCallback[keyCombo], gameRootPanel)      
       end
     end
 
     boundCombosCallback[keyCombo] = function() prepareKeyCombo(keyCombo) end
-    g_keyboard.bindKeyPress(keyCombo, boundCombosCallback[keyCombo])
+    g_keyboard.bindKeyPress(keyCombo, boundCombosCallback[keyCombo], gameRootPanel)
         
     if not keyCombo:lower():find("ctrl") then
       local keyComboCtrl = "Ctrl+" .. keyCombo
       if not boundCombosCallback[keyComboCtrl] then
         boundCombosCallback[keyComboCtrl] = function() prepareKeyCombo(keyComboCtrl) end
-        g_keyboard.bindKeyPress(keyComboCtrl, boundCombosCallback[keyComboCtrl])      
+        g_keyboard.bindKeyPress(keyComboCtrl, boundCombosCallback[keyComboCtrl], gameRootPanel)   
       end
     end
   end
@@ -400,7 +400,7 @@ function addKeyCombo(keyCombo, keySettings, focus)
   configValueChanged = true
 end
 
-function prepareKeyCombo(keyCombo)
+function prepareKeyCombo(keyCombo, repeated)
     local hotKey = hotkeyList[keyCombo]
     if keyCombo:lower():find("ctrl") or not hotKey or (hotKey.itemId == nil and (not hotKey.value or #hotKey.value == 0)) then
       keyCombo = keyCombo:gsub("Ctrl%+", "")
@@ -432,7 +432,11 @@ function doKeyCombo(keyCombo)
   local hotKey = hotkeyList[keyCombo]
   if not hotKey then return end
 
-  if hotKey.lastHotkeyTime ~= nil and g_clock.millis() - hotKey.lastHotkeyTime < 100 then
+  local hotkeyDelay = 100  
+  if hotKey.hotkeyDelayTo == nil or g_clock.millis() > hotKey.hotkeyDelayTo + hotkeyDelay then
+    hotkeyDelay = 200 -- for first use
+  end
+  if hotKey.hotkeyDelayTo ~= nil and g_clock.millis() < hotKey.hotkeyDelayTo then
     return
   end
 	
@@ -443,7 +447,7 @@ function doKeyCombo(keyCombo)
     else
       modules.game_console.setTextEditText(hotKey.value)
     end
-    hotKey.lastHotkeyTime = g_clock.millis()
+    hotKey.hotkeyDelayTo = g_clock.millis() + hotkeyDelay
   elseif hotKey.useType == HOTKEY_MANAGER_USE then
     if g_game.getClientVersion() < 740 then
       local item = g_game.findPlayerItem(hotKey.itemId, hotKey.subType or -1)
@@ -453,7 +457,7 @@ function doKeyCombo(keyCombo)
     else
       g_game.useInventoryItem(hotKey.itemId)
     end
-    hotKey.lastHotkeyTime = g_clock.millis()
+    hotKey.hotkeyDelayTo = g_clock.millis() + hotkeyDelay
   elseif hotKey.useType == HOTKEY_MANAGER_USEONSELF then
     if g_game.getClientVersion() < 740 then
       local item = g_game.findPlayerItem(hotKey.itemId, hotKey.subType or -1)
@@ -463,7 +467,7 @@ function doKeyCombo(keyCombo)
     else
       g_game.useInventoryItemWith(hotKey.itemId, g_game.getLocalPlayer(), hotKey.subType or -1)
     end
-    hotKey.lastHotkeyTime = g_clock.millis()
+    hotKey.hotkeyDelayTo = g_clock.millis() + hotkeyDelay
   elseif hotKey.useType == HOTKEY_MANAGER_USEONTARGET then
     local attackingCreature = g_game.getAttackingCreature()
     if not attackingCreature then
@@ -487,7 +491,7 @@ function doKeyCombo(keyCombo)
     else
       g_game.useInventoryItemWith(hotKey.itemId, attackingCreature, hotKey.subType or -1)
     end
-    hotKey.lastHotkeyTime = g_clock.millis()
+    hotKey.hotkeyDelayTo = g_clock.millis() + hotkeyDelay
   elseif hotKey.useType == HOTKEY_MANAGER_USEWITH then
     local item = Item.create(hotKey.itemId)
     if g_game.getClientVersion() < 740 then
@@ -596,7 +600,8 @@ end
 
 function removeHotkey()
   if currentHotkeyLabel == nil then return end
-  g_keyboard.unbindKeyPress(currentHotkeyLabel.keyCombo, boundCombosCallback[currentHotkeyLabel.keyCombo])
+  local gameRootPanel = modules.game_interface.getRootPanel()
+  g_keyboard.unbindKeyPress(currentHotkeyLabel.keyCombo, boundCombosCallback[currentHotkeyLabel.keyCombo], gameRootPanel)
   boundCombosCallback[currentHotkeyLabel.keyCombo] = nil
   currentHotkeyLabel:destroy()
   currentHotkeyLabel = nil

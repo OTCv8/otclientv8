@@ -181,7 +181,13 @@ function editConfig()
   configWindow:raise()
   configWindow:focus()
   editorText = {botConfig.configs[config].script or "", ""}
-  configEditorText:setText(botConfig.configs[config].script)
+  if #editorText[1] <= 2 then
+    editorText[1] = "--config name\n\n"
+    for k, v in ipairs(tabs) do
+      editorText[1] = editorText[1] .. "--#" .. v .. "\n\n"  
+    end    
+  end
+  configEditorText:setText(editorText[1])
   configEditorText:setEditable(true)
   activeTab = mainTab
   configTab:selectTab(mainTab)
@@ -208,8 +214,12 @@ function restoreMainTab()
     editorText = {configEditorText:getText(), ""}
     return
   end
-  editorText = {editorText[1] .. "--#" .. activeTab:getText():lower() .. "\n" .. configEditorText:getText() .. editorText[2], ""}
-  configEditorText:setText(editorText[1])  
+  local currentText = configEditorText:getText()
+  if #currentText > 0 and currentText:sub(#currentText, #currentText) ~= '\n' then
+    currentText = currentText .. '\n'
+  end
+  editorText = {editorText[1] .. "--#" .. activeTab:getText():lower() .. "\n" .. currentText .. editorText[2], ""}
+  configEditorText:setText(editorText[1])
 end
 
 function editorTabChanged(holder, tab)
@@ -279,7 +289,7 @@ function refreshConfig()
   local status, result = pcall(function() return executeBot(config.script, config.storage, botPanel, botMsgCallback) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. tostring(result)))
+    statusLabel:setText("Error: " .. tostring(result))
     return
   end
   compiledConfig = result
@@ -300,7 +310,7 @@ function executeConfig()
   local status, result = pcall(function() return compiledConfig.script() end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
     return
   end 
 end
@@ -337,7 +347,7 @@ function botKeyDown(widget, keyCode, keyboardModifiers)
   local status, result = pcall(function() compiledConfig.callbacks.onKeyDown(keyCode, keyboardModifiers) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false
 end
@@ -347,7 +357,7 @@ function botKeyUp(widget, keyCode, keyboardModifiers)
   local status, result = pcall(function() compiledConfig.callbacks.onKeyUp(keyCode, keyboardModifiers) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false
 end
@@ -357,7 +367,7 @@ function botKeyPress(widget, keyCode, keyboardModifiers, autoRepeatTicks)
   local status, result = pcall(function() compiledConfig.callbacks.onKeyPress(keyCode, keyboardModifiers, autoRepeatTicks) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false
 end
@@ -367,7 +377,7 @@ function botOnTalk(name, level, mode, text, channelId, pos)
   local status, result = pcall(function() compiledConfig.callbacks.onTalk(name, level, mode, text, channelId, pos) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false  
 end
@@ -377,7 +387,7 @@ function botAddThing(tile, thing, asd)
   local status, result = pcall(function() compiledConfig.callbacks.onAddThing(tile, thing) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false 
 end
@@ -387,7 +397,7 @@ function botRemoveThing(tile, thing)
   local status, result = pcall(function() compiledConfig.callbacks.onRemoveThing(tile, thing) end)
   if not status then    
     errorOccured = true
-    statusLabel:setText(tr("Error: " .. result))
+    statusLabel:setText("Error: " .. result)
   end
   return false
 end

@@ -422,7 +422,9 @@ function EnterGame.doLogin()
   g_game.setProtocolVersion(g_game.getClientProtocolVersion(G.clientVersion))
   g_game.setCustomProtocolVersion(0)
   g_game.chooseRsa(G.host)
-  -- g_game.setCustomOs(2) -- windows, optional
+  if #server_params <= 3 then
+    g_game.setCustomOs(2) -- set os to windows
+  end
 
   -- extra features from init.lua
   for i = 4, #server_params do
