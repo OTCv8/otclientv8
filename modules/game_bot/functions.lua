@@ -47,6 +47,15 @@ function setupFunctions(context)
   context.skull = function() return context.player:getSkull() end
   context.outfit = function() return context.player:getOutfit() end
 
+  context.setOutfit = function(outfit)
+    modules.game_outfit.ignoreNextOutfitWindow = g_clock.millis() 
+    g_game.requestOutfit()
+    context.schedule(100, function()
+      g_game.changeOutfit(outfit)
+    end)
+  end
+  context.changeOutfit = context.setOutfit
+  context.setSpeed = function(value) context.player:setSpeed(value) end
 
   context.autoWalk = function(destination) return context.player:autoWalk(destination) end
   context.walk = function(dir) return modules.game_walking.walk(dir) end
@@ -73,6 +82,40 @@ function setupFunctions(context)
   -- map releated
   context.zoomIn = function() modules.game_interface.getMapPanel():zoomIn() end
   context.zoomOut = function() modules.game_interface.getMapPanel():zoomOut() end
+
+  context.getSpectators = function(multifloor)
+    if multifloor ~= true then
+      multifloor = false
+    end
+    return g_map.getSpectators(context.player:getPosition(), multifloor)
+  end
+
+  context.getCreatureByName = function(name, multifloor)
+    if not name then return nil end
+    name = name:lower()
+    if multifloor ~= true then
+      multifloor = false
+    end
+    for i, spec in ipairs(g_map.getSpectators(context.player:getPosition(), multifloor)) do
+       if spec:getName():lower() == name then
+          return spec
+       end
+    end
+    return nil
+  end
+  context.getPlayerByName = function(name, multifloor)
+    if not name then return nil end
+    name = name:lower()
+    if multifloor ~= true then
+      multifloor = false
+    end
+    for i, spec in ipairs(g_map.getSpectators(context.player:getPosition(), multifloor)) do
+       if spec:isPlayer() and spec:getName():lower() == name then
+          return spec
+       end
+    end
+    return nil
+  end
   
   -- tools
   context.encode = function(data) return json.encode(data) end
