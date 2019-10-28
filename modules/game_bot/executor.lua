@@ -278,6 +278,7 @@ function executeBot(config, storage, panel, msgCallback)
   
   -- listen(name, callback) -- callback = function(text, channelId, pos)
   context.listen = function(name, callback)
+    if not name then return context.error("listen: invalid name") end
     name = name:lower()
     context.onTalk(function(name2, level, mode, text, channelId, pos)
       if name == name2:lower() then
