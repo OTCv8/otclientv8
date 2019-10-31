@@ -247,10 +247,12 @@ function onColorCheckChange(colorBox)
     colorBox:setChecked(true)
     colorBox.onCheckChange = onColorCheckChange
   else
-    currentColorBox.onCheckChange = nil
-    currentColorBox:setChecked(false)
-    currentColorBox.onCheckChange = onColorCheckChange
-
+    if currentColorBox then
+      currentColorBox.onCheckChange = nil
+      currentColorBox:setChecked(false)
+      currentColorBox.onCheckChange = onColorCheckChange
+    end
+    
     currentColorBox = colorBox
 
     if currentClotheButtonBox:getId() == 'head' then

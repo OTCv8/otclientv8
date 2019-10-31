@@ -3,21 +3,18 @@
 Preview version of OTClientV8, version v1.0 with tutorials will be released soon.
 It's based on https://github.com/edubart/otclient and it's not backward compatible.
 
-# DISCORD
-OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
-
-# Forum
-OTClientV8 forum: https://otland.net/forums/otclient.494/
+## DISCORD: https://discord.gg/feySup6
+## Forum: https://otland.net/forums/otclient.494/
 
 # FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
 - Better DirectX9 and DirectX11 support
 - Adaptive rendering (automated graphics optimizations)
-- Rewritten light rendering
+- Rewritten and optimized light rendering
 - Rewritten path finding and auto walking
-- Rewritten walking system
-- HTTP lua API with JSON support
-- Auto updater
+- Rewritten walking system with animations
+- HTTP/HTTPS lua API with JSON support
+- Auto updater with failsafe (recovery) mode
 - New filesystem
 - File encryption and compression
 - Automatic diagnostic system
@@ -28,12 +25,15 @@ OTClientV8 forum: https://otland.net/forums/otclient.494/
 - Updated hotkey manager
 - Updated and optimized battle list
 - Crosshair, floor fading, extra health/mana bars and panels
+- Much more client options
 - Removed a lot of useless and outdated things
-- Bot (https://github.com/OTCv8/otclientv8_bot)
+- Advanced bot (https://github.com/OTCv8/otclientv8_bot)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
+- Bot protection (extra paid option)
+- [Soon] Mobile application for quick authorization
 
 ### And hundreds of smaller features, optimizations and bug fixes!
-### Check out directory `tutorials` to see how activate and use features
+### Check out directory `tutorials` to see how activate and use new features
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
 
