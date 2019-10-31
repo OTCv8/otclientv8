@@ -6,6 +6,9 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 # DISCORD
 OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 
+# Forum
+OTClientV8 forum: https://otland.net/forums/otclient.494/
+
 # FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
 - Better DirectX9 and DirectX11 support
@@ -26,6 +29,7 @@ OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 - Updated and optimized battle list
 - Crosshair, floor fading, extra health/mana bars and panels
 - Removed a lot of useless and outdated things
+- Bot (https://github.com/OTCv8/otclientv8_bot)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 
 ### And hundreds of smaller features, optimizations and bug fixes!
@@ -33,13 +37,8 @@ OTClientV8 discord channel: https://discord.gg/feySup6 (new, working link!)
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
 
-# Facts
-### It took almost 1000h to make this project
-### OTClientV8 has been used by over 6000 unique players!
-### You can check last active players on: http://otclient.ovh/clients.php
-
 # Paid version
-The difference between paid version and this one is that the 1st one comes with c++ sources and has professional support.  You may need c++ source if you want to add some more advanced modifications, better encryption, bot protection or some other things. The free version doesn't offer technical support, you need to follow tutorials and in case of any bug or problem you should submit an issue on github. Check http://otclient.ovh if you want more about paid version and other extra services.
+The difference between paid version and this one is that the 1st one comes with c++ sources and has better support.  You may need c++ source if you want to add some more advanced modifications, better encryption, bot protection or some other things. The free version doesn't offer technical support, you need to follow tutorials and in case of any bug or problem you should submit an issue on github. Visit http://otclient.ovh if you want to know more about paid version and other extra services.
 
 # Quick Start
 

@@ -3,12 +3,14 @@ BotButton < Button
 
 BotSwitch < Button
   margin-top: 2
+  height: 20
   image-color: green
   $!on:
     image-color: red
     
 BotLabel < Label
   margin-top: 2
+  height: 20
   text-auto-resize: true
   text-align: center
   text-wrap: true
@@ -18,17 +20,20 @@ BotItem < UIItem
   size: 32 32
   border: 1 black
   &selectable: true
+
+BotTextEdit < TextEdit  
+  @onClick: modules.game_textedit.show(self)
+  text-align: center
+  multiline: false
   
 BotSeparator < HorizontalSeparator
   margin-top: 5
   margin-bottom: 3
-  
+
 BotPanel < Panel
-  margin-top: 2
   layout:
     type: verticalBox
-    fit-children: true
-    
+
 MiniWindow
   id: botWindow
   !text: tr('Bot')
@@ -99,12 +104,28 @@ MiniWindow
       anchors.right: parent.right
       anchors.top: prev.bottom
       margin-top: 5
+    
+    MoveableTabBar
+      id: botTabs
+      anchors.top: prev.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      tab-spacing: 2
+      height: 20
+      movable: false
+      
+      $on:
+        visible: true
+        margin-top: 2
 
+      $!on:
+        visible: false
+        margin-top: -20
+      
     Panel
+      id: botPanel
+      margin-top: 2
       anchors.top: prev.bottom
       anchors.bottom: parent.bottom
       anchors.left: parent.left
       anchors.right: parent.right
-      id: botPanel
-      layout:
-        type: verticalBox

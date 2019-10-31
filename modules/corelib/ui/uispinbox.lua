@@ -80,8 +80,10 @@ end
 function UISpinBox:onStyleApply(styleName, styleNode)
   for name, value in pairs(styleNode) do
     if name == 'maximum' then
+      self.maximum = value
       addEvent(function() self:setMaximum(value) end)
     elseif name == 'minimum' then
+      self.minimum = value
       addEvent(function() self:setMinimum(value) end)
     elseif name == 'mouse-scroll' then
       addEvent(function() self:setMouseScroll(value) end)
@@ -118,6 +120,9 @@ function UISpinBox:down()
 end
 
 function UISpinBox:setValue(value, dontSignal)
+  if type(value) == "string" then
+    value = tonumber(value)
+  end
   value = value or 0
   value = math.max(math.min(self.maximum, value), self.minimum)
 

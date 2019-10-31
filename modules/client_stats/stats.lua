@@ -9,6 +9,7 @@ local render = nil
 local atlas = nil
 local adaptiveRender = nil
 local slowMain = nil
+local widgetsInfo = nil
 
 local updateEvent = nil
 local monitorEvent = nil
@@ -36,6 +37,7 @@ function init()
   atlas = statsWindow:recursiveGetChildById('atlas')
   adaptiveRender = statsWindow:recursiveGetChildById('adaptiveRender')
   slowMain = statsWindow:recursiveGetChildById('slowMain')
+  widgetsInfo = statsWindow:recursiveGetChildById('widgetsInfo')
   
   lastSend = os.time()
   g_stats.resetSleepTime()
@@ -143,6 +145,7 @@ function sendStats()
     g_stats.clear(i - 1)
     g_stats.clearSlow(i - 1)
   end
+  data.widgets = g_stats.getWidgetsInfo(10, false)
   data = json.encode(data)
   if Services.stats ~= nil and Services.stats:len() > 3 then
     g_http.post(Services.stats, data)
@@ -171,7 +174,8 @@ function update()
   dispatcherStats:setText(g_stats.get(3, 5, true))
   luaStats:setText(g_stats.get(4, 5, true))
   luaCallback:setText(g_stats.get(5, 5, true))
-  slowMain:setText(g_stats.getSlow(3, 10, 10, true) .. "\n\n\n" .. g_stats.getSlow(1, 20, 20, true))  
+  slowMain:setText(g_stats.getSlow(3, 10, 10, true) .. "\n\n\n" .. g_stats.getSlow(1, 20, 20, true))    
+  widgetsInfo:setText(g_stats.getWidgetsInfo(10, true))
   
   if g_proxy then  
     local text = ""
