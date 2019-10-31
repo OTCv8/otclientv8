@@ -1,8 +1,8 @@
 Module
   name: game_bot
-  description: Bot
+  description: Advanced OTClientV8 Bot
   author: otclient@otclient.ovh
   sandboxed: true
-  scripts: [ bot ]
+  scripts: [ ui/botitemcontainer, ui/botwaypoints, bot ]
   @onLoad: init()
   @onUnload: terminate()

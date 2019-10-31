@@ -38,6 +38,7 @@ function executeBot(config, storage, tabs, msgCallback)
   context.regexMatch = regexMatch
   
   -- classes
+  context.g_resources = g_resources
   context.g_game = g_game
   context.g_map = g_map
   context.g_ui = g_ui

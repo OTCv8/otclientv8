@@ -26,7 +26,7 @@ end
 
 Panels.AntiParalyze = function(parent)
   context.macro(500, "Anti Paralyze", nil, function()
-    if not context.isParalyzed() and context.storage.autoHasteText:len() > 0 then
+    if context.isParalyzed() and context.storage.autoAntiParalyzeText:len() > 0 then
       if context.saySpell(context.storage.autoAntiParalyzeText, 2500) then
         context.delay(5000)
       end
