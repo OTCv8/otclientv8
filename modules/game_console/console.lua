@@ -619,22 +619,36 @@ function addTabText(text, speaktype, tab, creatureName)
 
   local panel = consoleTabBar:getTabPanel(tab)
   local consoleBuffer = panel:getChildById('consoleBuffer')
-  local label = g_ui.createWidget('ConsoleLabel', consoleBuffer)
+
+  local label = nil
+  if consoleBuffer:getChildCount() > MAX_LINES then
+    label = consoleBuffer:getFirstChild()
+    consoleBuffer:moveChildToIndex(label, consoleBuffer:getChildCount())
+  end
+
+  if not label then
+    label = g_ui.createWidget('ConsoleLabel', consoleBuffer)
+  end
   label:setId('consoleLabel' .. consoleBuffer:getChildCount())
   label:setText(text)
   label:setColor(speaktype.color)
   consoleTabBar:blinkTab(tab)
 
-  -- Overlay for consoleBuffer which shows highlighted words only
+  -- Overlay for consoleBuffer which shows highlighted words only  
+  local labelHighlight = label:getChildById("consoleLabelHighlight")
+  if labelHighlight then
+    labelHighlight:setText("")
+  end  
 
   if speaktype.npcChat and (g_game.getCharacterName() ~= creatureName or g_game.getCharacterName() == 'Account Manager') then
     local highlightData = getHighlightedText(text)
     if #highlightData > 0 then
-      local labelHighlight = g_ui.createWidget('ConsolePhantomLabel', label)
-      labelHighlight:fill('parent')
-
-      labelHighlight:setId('consoleLabelHighlight' .. consoleBuffer:getChildCount())
-      labelHighlight:setColor("#1f9ffe")
+      if not labelHighlight then
+        labelHighlight = g_ui.createWidget('ConsolePhantomLabel', label)
+        labelHighlight:fill('parent')
+        labelHighlight:setId('consoleLabelHighlight')
+        labelHighlight:setColor("#1f9ffe")
+      end
 
       -- Remove the curly braces
       for i = 1, #highlightData / 3 do
@@ -767,12 +781,6 @@ function addTabText(text, speaktype, tab, creatureName)
     end
 
     return true
-  end
-
-  if consoleBuffer:getChildCount() > MAX_LINES then
-    local child = consoleBuffer:getFirstChild()
-    clearSelection(consoleBuffer)
-    child:destroy()
   end
 end
 
@@ -1499,6 +1507,12 @@ function online()
   defaultTab = addTab(tr('Default'), true)
   serverTab = addTab(tr('Server Log'), false)
 
+
+  if g_game.getClientVersion() >= 820 then
+    local tab = addTab("NPCs", false)
+    tab.npcChat = true
+  end
+  
   if g_game.getClientVersion() < 862 then
     local gameRootPanel = modules.game_interface.getRootPanel()
     g_keyboard.bindKeyDown('Ctrl+R', openPlayerReportRuleViolationWindow, gameRootPanel)

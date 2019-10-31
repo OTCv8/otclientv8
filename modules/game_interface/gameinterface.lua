@@ -531,9 +531,13 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
     end
   end
 
-  if g_game.getFeature(GameBot) and useThing then
+  if g_game.getFeature(GameBot) and useThing and useThing:isItem() then
     menu:addSeparator()
-    menu:addOption("ID: " .. useThing:getId())
+    if useThing:getSubType() > 1 then
+      menu:addOption("ID: " .. useThing:getId() .. " SubType: " .. useThing:getSubType())    
+    else
+      menu:addOption("ID: " .. useThing:getId())
+    end
   end
 
   menu:display(menuPosition)

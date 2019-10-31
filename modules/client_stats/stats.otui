@@ -87,6 +87,13 @@ MainWindow
     DebugText
       id: luaCallback
       text: -
+      
+    DebugLabel
+      !text: tr('Widgets')
+
+    DebugText
+      id: widgetsInfo
+      text: -      
 
     DebugLabel
       !text: tr('Slow main functions')

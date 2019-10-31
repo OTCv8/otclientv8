@@ -200,6 +200,7 @@ function refresh()
   if player then
     onSoulChange(player, player:getSoul())
     onFreeCapacityChange(player, player:getFreeCapacity())
+    onStatesChange(player, player:getStates(), 0)
   end
 
   --purseButton:setVisible(g_game.getFeature(GamePurseSlot))

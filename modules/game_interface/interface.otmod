@@ -4,7 +4,7 @@ Module
   author: OTClient team
   website: https://github.com/edubart/otclient
   sandboxed: true
-  scripts: [ widgets/uigamemap, widgets/uiitem, gameinterface ]
+  scripts: [ widgets/uigamemap, gameinterface ]
   load-later:
     - game_hotkeys
     - game_questlog
@@ -32,6 +32,8 @@ Module
     - game_unjustifiedpoints
     - game_walking
     - game_shop
+    - game_itemselector
+    - game_textedit
     - game_bot
   @onLoad: init()
   @onUnload: terminate()

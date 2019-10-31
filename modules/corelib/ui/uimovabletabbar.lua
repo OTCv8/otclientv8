@@ -317,6 +317,12 @@ function UIMoveableTabBar:onStyleApply(styleName, styleNode)
   end
 end
 
+function UIMoveableTabBar:clearTabs()
+  while #self.tabs > 0 do
+    self:removeTab(self.tabs[#self.tabs])
+  end
+end
+
 function UIMoveableTabBar:removeTab(tab)
   local tabTables = {self.tabs, self.preTabs, self.postTabs}
   local index = nil
