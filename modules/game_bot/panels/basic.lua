@@ -195,7 +195,6 @@ Panel
   ui:setId(panelName)
   
   ui.item.onItemChange = function(widget)
-    cp("item change")
     context.storage["healthItem" .. panelId] = widget:getItemId()
   end
   ui.item:setItemId(context.storage["healthItem" .. panelId] or 266)

@@ -108,6 +108,12 @@ function UIComboBox:removeOption(text)
   end
 end
 
+function UIComboBox:clear()
+  self.options = {}
+  self.currentIndex = -1
+  self:setText("")
+end
+
 function UIComboBox:onMousePress(mousePos, mouseButton)
   local menu
   if self.menuScroll then

@@ -54,7 +54,6 @@ end
 context.changeOutfit = context.setOutfit
 context.setSpeed = function(value) context.player:setSpeed(value) end
 
-context.autoWalk = function(destination) return context.player:autoWalk(destination) end
 context.walk = function(dir) return modules.game_walking.walk(dir) end
 context.turn = function(dir) return g_game.turn(dir) end
 

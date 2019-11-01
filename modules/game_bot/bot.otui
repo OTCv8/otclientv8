@@ -33,7 +33,16 @@ BotSeparator < HorizontalSeparator
 BotPanel < Panel
   layout:
     type: verticalBox
+    
+CaveBotLabel < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
 
+  $focus:
+    background-color: #00000033
+    color: #ffffff
+    
 MiniWindow
   id: botWindow
   !text: tr('Bot')
