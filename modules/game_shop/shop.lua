@@ -35,7 +35,7 @@ function init()
 end
 
 function terminate()
-  disconnect(g_game, {  onGameEnd = hide  })
+  disconnect(g_game, {  onGameStart = check, onGameEnd = hide  })
 
   ProtocolGame.unregisterExtendedOpcode(SHOP_EXTENTED_OPCODE, onExtendedOpcode)
   

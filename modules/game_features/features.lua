@@ -11,7 +11,7 @@ function updateFeatures(version)
     
     -- you can add custom features here, list of them in modules\gamelib\const.lua
     g_game.enableFeature(GameBot)
-    --g_game.enableFeature(GameMinimapLimitedToSingleFloor)
+    g_game.enableFeature(GameMinimapLimitedToSingleFloor)
     --g_game.enableFeature(GameSpritesAlphaChannel)
     
     if(version >= 770) then

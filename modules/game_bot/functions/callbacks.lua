@@ -11,9 +11,10 @@ context.callback = function(callbackType, callback)
   local callbackData = {}
   table.insert(context._callbacks[callbackType], function(...)
     if not callbackData.delay or callbackData.delay < context.now then
+      local prevExecution = context._currentExecution
       context._currentExecution = callbackData       
       callback(...)
-      context._currentExecution = nil
+      context._currentExecution = prevExecution
     end
   end)
 end
@@ -66,6 +67,16 @@ end
 -- onCreatureHealthPercentChange(callback) -- callback = function(creature, healthPercent)
 context.onCreatureHealthPercentChange = function(callback)
   return context.callback("onCreatureHealthPercentChange", callback)
+end
+
+-- onUse(callback) -- callback = function(pos, itemId, stackPos, subType)
+context.onUse = function(callback)
+  return context.callback("onUse", callback)
+end
+
+-- onUseWith(callback) -- callback = function(pos, itemId, target, subType)
+context.onUseWith = function(callback)
+  return context.callback("onUseWith", callback)
 end
 
 

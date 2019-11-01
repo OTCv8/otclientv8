@@ -51,6 +51,64 @@ function show(widget)
   activeWindow:focus()
 end
 
+function singlelineEditor(text, callback)
+  if activeWindow then
+    destroyWindow()
+  end
+  local window = g_ui.createWidget('TextEditWindow', rootWidget)
+  
+  local destroy = function()
+    window:destroy()
+    if window == activeWindow then
+      activeWindow = nil
+    end
+  end
+
+  window.okButton.onClick = function() 
+    local text = window.text:getText()
+    destroy() 
+    callback(text) 
+  end
+  window.cancelButton.onClick = destroy
+  window.onEscape = destroy
+  window.onEnter = window.okButton.onClick
+    
+  window.text:setText(text)
+    
+  activeWindow = window
+  activeWindow:raise()
+  activeWindow:focus()
+end
+
+function multilineEditor(description, text, callback)
+  if activeWindow then
+    destroyWindow()
+  end
+  local window = g_ui.createWidget('TextEditMultilineWindow', rootWidget)
+  
+  local destroy = function()
+    window:destroy()
+    if window == activeWindow then
+      activeWindow = nil
+    end
+  end
+
+  window.okButton.onClick = function() 
+    local text = window.text:getText()
+    destroy() 
+    callback(text) 
+  end
+  window.cancelButton.onClick = destroy
+  window.onEscape = destroy
+  
+  window.description:setText(description)
+  window.text:setText(text)
+  
+  activeWindow = window
+  activeWindow:raise()
+  activeWindow:focus()
+end
+
 function hide()
   destroyWindow()
 end

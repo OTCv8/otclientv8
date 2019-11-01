@@ -1,7 +1,8 @@
-function executeBot(config, storage, tabs, msgCallback)
+function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
   local context = {}
   context.tabs = tabs
   context.panel = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel
+  context.saveConfig = saveConfigCallback
   
   context.storage = storage
   if context.storage._macros == nil then
@@ -22,7 +23,9 @@ function executeBot(config, storage, tabs, msgCallback)
     onCreatureAppear = {},
     onCreatureDisappear = {},
     onCreaturePositionChange = {},
-    onCreatureHealthPercentChange = {}
+    onCreatureHealthPercentChange = {},
+    onUse = {},
+    onUseWith = {}
   }
 
   -- basic functions & classes
@@ -36,6 +39,9 @@ function executeBot(config, storage, tabs, msgCallback)
   context.tr = tr
   context.json = json
   context.regexMatch = regexMatch
+  context.getDistanceBetween = function(p1, p2)
+    return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))
+  end
   
   -- classes
   context.g_resources = g_resources
@@ -166,7 +172,17 @@ function executeBot(config, storage, tabs, msgCallback)
         for i, callback in ipairs(context._callbacks.onCreatureHealthPercentChange) do
           callback(creature, healthPercent)
         end      
-      end
+      end,
+      onUse = function(pos, itemId, stackPos, subType)
+        for i, callback in ipairs(context._callbacks.onUse) do
+          callback(pos, itemId, stackPos, subType)
+        end      
+      end,
+      onUseWith = function(pos, itemId, target, subType)
+        for i, callback in ipairs(context._callbacks.onUseWith) do
+          callback(pos, itemId, target, subType)
+        end
+      end      
     }    
   }
 end
