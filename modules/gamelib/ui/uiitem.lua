@@ -31,9 +31,6 @@ function UIItem:onDrop(widget, mousePos, forced)
     if item:getSubType() > 1 then
       self:setItemSubType(item:getSubType())
     end
-    if self.onItemChange then
-      self:onItemChange()
-    end
     return
   end
 

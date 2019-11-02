@@ -5,6 +5,7 @@ context.setupUI = function(otml, parent)
     parent = context.panel
   end
   local widget = g_ui.loadUIFromString(otml, parent)
+  widget.botWidget = true
   return widget
 end
 

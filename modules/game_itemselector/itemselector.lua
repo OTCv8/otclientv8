@@ -37,9 +37,6 @@ function show(itemWidget)
   local doneFunc = function()
     itemWidget:setItemId(window.item:getItemId())
     itemWidget:setItemCount(window.item:getItemCount())
-    if itemWidget.onItemChange then
-      itemWidget:onItemChange()
-    end    
     destroy()
   end
 

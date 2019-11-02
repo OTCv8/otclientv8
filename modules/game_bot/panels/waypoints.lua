@@ -5,7 +5,7 @@ Panels.Waypoints = function(parent)
   local ui = context.setupUI([[
 Panel
   id: waypoints
-  height: 213
+  height: 203
   
   BotLabel
     anchors.top: parent.top
@@ -35,6 +35,7 @@ Panel
     anchors.left: parent.left
     text: Add
     width: 60
+    height: 20
 
   Button
     id: edit
@@ -42,6 +43,7 @@ Panel
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 60
+    height: 20
 
   Button
     id: remove
@@ -49,6 +51,7 @@ Panel
     anchors.right: parent.right
     text: Remove
     width: 60
+    height: 20
   
   TextList
     id: list
@@ -85,6 +88,7 @@ Panel
     text: Goto
     width: 61
     margin-top: 1
+    height: 20
 
   Button
     id: wUse
@@ -92,6 +96,7 @@ Panel
     anchors.left: prev.right
     text: Use
     width: 61
+    height: 20
 
   Button
     id: wUseWith
@@ -99,6 +104,7 @@ Panel
     anchors.left: prev.right
     text: UseWith
     width: 61
+    height: 20
 
   Button
     id: wWait
@@ -107,6 +113,7 @@ Panel
     text: Wait
     width: 61
     margin-top: 1
+    height: 20
     
   Button
     id: wSay
@@ -114,6 +121,7 @@ Panel
     anchors.left: prev.right
     text: Say
     width: 61
+    height: 20
 
   Button
     id: wFunction
@@ -121,6 +129,7 @@ Panel
     anchors.left: prev.right
     text: Function
     width: 61
+    height: 20
     
   BotSwitch
     id: recording
@@ -128,6 +137,7 @@ Panel
     anchors.left: parent.left
     anchors.right: parent.right
     text: Auto Recording
+    height: 20
 
 ]], parent)
 
@@ -157,6 +167,12 @@ Panel
       return true
     elseif command == "say" then
       return true
+    elseif command == "label" then
+      return true
+    elseif command == "gotolabel" then
+      return true
+    elseif command == "comment" then
+      return true
     elseif command == "function" then
       return true
     end
@@ -169,7 +185,7 @@ Panel
 
   local parseConfig = function(config)
     commands = {}
-    local matches = regexMatch(config, [[\s*([^:^\n]+)(:?)([^\n]*)]])
+    local matches = regexMatch(config, [[([^:^\n^\s]+)(:?)([^\n]*)]])
     for i=1,#matches do
       local command = matches[i][2]
       local validation = (matches[i][3] == ":")
@@ -178,7 +194,7 @@ Panel
         if validation then
           table.insert(commands, {command=command:lower(), text=text})
         elseif #commands > 0 then
-          commands[#commands].text = commands[#commands].text .. "\n" .. command
+          commands[#commands].text = commands[#commands].text .. "\n" .. matches[i][1]
         end
       end
     end
@@ -186,6 +202,18 @@ Panel
     for i=1,#commands do
       local label = g_ui.createWidget("CaveBotLabel", ui.list)
       label:setText(commands[i].command .. ":" .. commands[i].text)
+      if commands[i].command == "goto" then
+        label:setColor("green")
+      elseif commands[i].command == "label" then
+        label:setColor("yellow")
+      elseif commands[i].command == "comment" then
+        label:setText(commands[i].text)
+        label:setColor("white")
+      elseif commands[i].command == "use" or commands[i].command == "usewith" then
+        label:setColor("orange")
+      elseif commands[i].command == "gotolabel" then
+        label:setColor("red")
+      end
     end        
   end
   
@@ -218,7 +246,7 @@ Panel
     
     ui.list:destroyChildren()
     
-    if context.storage.cavebot.activeConfig then
+    if context.storage.cavebot.activeConfig and context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       ui.config:setCurrentIndex(context.storage.cavebot.activeConfig)
       parseConfig(context.storage.cavebot.configs[context.storage.cavebot.activeConfig])
     end
@@ -247,7 +275,7 @@ Panel
     refreshConfig()
   end
   ui.add.onClick = function()
-    modules.game_textedit.multilineEditor("Waypoints editor", "name:Config name\n", function(newText)
+    modules.game_textedit.multilineEditor("Waypoints editor", "name:Config name\nlabel:start\n", function(newText)
       table.insert(context.storage.cavebot.configs, newText)
       context.storage.cavebot.activeConfig = #context.storage.cavebot.configs
       refreshConfig()
@@ -287,12 +315,7 @@ Panel
     local newText = ""
     if newPos.z ~= oldPos.z then
       newText = "goto:" .. oldPos.x .. "," .. oldPos.y .. "," .. oldPos.z
-      if #commands > 0 then
-        local lastCommand = commands[#commands].command .. ":" .. commands[#commands].text
-        if lastCommand == newText then
-          return
-        end
-      end      
+      newText = newText .. "\ngoto:" .. newPos.x .. "," .. newPos.y .. "," .. newPos.z
       stepsSincleLastPos = 0
     else
       stepsSincleLastPos = stepsSincleLastPos + 1
@@ -319,7 +342,8 @@ Panel
       return
     end
     stepsSincleLastPos = 0
-    newText = "use:" .. pos.x .. "," .. pos.y .. "," .. pos.z
+    local playerPos = context.player:getPosition()
+    newText = "goto:" .. playerPos.x .. "," .. playerPos.y .. "," .. playerPos.z .. "\nuse:" .. pos.x .. "," .. pos.y .. "," .. pos.z
     context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\n" .. newText
     refreshConfig(true)
   end)
@@ -338,7 +362,8 @@ Panel
       return
     end
     stepsSincleLastPos = 0
-    newText = "usewith:" .. itemId .. "," .. targetPos.x .. "," .. targetPos.y .. "," .. targetPos.z
+    local playerPos = context.player:getPosition()
+    newText = "goto:" .. playerPos.x .. "," .. playerPos.y .. "," .. playerPos.z .. "\nusewith:" .. itemId .. "," .. targetPos.x .. "," .. targetPos.y .. "," .. targetPos.z
     context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\n" .. newText
     refreshConfig(true)
   end)
@@ -404,7 +429,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.multilineEditor("Add function", "function(waypoints)\n  --your lua code\n\n  -- must return true to execute next command, othwerwise will run in loop till correct return\n  return true\nend", function(newText)
+    modules.game_textedit.multilineEditor("Add function", "function(waypoints)\n  -- your lua code, function is executed if previous goto was successful or is just after label\n\n  -- must return true to execute next command, otherwise will run in loop till correct return\n  return true\nend", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nfunction:" .. newText
       refreshConfig(true)
     end)
@@ -423,6 +448,12 @@ Panel
   end
   
   refreshConfig()
+
+  local usedGotoLabel = false
+  local executeNextMacroCall = false
+  local commandExecutionNo = 0
+  local lastGotoSuccesful = true
+  local lastOpenedContainer = 0
   
   local functions = {
     enable = function()
@@ -435,21 +466,50 @@ Panel
     end,
     refresh = function()
       refreshConfig()
-    end
+    end,
+    wait = function(peroid)
+      waitTo = context.now + peroid
+    end,
+    waitTo = function(timepoint)
+      waitTo = timepoint
+    end,
+    gotoLabel = function(name)
+      for i=1,ui.list:getChildCount() do
+        local command = commands[i]
+        if command and command.command == "label" and command.text == name then
+          ui.list:focusChild(ui.list:getChildByIndex(i))
+          usedGotoLabel = true
+          lastGotoSuccesful = true
+          return true
+        end
+      end
+    end   
   }
   
-  local executeNextMacroCall = false
-  local commandExecutionNo = 0
-  local lastGotoSuccesful = true
+  context.onContainerOpen(function(container)
+    if container:getItemsCount() > 0 then
+      lastOpenedContainer = context.now
+    end
+  end)
+
   
   context.macro(250, function()
     if not context.storage.cavebot.enabled then
       return
     end
     
-    if context.player:isWalking() then
+    -- wait if walked or opened container recently
+    if context.player:isWalking() or lastOpenedContainer + 1000 > context.now then
       executeNextMacroCall = false
       return
+    end
+    
+    -- wait if attacking/following creature
+    local attacking = g_game.getAttackingCreature()
+    local following = g_game.getFollowingCreature()
+    if (attacking and context.getCreatureById(attacking:getId())) or (following and context.getCreatureById(following:getId())) then
+      executeNextMacroCall = false
+      return 
     end
     
     if not executeNextMacroCall then
@@ -474,32 +534,45 @@ Panel
       end
       return
     end
+    
+    if commandIndex == 1 then
+      lastGotoSuccesful = true
+    end
+    
     if command.command == "goto" then
       local matches = regexMatch(command.text, [[([0-9]+)[^0-9]+([0-9]+)[^0-9]+([0-9]+)]])
       if #matches == 1 and #matches[1] == 4 then
         local position = {x=tonumber(matches[1][2]), y=tonumber(matches[1][3]), z=tonumber(matches[1][4])}        
         local distance = context.getDistanceBetween(position, context.player:getPosition())
-        if distance > 0 and position.z == context.player:getPosition().z then
+        if distance > 100 or position.z ~= context.player:getPosition().z then
+          lastGotoSuccesful = false
+        elseif distance > 0 then
           commandExecutionNo = commandExecutionNo + 1
           lastGotoSuccesful = false
           if commandExecutionNo <= 3 then -- try max 3 times
             if not context.autoWalk(position, 100 + distance * 2, commandExecutionNo > 1, false) then
-              context.autoWalk(position, 100 + distance * 2, true, true)
+              if commandExecutionNo > 1 then
+                context.autoWalk(position, 100 + distance * 2, true, true) -- ignore creatures
+              end
               context.delay(500)
               return
             end
             return
           elseif commandExecutionNo == 4 then -- try last time, location close to destination
-            position.x = position.x + math.random(-1, 1)
-            position.y = position.y + math.random(-1, 1)
-            if context.autoWalk(position, 100 + distance * 2, true) then
-              return
+            for i=1,3 do
+              position.x = position.x + math.random(-1, 1)
+              position.y = position.y + math.random(-1, 1)
+              if context.autoWalk(position, 100 + distance * 2, true) then
+                return
+              end
             end
-          elseif distance < 2 then
+          elseif distance <= 2 then
             lastGotoSuccesful = true
+            executeNextMacroCall = lastGotoSuccesful
           end
         else
-          lastGotoSuccesful = (position.z == context.player:getPosition().z)
+          lastGotoSuccesful = true
+          executeNextMacroCall = lastGotoSuccesful
         end
       else
         context.error("Waypoints: invalid use of goto function")
@@ -550,6 +623,7 @@ Panel
     elseif command.command == "say" and lastGotoSuccesful then
       context.say(command.text)
     elseif command.command == "function" and lastGotoSuccesful then
+      usedGotoLabel = false
       local status, result = pcall(function() 
         return assert(load("return " .. command.text, nil, nil, context))()(functions)
       end)
@@ -557,7 +631,11 @@ Panel
         context.error("Waypoints function execution error:\n" .. result)
         context.delay(2500)
       end
-      if not result then
+      if not result or usedGotoLabel then
+        return
+      end
+    elseif command.command == "gotolabel" then
+      if functions.gotoLabel(command.text) then
         return
       end
     end

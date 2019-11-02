@@ -17,7 +17,7 @@ end
 Panels.ManaShield = function(parent)
   context.macro(500, "Auto ManaShield", nil, function()
     if not context.hasManaShield() then
-      if context.saySpell("utamo vita", 1000) then
+      if context.saySpell("utamo vita", 500) then
         context.delay(5000)
       end
     end
@@ -323,3 +323,16 @@ Panels.Turning = function(parent)
 end
 Panels.AntiIdle = Panels.Turning
 
+Panels.AttackSpell = function(parent)
+  context.macro(500, "Auto attack spell", nil, function()
+    local target = g_game.getAttackingCreature()
+    if target and context.getCreatureById(target:getId()) and context.storage.autoAttackText:len() > 0 then
+      if context.saySpell(context.storage.autoAttackText, 1000) then
+        context.delay(1000)
+      end
+    end
+  end, parent)
+  context.addTextEdit("autoAttackText", context.storage.autoAttackText or "exori vis", function(widget, text)    
+    context.storage.autoAttackText = text
+  end, parent)
+end

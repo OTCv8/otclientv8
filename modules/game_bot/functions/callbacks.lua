@@ -79,8 +79,22 @@ context.onUseWith = function(callback)
   return context.callback("onUseWith", callback)
 end
 
+-- onContainerOpen -- callback = function(container, previousContainer)
+context.onContainerOpen = function(callback)
+  return context.callback("onContainerOpen", callback)
+end
 
--- custom callbacks
+-- onContainerUpdateItem -- callback = function(container)
+context.onContainerClose = function(callback)
+  return context.callback("onContainerClose", callback)
+end
+
+-- onContainerUpdateItem -- callback = function(container, slot, item)
+context.onContainerUpdateItem = function(callback)
+  return context.callback("onContainerUpdateItem", callback)
+end
+
+-- CUSTOM CALLBACKS
 
 -- listen(name, callback) -- callback = function(text, channelId, pos)
 context.listen = function(name, callback)
