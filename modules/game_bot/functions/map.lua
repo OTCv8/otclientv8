@@ -10,6 +10,19 @@ context.getSpectators = function(multifloor)
   return g_map.getSpectators(context.player:getPosition(), multifloor)
 end
 
+context.getCreatureById = function(id, multifloor)
+  if type(id) ~= 'number' then return nil end
+  if multifloor ~= true then
+    multifloor = false
+  end
+  for i, spec in ipairs(g_map.getSpectators(context.player:getPosition(), multifloor)) do
+     if spec:getId() == id then
+        return spec
+     end
+  end
+  return nil
+end
+
 context.getCreatureByName = function(name, multifloor)
   if not name then return nil end
   name = name:lower()
@@ -70,6 +83,10 @@ context.autoWalk = function(destination, maxDist, ignoreFields, ignoreCreatures)
   if #path < 1 then
     return false
   end
-  g_game.autoWalk(path, context.player:getPosition())
+  if g_game.getFeature(GameNewWalking) then
+    g_game.autoWalk(path, context.player:getPosition())
+  else
+    g_game.autoWalk(path, {x=0,y=0,z=0})
+  end
   return true
 end

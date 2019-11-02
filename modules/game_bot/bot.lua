@@ -42,7 +42,7 @@ function init()
 
   connect(Creature, {
     onAppear = botCreatureAppear,
-    onDisappear =botCreatureDisappear,
+    onDisappear = botCreatureDisappear,
     onPositionChange = botCreaturePositionChange,
     onHealthPercentChange = botCraetureHealthPercentChange
   })  
@@ -50,6 +50,9 @@ function init()
     onPositionChange = botCreaturePositionChange,
     onHealthPercentChange = botCraetureHealthPercentChange
   })  
+  connect(Container, { onOpen = botContainerOpen,
+                       onClose = botContainerClose,
+                       onUpdateItem = botContainerUpdateItem })
   
   botConfigFile = g_configs.create("/bot.otml")
   local config = botConfigFile:get("config")
@@ -165,6 +168,9 @@ function terminate()
     onPositionChange = botCreaturePositionChange,
     onHealthPercentChange = botCraetureHealthPercentChange
   })  
+  disconnect(Container, { onOpen = botContainerOpen,
+                       onClose = botContainerClose,
+                       onUpdateItem = botContainerUpdateItem })
 
   removeEvent(executeEvent)
   removeEvent(checkMsgsEvent)
@@ -324,6 +330,12 @@ function clearConfig()
   
   botMessages:destroyChildren()
   botMessages:updateLayout()
+
+  for i, widget in pairs(g_ui.getRootWidget():getChildren()) do
+    if widget.botWidget then
+      widget:destroy()
+    end
+  end
 end
 
 function refreshConfig()
@@ -478,4 +490,19 @@ end
 function botOnUseWith(pos, itemId, target, subType)
   if compiledConfig == nil then return false end
   safeBotCall(function() compiledConfig.callbacks.onUseWith(pos, itemId, target, subType) end)
+end
+
+function botContainerOpen(container, previousContainer)
+  if compiledConfig == nil then return false end
+  safeBotCall(function() compiledConfig.callbacks.onContainerOpen(container, previousContainer) end)
+end
+
+function botContainerClose(container)
+  if compiledConfig == nil then return false end
+  safeBotCall(function() compiledConfig.callbacks.onContainerClose(container) end)
+end
+
+function botContainerUpdateItem(container, slot, item)
+  if compiledConfig == nil then return false end
+  safeBotCall(function() compiledConfig.callbacks.onContainerUpdateItem(container, slot, item) end)
 end

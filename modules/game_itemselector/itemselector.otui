@@ -19,8 +19,8 @@ ItemSelectorWindow < MainWindow
     margin-left: 5
     padding-left: 5
     width: 70
-    minimum: 1
-    maximum: 999999999
+    minimum: 0
+    maximum: 999999
     focusable: true
 
   Label

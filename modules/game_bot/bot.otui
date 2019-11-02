@@ -15,16 +15,15 @@ BotLabel < Label
   text-align: center
   text-wrap: true
     
-BotItem < UIItem  
+BotItem < Item
   virtual: true
-  size: 32 32
-  border: 1 black
   &selectable: true
 
 BotTextEdit < TextEdit  
   @onClick: modules.game_textedit.show(self)
   text-align: center
   multiline: false
+  focusable: false
   
 BotSeparator < HorizontalSeparator
   margin-top: 5
@@ -40,8 +39,7 @@ CaveBotLabel < Label
   focusable: true
 
   $focus:
-    background-color: #00000033
-    color: #ffffff
+    background-color: #00000055
     
 MiniWindow
   id: botWindow

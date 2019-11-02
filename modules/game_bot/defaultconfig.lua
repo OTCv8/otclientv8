@@ -15,22 +15,28 @@ local battleTab = addTab("Battle")
 local caveTab = addTab("Cave")
 local toolsTab = addTab("Tools")
 
+Panels.Health(battleTab)
 Panels.HealthItem(battleTab)
 Panels.ManaItem(battleTab)
+Panels.AttackSpell(battleTab)
 
 local waypoints = Panels.Waypoints(caveTab)
 local attacking = Panels.Attacking(caveTab)
 local looting = Panels.Looting(caveTab) 
+addButton("tutorial", "Help & Tutorials", function()
+  g_platform.openUrl("https://github.com/OTCv8/otclientv8_bot")
+end, caveTab)
 
 --#macros
 
+addSeparator("sep1")
 local helloLabel = addLabel("helloLabel", "")
 
 macro(1000, "example macro (time)", nil, function()
   helloLabel:setText("Time from start: " .. now)
 end)
 
-macro(1000, "this macro does nothing", nil, function()
+macro(1000, "this macro does nothing", "f7", function()
 
 end, toolsTab)
 
@@ -40,7 +46,7 @@ hotkey("f5", "example hotkey", function()
   info("Wow, you clicked f5 hotkey")
 end)
 
-singlehotkey("ctrl+f6", "example hotkey2", function()
+singlehotkey("ctrl+f6", "singlehotkey", function()
   info("Wow, you clicked f6 singlehotkey")
 end)
 
