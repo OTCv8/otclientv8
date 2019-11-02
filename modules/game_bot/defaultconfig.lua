@@ -15,6 +15,7 @@ local battleTab = addTab("Battle")
 local caveTab = addTab("Cave")
 local toolsTab = addTab("Tools")
 
+Panels.Eating(battleTab)
 Panels.Health(battleTab)
 Panels.HealthItem(battleTab)
 Panels.ManaItem(battleTab)
@@ -40,6 +41,30 @@ macro(1000, "this macro does nothing", "f7", function()
 
 end, toolsTab)
 
+macro(100, "debug pathfinding", nil, function()
+  for i, tile in ipairs(g_map.getTiles(posz())) do
+    tile:setText("")
+  end
+  local path = findEveryPath(pos(), 20, {
+    ignoreNonPathable = false
+  })
+  local total = 0
+  for i, p in pairs(path) do
+    local s = i:split(",")
+    local pos = {x=tonumber(s[1]), y=tonumber(s[2]), z=tonumber(s[3])}
+    local tile = g_map.getTile(pos)
+    if tile then
+      tile:setText(p[2])
+    end
+     total = total + 1
+  end
+end, toolsTab)
+
+macro(1000, "speed hack", nil, function()
+  player:setSpeed(1000)
+end, toolsTab)
+
+
 --#hotkeys
 
 hotkey("f5", "example hotkey", function()
@@ -48,6 +73,7 @@ end)
 
 singlehotkey("ctrl+f6", "singlehotkey", function()
   info("Wow, you clicked f6 singlehotkey")
+  usewith(268, player)
 end)
 
 --#callbacks
@@ -58,15 +84,6 @@ onPlayerPositionChange(function()
 end)
 
 --#other
-
-HTTP.getJSON("https://api.ipify.org/?format=json", function(data, err)
-    if err then
-        warn("Whoops! Error occured: " .. err)
-        return
-    end
-    local myIp = data['ip']
-end)
-
 
 ]=]},
   {name = "UI & Healing", script = [=[

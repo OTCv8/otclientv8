@@ -1,6 +1,6 @@
 # OTClientV8
 
-Preview version of OTClientV8, version v1.0 with tutorials will be released soon.
+Tibia client design for versions 7.40 - 10.99
 It's based on https://github.com/edubart/otclient and it's not backward compatible.
 
 ## DISCORD: https://discord.gg/feySup6

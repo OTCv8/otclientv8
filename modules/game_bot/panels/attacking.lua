@@ -621,6 +621,8 @@ Panel
   end
 
   refreshConfig()
+  
+  -- processing
 
   local getMonsterConfig = function(monster)
     if monsters[monster:getName():lower()] then
@@ -639,21 +641,28 @@ Panel
       return -1
     end
 
-    local distance = context.getDistanceBetween(context.player:getPosition(), monster:getPosition())
-    if distance > 10 then
+    local pos = context.player:getPosition()
+    local mpos = monster:getPosition()
+    local hp = monster:getHealthPercent()
+    
+    if config.minHealth > hp or config.maxHealth < hp then
       return -1
     end
     
-    local mpos = monster:getPosition()
+    local maxDistance = 5
+    if config.chase and hp < 20 then
+      maxDistance = 7
+    end
+    
+    local distance = math.max(math.abs(pos.x-mpos.x), math.abs(pos.y-mpos.y))
+    if distance > maxDistance then
+      return -1
+    end
+    
     local hasPath = false
-    for x=-1,1 do
-      for y=-1,1 do
-        local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x-x, y=mpos.y-y, z=mpos.z}, 100, true, false)
-        if #pathTo > 0 then
-          hasPath = true
-          break
-        end
-      end
+    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, 10, { ignoreNonPathable = true, precision=1 })
+    if pathTo then
+      hasPath = true
     end
     if distance > 2 and not hasPath then
       return -1
@@ -667,19 +676,26 @@ Panel
       priority = priority + 10
     end
     if distance <= 2 then
-      priority = priority + 20
+      priority = priority + 10
+    end
+    if distance <= 1 then
+      priority = priority + 10
     end
 
-    if monster:getHealthPercent() <= 10 then
+    if hp <= 20 and config.chase then
+      priority = priority + 30
+    end
+
+    if hp <= 10 then
       priority = priority + 10
     end
-    if monster:getHealthPercent() <= 25 then
+    if hp <= 25 then
       priority = priority + 10
     end
-    if monster:getHealthPercent() <= 50 then
+    if hp <= 50 then
       priority = priority + 10
     end
-    if monster:getHealthPercent() <= 75 then
+    if hp <= 75 then
       priority = priority + 10
     end
     
@@ -720,13 +736,13 @@ Panel
       table.remove(lootContainers, 1)
       return true
     end
-
+    
     if lootTries >= 5 then
       lootTries = 0
       table.remove(lootContainers, 1)
       return true
     end
-    local dist = math.max(math.abs(pos.x-cpos.x), math.abs(pos.y-cpos.y))    
+    local dist = math.max(math.abs(pos.x-cpos.x), math.abs(pos.y-cpos.y))     
     if dist <= 5 then
       local tile = g_map.getTile(cpos)
       if not tile then
@@ -739,7 +755,8 @@ Panel
         table.remove(lootContainers, 1)
         return true
       end
-    
+      topItem:setMarked('orange')
+
       if dist <= 1 then
         lootTries = lootTries + 1
         openContainerRequest = context.now
@@ -755,30 +772,19 @@ Panel
       end
 
       lootTries = lootTries + 1
-      if context.autoWalk(cpos, 100 + dist * 2) then          
+      if context.autoWalk(cpos, 20, { precision = 1}) then
         return true
       end
 
-      if context.autoWalk(cpos, 100 + dist * 2, true) then          
+      if context.autoWalk(cpos, 20, { ignoreNonPathable = true, precision = 1}) then
         return true
       end
 
-      for i=1,5 do
-        local cpos2 = {x=cpos.x + math.random(-1, 1),y = cpos.y + math.random(-1, 1), z = cpos.z}
-        if context.autoWalk(cpos2, 100 + dist * 2) then          
-          return true
-        end
-      end
-      -- try again, ignore field
-      for i=1,5 do
-        local cpos2 = {x=cpos.x + math.random(-1, 1),y = cpos.y + math.random(-1, 1), z = cpos.z}
-        if context.autoWalk(cpos2, 100 + dist * 2, true) then          
-          return true
-        end
+      if context.autoWalk(cpos, 20, { ignoreNonPathable = true, precision = 2}) then
+        return true
       end
       
-      -- ignore fields and monsters
-      if context.autoWalk(cpos, 100 + dist * 2, true, true) then          
+      if context.autoWalk(cpos, 20, { ignoreNonPathable = true, ignoreCreatures = true, precision = 2}) then
         return true
       end
     else
@@ -817,6 +823,7 @@ Panel
       return
     end
     
+    topItem:setMarked('blue')
     table.insert(lootContainers, tpos)
   end)
 
@@ -916,40 +923,23 @@ Panel
     
     local distance = math.max(math.abs(offsetX), math.abs(offsetY))
     if config.keepDistance then
-      if (distance == config.distance or distance == config.distance + 1) then
+      local minDistance = config.distance
+      if target:getHealthPercent() < 20 and config.chase and danger < 10 then
+        minDistance = 1
+      end
+      if (distance == minDistance or distance == minDistance + 1) then
         return
       else
         local bestDist = 10
         local bestPos = pos
-
-        for i=1,5 do
-          local testPos = {x=pos.x + math.random(-3,3), y=pos.y + math.random(-3,3), z=pos.z}
-          local dist = math.abs(config.distance - math.max(math.abs(tpos.x - testPos.x), math.abs(tpos.y - testPos.y)))
-          if dist < bestDist then
-            local path = context.findPath(pos, testPos, 100, false, false)
-            if #path > 0 then
-              bestPos = testPos
-              bestDist = dist
+        if not context.autoWalk(tpos, 8, {  minMargin=minDistance, maxMargin=minDistance + 1}) then
+          if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, minMargin=minDistance, maxMargin=minDistance + 1}) then
+            if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, ignoreCreatures = true, minMargin=minDistance, maxMargin=minDistance + 2}) then
+              return
             end
           end
         end
-        if bestDist > 1 then
-          for i=1,10 do
-            local testPos = {x=pos.x + math.random(-4,4), y=pos.y + math.random(-4,4), z=pos.z}
-            local dist = math.abs(config.distance - math.max(math.abs(tpos.x - testPos.x), math.abs(tpos.y - testPos.y)))
-            if dist < bestDist then
-              local path = context.findPath(pos, testPos, 100, true, false)
-              if #path > 0 then
-                bestPos = testPos
-                bestDist = dist
-              end
-            end
-          end
-        end 
-        if bestDist < 10 then
-          context.autoWalk(bestPos, 100, true, false)
-          context.delay(300)
-        end
+        context.delay(300)
       end
       return
     end
@@ -971,16 +961,14 @@ Panel
     end
      
     if distance > 1 then
-      for x=-1,1 do
-        for y=-1,1 do
-          if context.autoWalk({x=tpos.x-x, y=tpos.y-y, z=tpos.z}, 100, true, false) then
+      if not context.autoWalk(tpos, 8, { precision = 1}) then
+        if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, precision = 1}) then
+          if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, precision = 2}) then
             return
           end
         end
       end
-      if not context.autoWalk(tpos, 100, false, true) then
-        context.autoWalk(tpos, 100, true, true)
-      end
+      context.delay(300)
     end
   end)
 end
