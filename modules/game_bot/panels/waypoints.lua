@@ -488,7 +488,7 @@ Panel
   
   context.onContainerOpen(function(container)
     if container:getItemsCount() > 0 then
-      lastOpenedContainer = context.now
+      lastOpenedContainer = context.now + container:getItemsCount() * 100
     end
   end)
 
@@ -547,32 +547,35 @@ Panel
         if distance > 100 or position.z ~= context.player:getPosition().z then
           lastGotoSuccesful = false
         elseif distance > 0 then
-          commandExecutionNo = commandExecutionNo + 1
-          lastGotoSuccesful = false
-          if commandExecutionNo <= 3 then -- try max 3 times
-            if not context.autoWalk(position, 100 + distance * 2, commandExecutionNo > 1, false) then
-              if commandExecutionNo > 1 then
-                context.autoWalk(position, 100 + distance * 2, true, true) -- ignore creatures
-              end
-              context.delay(500)
-              return
-            end
-            return
-          elseif commandExecutionNo == 4 then -- try last time, location close to destination
-            for i=1,3 do
-              position.x = position.x + math.random(-1, 1)
-              position.y = position.y + math.random(-1, 1)
-              if context.autoWalk(position, 100 + distance * 2, true) then
+          if not context.findPath(context.player:getPosition(), position, 100, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true }) then
+            lastGotoSuccesful = false          
+            executeNextMacroCall = true
+          else
+            commandExecutionNo = commandExecutionNo + 1
+            lastGotoSuccesful = false
+            if commandExecutionNo <= 3 then -- try max 3 times
+              if not context.autoWalk(position, distance * 2, { ignoreNonPathable = false }) then
+                if commandExecutionNo > 1 then
+                  if context.autoWalk(position, distance * 2, { ignoreNonPathable = true, precision = 1 }) then
+                    context.delay(500)
+                  end
+                end
                 return
               end
+              return
+            elseif commandExecutionNo == 4 then -- try last time, location close to destination
+              if context.autoWalk(position, distance * 2, { ignoreNonPathable = true, ignoreLastCreature = true, precision = 2, allowUnseen = true }) then
+                context.delay(500)
+                return
+              end
+            elseif distance <= 2 then
+              lastGotoSuccesful = true
+              executeNextMacroCall = true
             end
-          elseif distance <= 2 then
-            lastGotoSuccesful = true
-            executeNextMacroCall = lastGotoSuccesful
           end
         else
           lastGotoSuccesful = true
-          executeNextMacroCall = lastGotoSuccesful
+          executeNextMacroCall = true
         end
       else
         context.error("Waypoints: invalid use of goto function")

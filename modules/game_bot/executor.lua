@@ -39,6 +39,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
   context.math = math
   context.table = table
   context.string = string
+  context.tonumber = tonumber
   context.tr = tr
   context.json = json
   context.regexMatch = regexMatch

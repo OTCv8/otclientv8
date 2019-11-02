@@ -316,6 +316,87 @@ Panel
 end
 Panels.ManaItem = Panels.Mana
 
+Panels.Eating = function(parent)
+  if not parent then
+    parent = context.panel
+  end
+  
+  local panelName = "autoEatingPanel"
+  local panelId = 1
+  while parent:getChildById(panelName .. panelId) do
+    panelId = panelId + 1
+  end
+  panelName = panelName .. panelId
+  
+  local ui = context.setupUI([[
+Panel
+  height: 55
+  margin-top: 2
+  
+  Label
+    id: info
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text: Auto Eating
+    text-align: center
+    
+  BotItem
+    id: item1
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-left: 10
+
+  BotItem
+    id: item2
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.top
+
+  BotItem
+    id: item3
+    anchors.right: parent.right
+    anchors.top: prev.top
+    margin-right: 10
+
+]], parent)
+  ui:setId(panelName)
+  
+  if not context.storage["autoEating" .. panelId] then
+    context.storage["autoEating" .. panelId] = {}
+  end
+  
+  ui.item1.onItemChange = function(widget)
+    context.storage["autoEating" .. panelId][1] = widget:getItemId()
+  end
+  ui.item1:setItemId(context.storage["autoEating" .. panelId][1] or 3725)
+  
+  ui.item2.onItemChange = function(widget)
+    context.storage["autoEating" .. panelId][2] = widget:getItemId()
+  end
+  ui.item2:setItemId(context.storage["autoEating" .. panelId][2] or 0)
+  
+  ui.item3.onItemChange = function(widget)
+    context.storage["autoEating" .. panelId][3] = widget:getItemId()
+  end
+  ui.item3:setItemId(context.storage["autoEating" .. panelId][3] or 0)
+  
+
+  context.macro(15000, function()    
+    local candidates = {}
+    for i, item in pairs(context.storage["autoEating" .. panelId]) do
+      if item >= 100 then
+        table.insert(candidates, item)
+      end
+    end
+    if #candidates == 0 then
+      return
+    end
+    context.usewith(candidates[math.random(1, #candidates)], context.player)
+  end)
+end
+Panels.ManaItem = Panels.Mana
+
 Panels.Turning = function(parent)
   context.macro(1000, "Turning / AntiIdle", nil, function()
     context.turn(math.random(1, 4))
