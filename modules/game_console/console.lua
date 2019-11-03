@@ -100,16 +100,16 @@ function init()
     onTalk = onTalk,
     onChannelList = onChannelList,
     onOpenChannel = onOpenChannel,
+    onCloseChannel = onCloseChannel,
+    onChannelEvent = onChannelEvent,
     onOpenPrivateChannel = onOpenPrivateChannel,
     onOpenOwnPrivateChannel = onOpenOwnPrivateChannel,
-    onCloseChannel = onCloseChannel,
     onRuleViolationChannel = onRuleViolationChannel,
     onRuleViolationRemove = onRuleViolationRemove,
     onRuleViolationCancel = onRuleViolationCancel,
     onRuleViolationLock = onRuleViolationLock,
     onGameStart = online,
     onGameEnd = offline,
-    onChannelEvent = onChannelEvent,
   })
 
   consolePanel = g_ui.loadUI('console', modules.game_interface.getBottomPanel())

@@ -28,9 +28,14 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
     onUseWith = {},
     onContainerOpen = {},
     onContainerClose = {},
-    onContainerUpdateItem = {}
+    onContainerUpdateItem = {},
+    onMissle = {},
+    onChannelList = {},
+    onOpenChannel = {},
+    onCloseChannel = {},
+    onChannelEvent = {}
   }
-
+  
   -- basic functions & classes
   context.print = print
   context.pairs = pairs
@@ -216,7 +221,32 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
         for i, callback in ipairs(context._callbacks.onContainerUpdateItem) do
           callback(container, slot, item)
         end
-      end
+      end,
+      onMissle = function(missle)
+        for i, callback in ipairs(context._callbacks.onMissle) do
+          callback(missle)
+        end
+      end,
+      onChannelList = function(channels)
+        for i, callback in ipairs(context._callbacks.onChannelList) do
+          callback(channels)
+        end      
+      end,
+      onOpenChannel = function(channelId, channelName)
+        for i, callback in ipairs(context._callbacks.onOpenChannel) do
+          callback(channels)
+        end      
+      end,
+      onCloseChannel = function(channelId)
+        for i, callback in ipairs(context._callbacks.onCloseChannel) do
+          callback(channelId)
+        end      
+      end,
+      onChannelEvent = function(channelId, name, event)
+        for i, callback in ipairs(context._callbacks.onChannelEvent) do
+          callback(channelId, name, event)
+        end      
+      end,
     }    
   }
 end

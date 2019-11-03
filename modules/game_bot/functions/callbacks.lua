@@ -94,6 +94,33 @@ context.onContainerUpdateItem = function(callback)
   return context.callback("onContainerUpdateItem", callback)
 end
 
+-- onMissle -- callback = function(missle)
+context.onMissle = function(callback)
+  return context.callback("onMissle", callback)
+end
+
+-- onChannelList -- callback = function(channels)
+context.onChannelList = function(callback)
+  return context.callback("onChannelList", callback)
+end
+
+-- onOpenChannel -- callback = function(channelId, name)
+context.onOpenChannel = function(callback)
+  return context.callback("onOpenChannel", callback)
+end
+
+-- onCloseChannel -- callback = function(channelId)
+context.onCloseChannel = function(callback)
+  return context.callback("onCloseChannel", callback)
+end
+
+-- onChannelEvent -- callback = function(channelId, name, event)
+context.onChannelEvent = function(callback)
+  return context.callback("onChannelEvent", callback)
+end
+
+
+
 -- CUSTOM CALLBACKS
 
 -- listen(name, callback) -- callback = function(text, channelId, pos)

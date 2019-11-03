@@ -766,7 +766,7 @@ Panel
       end
     end
 
-    if dist <= 20 then
+    if dist <= 25 then
       if context.player:isWalking() then
         return true
       end
