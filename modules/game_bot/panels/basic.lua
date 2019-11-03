@@ -27,12 +27,12 @@ end
 Panels.AntiParalyze = function(parent)
   context.macro(500, "Anti Paralyze", nil, function()
     if context.isParalyzed() and context.storage.autoAntiParalyzeText:len() > 0 then
-      if context.saySpell(context.storage.autoAntiParalyzeText, 2500) then
-        context.delay(5000)
+      if context.saySpell(context.storage.autoAntiParalyzeText, 750) then
+        context.delay(1000)
       end
     end
   end, parent)
-  context.addTextEdit("autoHasteText", context.storage.autoAntiParalyzeText or "utani hur", function(widget, text)    
+  context.addTextEdit("autoAntiParalyzeText", context.storage.autoAntiParalyzeText or "utani hur", function(widget, text)    
     context.storage.autoAntiParalyzeText = text
   end, parent)
 end
@@ -415,5 +415,56 @@ Panels.AttackSpell = function(parent)
   end, parent)
   context.addTextEdit("autoAttackText", context.storage.autoAttackText or "exori vis", function(widget, text)    
     context.storage.autoAttackText = text
+  end, parent)
+end
+
+Panels.AttackItem = function(parent)
+  if not parent then
+    parent = context.panel
+  end
+  
+  local panelName = "autoAttackItem"
+  local panelId = 1
+  while parent:getChildById(panelName .. panelId) do
+    panelId = panelId + 1
+  end
+  panelName = panelName .. panelId
+  
+  local ui = context.setupUI([[
+Panel
+  height: 55
+  margin-top: 2
+  
+  Label
+    id: info
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text: Auto Attack Item
+    text-align: center
+        
+  BotItem
+    id: item
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-left: 10
+]], parent)
+  ui:setId(panelName)
+  
+  if not context.storage["autoEating" .. panelId] then
+    context.storage["autoEating" .. panelId] = {}
+  end
+  
+  ui.item.onItemChange = function(widget)
+    context.storage["autoAttackItem" .. panelId] = widget:getItemId()
+  end
+  ui.item:setItemId(context.storage["autoAttackItem" .. panelId] or 3155)
+
+  context.macro(500, "Auto attack with item", nil, function()
+    local target = g_game.getAttackingCreature()
+    if target and context.getCreatureById(target:getId()) and context.storage["autoAttackItem" .. panelId] >= 100 then
+      context.useWith(context.storage["autoAttackItem" .. panelId], target)
+    end
   end, parent)
 end

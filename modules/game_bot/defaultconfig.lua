@@ -20,6 +20,7 @@ Panels.Health(battleTab)
 Panels.HealthItem(battleTab)
 Panels.ManaItem(battleTab)
 Panels.AttackSpell(battleTab)
+Panels.AttackItem(battleTab)
 
 local waypoints = Panels.Waypoints(caveTab)
 local attacking = Panels.Attacking(caveTab)
@@ -84,7 +85,17 @@ onPlayerPositionChange(function()
 end)
 
 --#other
-
+
+macro(100, "hide useless tiles", "", function()
+  for i, tile in ipairs(g_map.getTiles(-1)) do
+    if not tile:isWalkable(true) then
+      tile:setFill('black')
+    end
+  end
+end, toolsTab)
+
+addLabel("mapinfo", "You can use ctrl + plus and ctrl + minus to zoom in / zoom out map", toolsTab)
+
 ]=]},
   {name = "UI & Healing", script = [=[
 -- UI & healing

@@ -58,8 +58,26 @@ context.walk = function(dir) return modules.game_walking.walk(dir) end
 context.turn = function(dir) return g_game.turn(dir) end
 
 -- game releated
+context.getChannels = function()
+  -- return { channelId = channelName }
+  return modules.game_console.channels
+end
+context.getChannelId = function(name)
+  for id, channel in pairs(context.getChannels()) do
+    if name:lower() == channel:lower() then
+      return id
+    end
+  end
+  return nil
+end
+
 context.say = g_game.talk
 context.talk = g_game.talk
+context.yell = function(text) g_game.talkChannel(3, 0, text) end
+context.talkChannel = function(channel, text) g_game.talkChannel(7, channel, text) end
+context.sayChannel = context.talkChannel
+context.talkPrivate = function(receiver, text) g_game.talkPrivate(5, receiver, text) end
+context.sayPrivate = g_game.talkPrivate
 
 context.saySpell = function(text, lastSpellTimeout)
   if context.lastSpell == nil then
@@ -80,8 +98,6 @@ context.setSpellTimeout = function()
   context.lastSpell = context.now
 end
 
-context.talkPrivate = g_game.talkPrivate
-context.sayPrivate = g_game.talkPrivate
 context.use = g_game.useInventoryItem
 context.usewith = g_game.useInventoryItemWith
 context.useWith = g_game.useInventoryItemWith
@@ -95,3 +111,4 @@ context.cancelAttackAndFollow = g_game.cancelAttackAndFollow
 
 context.logout = g_game.forceLogout
 context.ping = g_game.getPing
+
