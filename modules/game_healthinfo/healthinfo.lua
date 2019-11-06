@@ -144,6 +144,10 @@ function onMiniWindowClose()
 end
 
 function onHealthChange(localPlayer, health, maxHealth)
+  if health > maxHealth then
+    maxHealth = health
+  end
+
   healthBar:setText(health .. ' / ' .. maxHealth)
   healthBar:setTooltip(tr(healthTooltip, health, maxHealth))
   healthBar:setValue(health, 0, maxHealth)
@@ -175,6 +179,9 @@ function onHealthChange(localPlayer, health, maxHealth)
 end
 
 function onManaChange(localPlayer, mana, maxMana)
+  if mana > maxMana then
+    maxMana = mana
+  end
   manaBar:setText(mana .. ' / ' .. maxMana)
   manaBar:setTooltip(tr(manaTooltip, mana, maxMana))
   manaBar:setValue(mana, 0, maxMana)

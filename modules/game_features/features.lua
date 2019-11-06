@@ -7,6 +7,7 @@ function terminate()
 end
 
 function updateFeatures(version)
+    print(version)
     g_game.resetFeatures()
     
     -- you can add custom features here, list of them in modules\gamelib\const.lua

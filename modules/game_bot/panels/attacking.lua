@@ -10,7 +10,7 @@ Panels.MonsterEditor = function(monster, config, callback, parent)
   local window = context.setupUI([[
 MainWindow
   id: monsterEditor
-  size: 400 300
+  size: 450 430
   !text: tr("Edit monster")
   
   Label
@@ -20,6 +20,14 @@ MainWindow
     anchors.top: parent.top
     text-align: center
     text: Use monster name * for any other monster not on the list
+
+  Label
+    id: info2
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    text-align: center
+    text: Add number (1-5) at the end of the name to create multiple configs
 
   TextEdit
     id: name
@@ -33,7 +41,7 @@ MainWindow
   Label
     anchors.verticalCenter: prev.verticalCenter
     anchors.left: parent.left
-    text: Monster name:
+    text: Target name:
 
   Label
     id: priorityText
@@ -76,13 +84,33 @@ MainWindow
     step: 1     
 
   Label
+    id: maxDistanceText
+    anchors.left: parent.left
+    anchors.right: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-right: 10
+    margin-top: 10
+    text: Max distance to target
+    text-align: center
+
+  HorizontalScrollBar
+    id: maxDistance
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    minimum: 1
+    maximum: 10
+    step: 1
+
+  Label
     id: distanceText
     anchors.left: parent.left
     anchors.right: parent.horizontalCenter
     anchors.top: prev.bottom
     margin-right: 10
     margin-top: 10
-    text: Distance
+    text: Keep distance
     text-align: center
 
   HorizontalScrollBar
@@ -134,6 +162,18 @@ MainWindow
     minimum: 0
     maximum: 100
     step: 1
+    
+  Label
+    id: attackSpellText
+    anchors.left: parent.left
+    anchors.right: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-right: 10
+    margin-top: 10
+    text: Attack spell and attack rune are only used when you have more than 30% health
+    text-align: center
+    text-wrap: true
+    text-auto-resize: true
 
   BotSwitch
     id: attack
@@ -148,7 +188,7 @@ MainWindow
     id: ignore
     anchors.left: prev.right
     anchors.top: name.bottom
-    margin-left: 5
+    margin-left: 18
     margin-top: 10
     width: 55
     text: Ignore
@@ -157,7 +197,7 @@ MainWindow
     id: avoid
     anchors.left: prev.right
     anchors.top: name.bottom
-    margin-left: 5
+    margin-left: 18
     margin-top: 10
     width: 55
     text: Avoid    
@@ -187,7 +227,7 @@ MainWindow
     anchors.top: prev.bottom
     margin-left: 10
     margin-top: 10
-    text: Chase when running away
+    text: Chase when has low health
 
   BotSwitch
     id: loot
@@ -197,6 +237,56 @@ MainWindow
     margin-left: 10
     margin-top: 10
     text: Loot corpse
+
+  BotSwitch
+    id: monstersOnly
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-left: 10
+    margin-top: 10
+    text: Only for monsters
+
+  BotSwitch
+    id: dontWalk
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-left: 10
+    margin-top: 10
+    text: Don't walk to target
+
+  Label
+    id: attackSpellText
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-left: 10
+    margin-top: 10
+    text: Attack Spell:
+    text-align: center
+
+  TextEdit
+    id: attackSpell
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
+  Label
+    id: attackItemText
+    anchors.left: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 20
+    margin-left: 20
+    text: Attack rune:
+    text-align: left
+
+  BotItem
+    id: attackItem
+    anchors.right: parent.right
+    anchors.verticalCenter: prev.verticalCenter
+    margin-right: 30
 
   Button
     id: okButton
@@ -212,7 +302,7 @@ MainWindow
     anchors.bottom: parent.bottom
     anchors.right: parent.right
     width: 60
-  ]], g_ui.getRootWidget())
+]], g_ui.getRootWidget())
 
   local destroy = function()
     window:destroy()
@@ -222,6 +312,7 @@ MainWindow
     local config = {
       priority = window.priority:getValue(),
       danger = window.danger:getValue(),
+      maxDistance = window.maxDistance:getValue(),
       distance = window.distance:getValue(),
       minHealth = window.minHealth:getValue(),
       maxHealth = window.maxHealth:getValue(),
@@ -231,7 +322,11 @@ MainWindow
       keepDistance = window.keepDistance:isOn(),
       avoidAttacks = window.avoidAttacks:isOn(),
       chase = window.chase:isOn(),
-      loot = window.loot:isOn()
+      loot = window.loot:isOn(),
+      monstersOnly = window.monstersOnly:isOn(),
+      dontWalk = window.dontWalk:isOn(),
+      attackItem = window.attackItem:getItemId(),
+      attackSpell = window.attackSpell:getText()
     }    
     destroy()
     callback(monster, config)
@@ -249,8 +344,11 @@ MainWindow
   window.danger.onValueChange = function(scroll, value)
     window.dangerText:setText("Danger: " .. value)
   end
+  window.maxDistance.onValueChange = function(scroll, value)
+    window.maxDistanceText:setText("Max distance to target: " .. value)
+  end
   window.distance.onValueChange = function(scroll, value)
-    window.distanceText:setText("Distance: " .. value)
+    window.distanceText:setText("Keep distance: " .. value)
   end
   window.minHealth.onValueChange = function(scroll, value)
     window.minHealthText:setText("Minimum health: " .. value .. "%")
@@ -260,12 +358,16 @@ MainWindow
   end
 
   window.priority:setValue(config.priority or 1)
-  window.danger:setValue(config.danger or 1)
+  window.danger:setValue(config.danger or 1)  
+  window.maxDistance:setValue(config.maxDistance or 6)
   window.distance:setValue(config.distance or 1)
   window.minHealth:setValue(1) -- to force onValueChange update
   window.maxHealth:setValue(1) -- to force onValueChange update
   window.minHealth:setValue(config.minHealth or 0)
   window.maxHealth:setValue(config.maxHealth or 100)
+
+  window.attackSpell:setText(config.attackSpell or "")
+  window.attackItem:setItemId(config.attackItem or 0)
 
   window.attack.onClick = function(widget)
     if widget:isOn() then
@@ -311,6 +413,12 @@ MainWindow
   window.loot.onClick = function(widget)
     widget:setOn(not widget:isOn())
   end
+  window.monstersOnly.onClick = function(widget)
+    widget:setOn(not widget:isOn())
+  end
+  window.dontWalk.onClick = function(widget)
+    widget:setOn(not widget:isOn())
+  end
 
   window.keepDistance:setOn(config.keepDistance)
   window.avoidAttacks:setOn(config.avoidAttacks)
@@ -319,6 +427,11 @@ MainWindow
   if config.loot == nil then
     window.loot:setOn(true)  
   end
+  window.monstersOnly:setOn(config.monstersOnly)
+  if config.monstersOnly == nil then
+    window.monstersOnly:setOn(true)  
+  end
+  window.dontWalk:setOn(config.dontWalk)
 
   window.name:setText(monster)
 
@@ -623,22 +736,17 @@ Panel
   refreshConfig()
   
   -- processing
-
-  local getMonsterConfig = function(monster)
-    if monsters[monster:getName():lower()] then
-      return monsters[monster:getName():lower()]
+  local isConfigPassingConditions = function(monster, config)
+    if not config or type(config.priority) ~= 'number' or type(config.danger) ~= 'number' then
+      return false
     end
-    return monsters["*"]
-  end
 
-  local calculatePriority = function(monster)
-    local priority = 0
-    local config = getMonsterConfig(monster)
-    if not config or type(config.priority) ~= 'number' then
-      return -1
-    end
     if not config.attack then
-      return -1
+      return false
+    end
+    
+    if monster:isPlayer() and config.monstersOnly then
+      return false
     end
 
     local pos = context.player:getPosition()
@@ -646,28 +754,64 @@ Panel
     local hp = monster:getHealthPercent()
     
     if config.minHealth > hp or config.maxHealth < hp then
-      return -1
-    end
+      return false
+    end  
     
     local maxDistance = 5
-    if config.chase and hp < 20 then
-      maxDistance = 7
+    if type(config.maxDistance) == 'number' then
+      maxDistance = config.maxDistance
+    end
+    if config.chase and hp < 25 then
+      maxDistance = maxDistance + 2
     end
     
     local distance = math.max(math.abs(pos.x-mpos.x), math.abs(pos.y-mpos.y))
     if distance > maxDistance then
-      return -1
+      return false
+    end 
+
+    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, maxDistance + 2, { ignoreNonPathable = true, precision=1, allowOnlyVisibleTiles = true })
+    if not pathTo or #pathTo > maxDistance + 1 then
+      return false
     end
-    
-    local hasPath = false
-    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, 10, { ignoreNonPathable = true, precision=1 })
-    if pathTo then
-      hasPath = true
+    return true    
+  end
+
+  local getMonsterConfig = function(monster)
+    local name = monster:getName():lower()
+    if isConfigPassingConditions(monster, monsters[name]) then
+      return monsters[name]
     end
-    if distance > 2 and not hasPath then
+    for i=1, 5 do 
+      if isConfigPassingConditions(monster, monsters[name .. i]) then
+        return monsters[name .. i]
+      end
+    end
+    if isConfigPassingConditions(monster, monsters["*"]) then
+      return monsters["*"]
+    end
+    return nil
+  end
+
+  local calculatePriority = function(monster)
+    local priority = 0
+    local config = getMonsterConfig(monster)
+    if not config then
       return -1
     end
 
+    local pos = context.player:getPosition()
+    local mpos = monster:getPosition()
+    local hp = monster:getHealthPercent()
+    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, 10, { ignoreNonPathable = true, ignoreLastCreature = true, precision=0, allowOnlyVisibleTiles = true })
+    if not pathTo then
+      pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, 10, { ignoreNonPathable = true, precision=1, allowOnlyVisibleTiles = true })
+      if not pathTo then
+        return -1
+      end
+    end
+    local distance = #pathTo
+        
     if monster == g_game.getAttackingCreature() then
       priority = priority + 10
     end
@@ -682,7 +826,7 @@ Panel
       priority = priority + 10
     end
 
-    if hp <= 20 and config.chase then
+    if hp <= 25 and config.chase then
       priority = priority + 30
     end
 
@@ -718,6 +862,8 @@ Panel
   local lootTries = 0
   local openContainerRequest = 0
   local waitForLooting = 0
+  local lastAttackSpell = 0
+  local lastAttackRune = 0
 
   local goForLoot = function()
     if #lootContainers == 0 or not context.storage.looting.enabled then
@@ -842,7 +988,7 @@ Panel
     else
       container.autoLooting = (openContainerRequest + 3000 > context.now)
     end
-  end)
+  end)  
 
   context.macro(200, function()
     if not context.storage.attacking.enabled then
@@ -864,7 +1010,7 @@ Panel
       if followingCandidate and followingCandidate:getId() == spec:getId() then
         following = spec
       end
-      if spec:isMonster() then
+      if spec:isMonster() or (spec:isPlayer() and not spec:isLocalPlayer()) then
         danger = danger + calculateMonsterDanger(spec)
         spec.attackingPriority = calculatePriority(spec)
         table.insert(monsters, spec)
@@ -879,7 +1025,7 @@ Panel
       return
     end
 
-    if #monsters == 0 then
+    if #monsters == 0 or context.isInProtectionZone() then
       goForLoot()
       return
     end
@@ -892,28 +1038,50 @@ Panel
     if target.attackingPriority < 0 then
       return
     end
-
+    
     local pos = context.player:getPosition()
     local tpos = target:getPosition()
     local config = getMonsterConfig(target)
     local offsetX = pos.x - tpos.x
     local offsetY = pos.y - tpos.y
 
+    local justStartedAttack = false
     if target ~= attacking then
       g_game.attack(target)
       attacking = target
       lastAttack = context.now
+      justStartedAttack = true
     end
 
     -- proceed attack
-    if lastAttack + 15000 < context.now then
+    if not target:isPlayer() and lastAttack + 15000 < context.now then
       -- stop and attack again, just in case
       g_game.cancelAttack()
       g_game.attack(target)          
       lastAttack = context.now
       return
     end
+    
+    if not justStartedAttack and config.attackSpell and config.attackSpell:len() > 0 then
+      if context.now > lastAttackSpell + 1000 and context.player:getHealthPercent() > 30 then
+        if context.saySpell(config.attackSpell, 1500) then
+          lastAttackRune = context.now
+        end
+      end
+    end
 
+    if not justStartedAttack and config.attackItem and config.attackItem >= 100 then
+      if context.now > lastAttackRune + 1000 and context.player:getHealthPercent() > 30 then
+        if context.useRune(config.attackItem, target, 1500) then
+          lastAttackRune = context.now
+        end
+      end
+    end
+    
+    if modules.game_walking.lastManualWalk + 500 > context.now then
+      return
+    end
+    
     if danger < 8 then
       -- low danger, go for loot first
       if goForLoot() then
@@ -921,10 +1089,14 @@ Panel
       end
     end
     
+    if config.dontWalk then
+      return
+    end
+
     local distance = math.max(math.abs(offsetX), math.abs(offsetY))
     if config.keepDistance then
       local minDistance = config.distance
-      if target:getHealthPercent() < 20 and config.chase and danger < 10 then
+      if target:getHealthPercent() <= 25 and config.chase and danger < 10 then
         minDistance = 1
       end
       if (distance == minDistance or distance == minDistance + 1) then
@@ -932,14 +1104,16 @@ Panel
       else
         local bestDist = 10
         local bestPos = pos
-        if not context.autoWalk(tpos, 8, {  minMargin=minDistance, maxMargin=minDistance + 1}) then
-          if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, minMargin=minDistance, maxMargin=minDistance + 1}) then
-            if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, ignoreCreatures = true, minMargin=minDistance, maxMargin=minDistance + 2}) then
+        if not context.autoWalk(tpos, 10, {  minMargin=minDistance, maxMargin=minDistance + 1, allowOnlyVisibleTiles = true}) then
+          if not context.autoWalk(tpos, 10, { ignoreNonPathable = true, minMargin=minDistance, maxMargin=minDistance + 1, allowOnlyVisibleTiles = true}) then
+            if not context.autoWalk(tpos, 10, { ignoreNonPathable = true, ignoreCreatures = true, minMargin=minDistance, maxMargin=minDistance + 2, allowOnlyVisibleTiles = true}) then
               return
             end
           end
         end
-        context.delay(300)
+        if not target:isPlayer() then
+          context.delay(300)
+        end
       end
       return
     end
@@ -961,14 +1135,16 @@ Panel
     end
      
     if distance > 1 then
-      if not context.autoWalk(tpos, 8, { precision = 1}) then
-        if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, precision = 1}) then
-          if not context.autoWalk(tpos, 8, { ignoreNonPathable = true, precision = 2}) then
+      if not context.autoWalk(tpos, 10, { precision = 1, allowOnlyVisibleTiles = true}) then
+        if not context.autoWalk(tpos, 10, { ignoreNonPathable = true, precision = 1, allowOnlyVisibleTiles = true}) then
+          if not context.autoWalk(tpos, 10, { ignoreNonPathable = true, precision = 2, allowOnlyVisibleTiles = true}) then
             return
           end
         end
       end
-      context.delay(300)
+      if not target:isPlayer() then
+        context.delay(300)
+      end
     end
   end)
 end

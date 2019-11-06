@@ -910,7 +910,9 @@ function updateSize()
     local newMargin = modules.game_console.consolePanel:getMarginLeft()
     newMargin = math.max(0, newMargin)
     newMargin = math.min(modules.game_console.consolePanel:getParent():getWidth() - modules.game_console.consolePanel:getWidth(), newMargin)
+    bottomSplitter:setMarginLeft(newMargin)
     modules.game_console.consolePanel:setMarginLeft(newMargin)
+    bottomSplitter:setMarginLeft(newMargin)
   end
      
   if not classic then

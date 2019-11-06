@@ -61,6 +61,7 @@ context.findAllPaths = function(start, maxDist, params)
       ignoreStairs
       ignoreCost
       allowUnseen
+      allowOnlyVisibleTiles
   ]]--
   if type(params) ~= 'table' then
     params = {}
@@ -114,6 +115,7 @@ context.findPath = function(startPos, destPos, maxDist, params)
       ignoreStairs
       ignoreCost
       allowUnseen
+      allowOnlyVisibleTiles
       precision
       marginMin
       marginMax

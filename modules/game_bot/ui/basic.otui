@@ -1,0 +1,68 @@
+BotButton < Button
+  margin-top: 2
+
+BotSwitch < Button
+  margin-top: 2
+  height: 20
+  image-color: green
+  $!on:
+    image-color: red
+
+SmallBotSwitch < Button
+  margin-top: 2
+  height: 15
+  image-color: green
+  $!on:
+    image-color: red
+    
+BotLabel < Label
+  margin-top: 2
+  height: 20
+  text-auto-resize: true
+  text-align: center
+  text-wrap: true
+    
+BotItem < Item
+  virtual: true
+  &selectable: true
+
+BotTextEdit < TextEdit  
+  @onClick: modules.game_textedit.show(self)
+  text-align: center
+  multiline: false
+  focusable: false
+  height: 20
+  
+BotSeparator < HorizontalSeparator
+  margin-top: 5
+  margin-bottom: 3
+
+BotPanel < Panel
+  layout:
+    type: verticalBox
+    
+CaveBotLabel < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+
+  $focus:
+    background-color: #00000055
+    
+SlotComboBoxPopupMenu < ComboBoxPopupMenu
+SlotComboBoxPopupMenuButton < ComboBoxPopupMenuButton
+SlotComboBox < ComboBox
+  @onSetup: |
+    self:addOption("Head")
+    self:addOption("Neck")
+    self:addOption("Back")
+    self:addOption("Body")
+    self:addOption("Right")
+    self:addOption("Left")
+    self:addOption("Leg")
+    self:addOption("Feet")
+    self:addOption("Finger")
+    self:addOption("Ammo")
+    self:addOption("Purse")
+
+

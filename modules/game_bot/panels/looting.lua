@@ -82,7 +82,7 @@ Panel
     margin-top: 4
     text: Loot Containers
 
-  Panel
+  ItemsRow
     id: containers
     anchors.top: prev.bottom
     anchors.left: parent.left
@@ -90,35 +90,6 @@ Panel
     height: 33
     margin-top: 2
     
-    BotItem
-      id: item1
-      anchors.top: parent.top
-      anchors.left: parent.left
-      margin-left: 3
-
-    BotItem
-      id: item2
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 2
-
-    BotItem
-      id: item3
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 2
-
-    BotItem
-      id: item4
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 2
-
-    BotItem
-      id: item5
-      anchors.top: prev.top
-      anchors.left: prev.right
-      margin-left: 2
 
 ]], parent)
   

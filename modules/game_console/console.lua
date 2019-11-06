@@ -206,7 +206,6 @@ function enableChat(temporarily)
   consoleTextEdit:focus()
 
   local gameRootPanel = modules.game_interface.getRootPanel()
-  g_keyboard.unbindKeyDown("Space", gameRootPanel)
   g_keyboard.unbindKeyDown("Enter", gameRootPanel)
   
   if temporarily then
@@ -225,7 +224,7 @@ function enableChat(temporarily)
   consoleToggleChat:setTooltip(tr("Disable chat mode, allow to walk using ASDW"))
 end
 
-function disableChat()
+function disableChat(temporarily)
   if not consoleToggleChat:isChecked() then
     return consoleToggleChat:setChecked(true)
   end
@@ -245,7 +244,6 @@ function disableChat()
   end
   
   local gameRootPanel = modules.game_interface.getRootPanel()
-  g_keyboard.bindKeyDown("Space", quickFunc, gameRootPanel)
   g_keyboard.bindKeyDown("Enter", quickFunc, gameRootPanel)
 
   modules.game_walking.enableWSAD()
@@ -392,6 +390,13 @@ function switchMode(floating)
     consolePanel:setWidth(600)
     consolePanel:setDraggable(true)
     consoleTabBar:setDraggable(true)
+    
+    local bottomSplitter = modules.game_interface.bottomSplitter
+    if bottomSplitter then
+      bottomSplitter:removeAnchor(AnchorRight)    
+      bottomSplitter:setWidth(600)
+    end
+    
     if not floatingMode then
       local savedMargin = g_settings.get("consoleLeftMargin")
       local newMargin = 150
@@ -401,7 +406,12 @@ function switchMode(floating)
       newMargin = math.max(0, newMargin)
       newMargin = math.min(consolePanel:getParent():getWidth() - consolePanel:getWidth(), newMargin)
       consolePanel:setMarginLeft(newMargin)
+      if bottomSplitter then
+        bottomSplitter:setMarginLeft(newMargin)
+      end
     end
+    
+
   else
     consolePanel:setImageColor('white')  
     consolePanel:addAnchor(AnchorLeft, 'parent', AnchorLeft)    
@@ -425,6 +435,10 @@ function onDragMove(widget, pos, moved)
   newMargin = math.max(0, newMargin)
   newMargin = math.min(consolePanel:getParent():getWidth() - consolePanel:getWidth(), newMargin)
   consolePanel:setMarginLeft(newMargin)
+  local bottomSplitter = modules.game_interface.bottomSplitter
+  if bottomSplitter then
+    bottomSplitter:setMarginLeft(newMargin)
+  end
   g_settings.set("consoleLeftMargin", newMargin)
   return true
 end

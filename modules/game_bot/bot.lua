@@ -17,7 +17,7 @@ local errorOccured = false
 local statusLabel = nil
 local compiledConfig = nil
 local configTab = nil
-local tabs = {"main", "macros", "hotkeys", "callbacks", "other"}
+local tabs = {"main", "panels", "macros", "hotkeys", "callbacks", "other"}
 local mainTab = nil
 local activeTab = nil
 local editorText = {"", ""}
@@ -25,6 +25,9 @@ local editorText = {"", ""}
 function init()
   dofile("defaultconfig")
   dofile("executor")
+  
+  g_ui.importStyle("ui/basic.otui")
+  g_ui.importStyle("ui/panels.otui")
   
   connect(g_game, { 
     onGameStart = online, 
@@ -345,6 +348,10 @@ function clearConfig()
     if widget.botWidget then
       widget:destroy()
     end
+  end
+  local gameMapPanel = modules.game_interface.getMapPanel()
+  if gameMapPanel then
+    gameMapPanel:unlockVisibleFloor()   
   end
 end
 

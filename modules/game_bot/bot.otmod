@@ -3,6 +3,6 @@ Module
   description: Advanced OTClientV8 Bot
   author: otclient@otclient.ovh
   sandboxed: true
-  scripts: [ ui/botitemcontainer, ui/botwaypoints, bot ]
+  scripts: [ bot ]
   @onLoad: init()
   @onUnload: terminate()

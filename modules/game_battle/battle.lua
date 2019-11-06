@@ -269,10 +269,17 @@ function checkCreatures()
       end
       
       battleButton:creatureSetup(creature)
+      battleButton:enable()
       creature_i = creature_i + 1
     end
   end
-  
+  for i=#creatures + 1, 30  do
+    local battleButton = battleButtonsList[i]
+    if battleButton then
+      battleButton:disable()
+    end
+  end
+
   local height = 0
   if creature_i > 1 then
     height = 25 * (creature_i - 1)
