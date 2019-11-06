@@ -5,7 +5,7 @@ Panels.Waypoints = function(parent)
   local ui = context.setupUI([[
 Panel
   id: waypoints
-  height: 203
+  height: 223
   
   BotLabel
     anchors.top: parent.top
@@ -124,6 +124,31 @@ Panel
     height: 20
 
   Button
+    id: wNpc
+    anchors.top: prev.top
+    anchors.left: prev.right
+    text: Say NPC
+    width: 61
+    height: 20
+    
+  Button
+    id: wLabel
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    text: Label
+    width: 61
+    margin-top: 1
+    height: 20
+    
+  Button
+    id: wFollow
+    anchors.top: prev.top
+    anchors.left: prev.right
+    text: Follow
+    width: 61
+    height: 20
+
+  Button
     id: wFunction
     anchors.top: prev.top
     anchors.left: prev.right
@@ -166,6 +191,10 @@ Panel
     elseif command == "wait" then
       return true
     elseif command == "say" then
+      return true
+    elseif command == "npc" then
+      return true
+    elseif command == "follow" then
       return true
     elseif command == "label" then
       return true
@@ -272,7 +301,15 @@ Panel
       return
     end
     context.storage.cavebot.enabled = not context.storage.cavebot.enabled
-    refreshConfig()
+    if autoRecording then
+      refreshConfig()
+    elseif context.storage.cavebot.enabled then
+      ui.enableButton:setText("On")
+      ui.enableButton:setColor('#00AA00FF')
+    else
+      ui.enableButton:setText("Off")
+      ui.enableButton:setColor('#FF0000FF')
+    end
   end
   ui.add.onClick = function()
     modules.game_textedit.multilineEditor("Waypoints editor", "name:Config name\nlabel:start\n", function(newText)
@@ -425,6 +462,36 @@ Panel
     end)
   end
   
+  ui.wNpc.onClick = function()
+    if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
+      return
+    end
+    modules.game_textedit.singlelineEditor("text", function(newText)
+      context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nnpc:" .. newText
+      refreshConfig(true)
+    end)
+  end
+
+  ui.wLabel.onClick = function()
+    if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
+      return
+    end
+    modules.game_textedit.singlelineEditor("label name", function(newText)
+      context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nlabel:" .. newText
+      refreshConfig(true)
+    end)
+  end
+
+  ui.wFollow.onClick = function()
+    if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
+      return
+    end
+    modules.game_textedit.singlelineEditor("creature name", function(newText)
+      context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nfollow:" .. newText
+      refreshConfig(true)
+    end)
+  end  
+  
   ui.wFunction.onClick = function()
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
@@ -497,6 +564,10 @@ Panel
     if not context.storage.cavebot.enabled then
       return
     end
+
+    if modules.game_walking.lastManualWalk + 500 > context.now then
+      return
+    end
     
     -- wait if walked or opened container recently
     if context.player:isWalking() or lastOpenedContainer + 1000 > context.now then
@@ -539,12 +610,23 @@ Panel
       lastGotoSuccesful = true
     end
     
-    if command.command == "goto" then
+    if command.command == "goto" or command.command == "follow" then
       local matches = regexMatch(command.text, [[([0-9]+)[^0-9]+([0-9]+)[^0-9]+([0-9]+)]])
-      if #matches == 1 and #matches[1] == 4 then
-        local position = {x=tonumber(matches[1][2]), y=tonumber(matches[1][3]), z=tonumber(matches[1][4])}        
-        local distance = context.getDistanceBetween(position, context.player:getPosition())
-        if distance > 100 or position.z ~= context.player:getPosition().z then
+      if (#matches == 1 and #matches[1] == 4) or command.command == "follow" then
+        local position = nil
+        if command.command == "follow" then
+          local creature = context.getCreatureByName(command.text)
+          if creature then
+            position = creature:getPosition()
+          end
+        else
+          position = {x=tonumber(matches[1][2]), y=tonumber(matches[1][3]), z=tonumber(matches[1][4])}        
+        end
+        local distance = 0
+        if position then
+          distance = context.getDistanceBetween(position, context.player:getPosition())
+        end
+        if distance > 100 or not position or position.z ~= context.player:getPosition().z then
           lastGotoSuccesful = false
         elseif distance > 0 then
           if not context.findPath(context.player:getPosition(), position, 100, { ignoreNonPathable = true, precision = 1, ignoreCreatures = true }) then
@@ -625,6 +707,8 @@ Panel
       waitTo = 0
     elseif command.command == "say" and lastGotoSuccesful then
       context.say(command.text)
+    elseif command.command == "npc" and lastGotoSuccesful then
+      context.sayNpc(command.text)
     elseif command.command == "function" and lastGotoSuccesful then
       usedGotoLabel = false
       local status, result = pcall(function() 

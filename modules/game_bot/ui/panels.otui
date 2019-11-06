@@ -1,0 +1,229 @@
+DualScrollPanel < Panel
+  height: 55
+  margin-top: 2
+      
+  SmallBotSwitch
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-align: center
+    
+  HorizontalScrollBar
+    id: scroll1
+    anchors.left: title.left
+    anchors.right: title.horizontalCenter
+    anchors.top: title.bottom
+    margin-right: 2
+    margin-top: 2
+    minimum: 0
+    maximum: 100
+    step: 1
+    
+  HorizontalScrollBar
+    id: scroll2
+    anchors.left: title.horizontalCenter
+    anchors.right: title.right
+    anchors.top: prev.top
+    margin-left: 2
+    minimum: 0
+    maximum: 100
+    step: 1
+    
+  BotTextEdit
+    id: text
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: scroll1.bottom
+    margin-top: 3
+
+SingleScrollItemPanel < Panel
+  height: 45
+  margin-top: 2
+    
+  BotItem
+    id: item
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 3
+
+  SmallBotSwitch
+    id: title
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top    
+    margin-left: 2
+    text-align: center
+    
+  HorizontalScrollBar
+    id: scroll
+    anchors.left: title.left
+    anchors.right: title.right
+    anchors.top: title.bottom
+    margin-top: 2
+    minimum: 0
+    maximum: 100
+    step: 1
+
+DualScrollItemPanel < Panel
+  height: 40
+  margin-top: 2
+    
+  BotItem
+    id: item
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 3
+
+  SmallBotSwitch
+    id: title
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top    
+    margin-left: 2
+    text-align: center
+    
+  HorizontalScrollBar
+    id: scroll1
+    anchors.left: title.left
+    anchors.right: title.horizontalCenter
+    anchors.top: title.bottom
+    margin-top: 2
+    margin-right: 2
+    minimum: 0
+    maximum: 100
+    step: 1
+    
+  HorizontalScrollBar
+    id: scroll2
+    anchors.left: title.horizontalCenter
+    anchors.right: title.right
+    anchors.top: prev.top
+    margin-left: 2
+    minimum: 0
+    maximum: 100
+    step: 1
+    
+ItemsRow < Panel
+  height: 33
+  margin-top: 2
+  
+  BotItem
+    id: item1
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-left: 3
+
+  BotItem
+    id: item2
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+
+  BotItem
+    id: item3
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+
+  BotItem
+    id: item4
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+
+  BotItem
+    id: item5
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+    
+ItemsPanel < Panel
+  height: 55
+
+  SmallBotSwitch
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-align: center
+  
+  ItemsRow
+    id: items
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    
+    
+ItemAndButtonPanel < Panel
+  height: 40
+      
+  BotItem
+    id: item
+    anchors.left: parent.left
+    anchors.top: parent.top
+    
+  BotSwitch
+    id: title
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.verticalCenter: prev.verticalCenter
+    text-align: center
+    margin-left: 2
+    margin-top: 0   
+    
+ItemAndSlotPanel < Panel
+  height: 40
+      
+  BotItem
+    id: item
+    anchors.left: parent.left
+    anchors.top: parent.top
+    
+  SmallBotSwitch
+    id: title
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    text-align: center
+    margin-left: 2
+    margin-top: 0
+
+  SlotComboBox
+    id: slot
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    height: 20
+
+TwoItemsAndSlotPanel < Panel
+  height: 40
+      
+  BotItem
+    id: item1
+    anchors.left: parent.left
+    anchors.top: parent.top
+
+  BotItem
+    id: item2
+    anchors.left: prev.right
+    anchors.top: prev.top
+    
+  SmallBotSwitch
+    id: title
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    text-align: center
+    margin-left: 2
+    margin-top: 0
+
+  SlotComboBox
+    id: slot
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    height: 20
+  

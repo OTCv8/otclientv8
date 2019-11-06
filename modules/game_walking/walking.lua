@@ -11,6 +11,7 @@ lastWalk = 0
 lastTurn = 0
 lastTurnDirection = 0
 lastStop = 0
+lastManualWalk = 0
 turnKeys = {}
 
 function init()
@@ -254,6 +255,7 @@ function onWalkFinish(player)
 end
 
 function walk(dir) 
+  lastManualWalk = g_clock.millis()
   local player = g_game.getLocalPlayer()
   if not player or g_game.isDead() or player:isDead() then
     return

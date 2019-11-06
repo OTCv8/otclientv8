@@ -70,6 +70,7 @@ context.getChannelId = function(name)
   end
   return nil
 end
+context.getChannel = context.getChannelId
 
 context.say = g_game.talk
 context.talk = g_game.talk
@@ -78,6 +79,17 @@ context.talkChannel = function(channel, text) g_game.talkChannel(7, channel, tex
 context.sayChannel = context.talkChannel
 context.talkPrivate = function(receiver, text) g_game.talkPrivate(5, receiver, text) end
 context.sayPrivate = g_game.talkPrivate
+
+context.talkNpc = function(text) 
+  if g_game.getClientVersion() >= 810 then
+    g_game.talkChannel(11, 0, text) 
+  else
+    return context.say(text)
+  end
+end
+context.sayNpc = context.talkNpc
+context.sayNPC = context.talkNpc
+context.talkNPC = context.talkNpc
 
 context.saySpell = function(text, lastSpellTimeout)
   if context.lastSpell == nil then
@@ -101,6 +113,23 @@ end
 context.use = g_game.useInventoryItem
 context.usewith = g_game.useInventoryItemWith
 context.useWith = g_game.useInventoryItemWith
+
+context.useRune = function(itemid, target, lastSpellTimeout)
+  if context.lastRuneUse == nil then
+    context.lastRuneUse = 0
+  end
+  if not lastRuneTimeout then
+    lastRuneTimeout = 1000
+  end
+  if context.lastRuneUse + lastRuneTimeout > context.now then
+    return false
+  end
+  context.usewith(itemid, target)
+  context.lastRuneUse = context.now
+  return true
+end
+context.userune = context.useRune
+
 context.findItem = g_game.findItemInContainers
 
 context.attack = g_game.attack
