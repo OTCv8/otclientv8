@@ -421,7 +421,7 @@ function prepareKeyCombo(keyCombo, ticks)
     end
     
     if hotKey.itemId == nil and hotKey.action == nil then -- say
-      scheduleEvent(function() doKeyCombo(keyCombom, ticks >= 5) end, g_settings.getNumber('hotkeyDelay'))
+      scheduleEvent(function() doKeyCombo(keyCombo, ticks >= 5) end, g_settings.getNumber('hotkeyDelay'))
     else
       doKeyCombo(keyCombo, ticks >= 5)
     end
@@ -448,7 +448,6 @@ function doKeyCombo(keyCombo, repeated)
   if hotKey.hotkeyDelayTo ~= nil and g_clock.millis() < hotKey.hotkeyDelayTo then
     return
   end
-
   if hotKey.action then
     executeExtraHotkey(hotKey.action, repeated)  
   elseif hotKey.itemId == nil then
