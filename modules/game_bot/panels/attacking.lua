@@ -779,15 +779,18 @@ Panel
 
   local getMonsterConfig = function(monster)
     local name = monster:getName():lower()
+    local hasConfig = false
+    hasConfig = hasConfig or (monsters[name] ~= nil)
     if isConfigPassingConditions(monster, monsters[name]) then
       return monsters[name]
     end
     for i=1, 5 do 
+      hasConfig = hasConfig or (monsters[name .. i] ~= nil)
       if isConfigPassingConditions(monster, monsters[name .. i]) then
         return monsters[name .. i]
       end
     end
-    if isConfigPassingConditions(monster, monsters["*"]) then
+    if not hasConfig and isConfigPassingConditions(monster, monsters["*"]) then
       return monsters["*"]
     end
     return nil
@@ -1089,7 +1092,11 @@ Panel
       end
     end
     
+    target.ignoreByWaypoints = config.dontWalk
     if config.dontWalk then
+      if goForLoot() then
+        return
+      end
       return
     end
 

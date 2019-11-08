@@ -34,6 +34,7 @@ Panels.AttackItem(attackTab)
 
 Panels.AttackLeaderTarget(warTab)
 Panels.LimitFloor(warTab)
+Panels.AntiPush(warTab)
 
 local waypoints = Panels.Waypoints(caveTab)
 local attacking = Panels.Attacking(caveTab)
