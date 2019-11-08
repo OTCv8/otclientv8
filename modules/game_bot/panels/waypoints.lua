@@ -578,7 +578,7 @@ Panel
     -- wait if attacking/following creature
     local attacking = g_game.getAttackingCreature()
     local following = g_game.getFollowingCreature()
-    if (attacking and context.getCreatureById(attacking:getId())) or (following and context.getCreatureById(following:getId())) then
+    if (attacking and context.getCreatureById(attacking:getId()) and not attacking.ignoreByWaypoints) or (following and context.getCreatureById(following:getId())) then
       executeNextMacroCall = false
       return 
     end

@@ -313,15 +313,15 @@ Panels.Eating = function(parent)
     widget:setOn(context.storage[panelName].enabled)
   end
   
-  if type(context.storage["autoEating" .. panelId]) ~= 'table' then
-    context.storage["autoEating" .. panelId] = {3725, 0, 0, 0, 0}
+  if type(context.storage[panelName].items) ~= 'table' then
+    context.storage[panelName].items = {3725, 0, 0, 0, 0}
   end
 
   for i=1,5 do
     ui.items:getChildByIndex(i).onItemChange = function(widget)
-      context.storage["autoEating" .. panelId][i] = widget:getItemId()
+      context.storage[panelName].items[i] = widget:getItemId()
     end
-    ui.items:getChildByIndex(i):setItemId(context.storage["autoEating" .. panelId][i])    
+    ui.items:getChildByIndex(i):setItemId(context.storage[panelName].items[i])    
   end
   
   context.macro(15000, function()    
@@ -329,16 +329,15 @@ Panels.Eating = function(parent)
       return
     end
     local candidates = {}
-    for i, item in pairs(context.storage["autoEating" .. panelId]) do
+    for i, item in pairs(context.storage[panelName].items) do
       if item >= 100 then
         table.insert(candidates, item)
       end
     end
     if #candidates == 0 then
       return
-    end
-    context.usewith(candidates[math.random(1, #candidates)], context.player)
+    end    
+    context.use(candidates[math.random(1, #candidates)])
   end)
 end
-Panels.ManaItem = Panels.Mana
 

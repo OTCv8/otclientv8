@@ -63,3 +63,65 @@ Panels.LimitFloor = function(parent)
   switch:setOn(context.storage.limitFloor)
 end
 
+Panels.AntiPush = function(parent)
+  if not parent then
+    parent = context.panel
+  end
+  
+  local panelName = "antiPushPanel"  
+  local ui = g_ui.createWidget("ItemsPanel", parent)
+  ui:setId(panelName)
+
+  if not context.storage[panelName] then
+    context.storage[panelName] = {}
+  end
+
+  ui.title:setText("Anti push")
+  ui.title:setOn(context.storage[panelName].enabled)
+  ui.title.onClick = function(widget)
+    context.storage[panelName].enabled = not context.storage[panelName].enabled
+    widget:setOn(context.storage[panelName].enabled)
+  end
+  
+  if type(context.storage[panelName].items) ~= 'table' then
+    context.storage[panelName].items = {3031, 3035, 0, 0, 0}
+  end
+
+  for i=1,5 do
+    ui.items:getChildByIndex(i).onItemChange = function(widget)
+      context.storage[panelName].items[i] = widget:getItemId()
+    end
+    ui.items:getChildByIndex(i):setItemId(context.storage[panelName].items[i])    
+  end
+  
+  context.macro(100, function()    
+    if not context.storage[panelName].enabled then
+      return
+    end
+    local tile = g_map.getTile(context.player:getPosition())
+    if not tile then
+      return
+    end
+    local topItem = tile:getTopUseThing()
+    if topItem and topItem:isStackable() then
+      topItem = topItem:getId()
+    else
+      topItem = 0    
+    end
+    local candidates = {}
+    for i, item in pairs(context.storage[panelName].items) do
+      if item >= 100 and item ~= topItem and context.findItem(item) then
+        table.insert(candidates, item)
+      end
+    end
+    if #candidates == 0 then
+      return
+    end
+    if type(context.storage[panelName].lastItem) ~= 'number' or context.storage[panelName].lastItem > #candidates then
+      context.storage[panelName].lastItem = 1
+    end
+    local item = context.findItem(candidates[context.storage[panelName].lastItem])
+    g_game.move(item, context.player:getPosition(), 1)
+    context.storage[panelName].lastItem = context.storage[panelName].lastItem + 1
+  end)
+end

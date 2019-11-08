@@ -37,6 +37,9 @@ function setupExtraHotkeys(combobox)
         nextChild = battlePanel:getFirstChild()
       end
     end
+    if not breakNext then
+      nextChild = battlePanel:getFirstChild()
+    end
     if nextChild and nextChild.creature ~= attackedCreature then
       g_game.attack(nextChild.creature)
     end
