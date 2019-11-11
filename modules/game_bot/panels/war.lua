@@ -27,7 +27,7 @@ Panels.AttackLeaderTarget = function(parent)
     end
   end)
   context.macro(50, "Attack leader's target", nil, function()
-    if toAttack and context.storage.attackLeader:len() > 0 then    
+    if toAttack and context.storage.attackLeader:len() > 0 and toAttack ~= g_game.getAttackingCreature() then    
       g_game.attack(toAttack)
       toAttack = nil
     end

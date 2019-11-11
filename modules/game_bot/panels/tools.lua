@@ -15,3 +15,22 @@ Panels.TradeMessage = function(parent)
     context.storage.autoTradeMessage = text
   end, parent)
 end
+
+Panels.AutoStackItems = function(parent)
+  context.macro(500, "Auto stacking items", nil, function()
+    local containers = context.getContainers()
+    for i, container in pairs(containers) do
+      local toStack = {}
+      for j, item in ipairs(container:getItems()) do
+        if item:isStackable() and item:getCount() ~= 100 then
+          local otherItem = toStack[item:getId()]
+          if otherItem then
+            g_game.move(item, otherItem, item:getCount())
+            return
+          end
+          toStack[item:getId()] = container:getSlotPosition(j - 1)
+        end
+      end
+    end
+  end, parent)
+end

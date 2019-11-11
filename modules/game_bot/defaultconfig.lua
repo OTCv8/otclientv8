@@ -3,10 +3,11 @@ botDefaultConfig = {
     {name = "Default", script = [=[
 --Default
 --IMPORTANT
---In this config editions are not saved
+--In 1st config (default) editions are not saved, just select and edit other config
 
 --#main
 
+--#panels
 
 local healTab = addTab("HP")
 local attackTab = addTab("Atck")
@@ -14,6 +15,21 @@ local warTab = addTab("War")
 local caveTab = addTab("Cave")
 
 Panels.TradeMessage()
+Panels.AutoStackItems()
+
+addButton("discord", "Discord & Help", function()
+  g_platform.openUrl("https://discord.gg/yhqBE4A")
+end)
+
+addButton("forum", "Forum", function()
+  g_platform.openUrl("https://otland.net/forums/otclient.494/")
+end)
+
+addButton("github", "Documentation", function()
+  g_platform.openUrl("https://github.com/OTCv8/otclientv8_bot")
+end)
+
+addSeparator("sep")
 
 Panels.Haste(healTab)
 Panels.ManaShield(healTab)
@@ -44,13 +60,6 @@ addButton("tutorial", "Help & Tutorials", function()
 end, caveTab)
 
 --#macros
-
-addSeparator("sep1")
-local helloLabel = addLabel("helloLabel", "")
-
-macro(1000, "example macro (time)", nil, function()
-  helloLabel:setText("Time from start: " .. now)
-end)
 
 macro(1000, "this macro does nothing", "f7", function()
 
@@ -91,11 +100,31 @@ singlehotkey("ctrl+f6", "singlehotkey", function()
   usewith(268, player)
 end)
 
+singlehotkey("ctrl+f8", "play alarm", function()
+  playAlarm()
+end)
+
+singlehotkey("ctrl+f9", "stop alarm", function()
+  stopSound()
+end)
+
 --#callbacks
 
 local positionLabel = addLabel("positionLabel", "")
 onPlayerPositionChange(function()
   positionLabel:setText("Pos: " .. posx() .. "," .. posy() .. "," .. posz())
+end)
+
+local s = addSwitch("sdSound", "Play sound when using sd", function(widget)
+  storage.sdSound = not storage.sdSound
+  widget:setOn(storage.sdSound)
+end)
+s:setOn(storage.sdSound)
+
+onUseWith(function(pos, itemId)
+  if storage.sdSound and itemId == 3155 then
+    playSound("/sounds/magnum.ogg")
+  end
 end)
 
 --#other

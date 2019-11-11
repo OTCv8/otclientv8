@@ -157,6 +157,7 @@ GameIngameStoreHighlights = 74
 GameIngameStoreServiceType = 75
 GameAdditionalSkills = 76
 GameDistanceEffectU16 = 77
+GamePrey = 78
 
 GameExtendedOpcode = 80
 GameMinimapLimitedToSingleFloor = 81

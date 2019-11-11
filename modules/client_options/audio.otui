@@ -26,3 +26,23 @@ Panel
     margin-top: 3
     minimum: 0
     maximum: 100
+
+  Label
+    id: botSoundVolumeLabel
+    !text: tr('Bot sound volume: %d', 100)
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 6
+    @onSetup: |
+      local value = modules.client_options.getOption('botSoundVolume')
+      self:setText(tr('Bot sound volume: %d', value))
+
+  OptionScrollbar
+    id: botSoundVolume
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 100

@@ -103,15 +103,15 @@ if($data->version != $otc_version) {
     die(json_encode(array("error" => "Outdated client, please update!")));
 }
 
-if($data->quick == 1) { 
-    // under development
-	http_response_code(404);    
-    die();
-}
-
 $conn = new mysqli($dbserver, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("SQL connection failed: " . $conn->connect_error);
+}
+
+if($data->quick == 1) { 
+    require_once("quick.php");
+    
+    die();
 }
 
 $account = $data->account;

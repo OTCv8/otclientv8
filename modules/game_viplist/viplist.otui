@@ -17,6 +17,7 @@ MiniWindow
   icon: /images/topbuttons/viplist
   @onClose: modules.game_viplist.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   MiniWindowContents
     layout: verticalBox

@@ -72,14 +72,20 @@ AmmoSlot < InventoryItem
   $on:
     image-source: /images/game/slots/ammo-blessed
 
-PurseButton < Button
+PurseButton < UIButton
   id: purseButton
-  size: 26 26
+  size: 24 24
   !tooltip: tr('Open purse')
   icon-source: /images/game/slots/purse
   icon-size: 24 24
-  icon-offset: 1 1
 
+MarketButton < UIButton
+  id: marketButton
+  size: 24 24
+  !tooltip: tr('Open Market')
+  icon-source: /images/game/slots/coins
+  icon-size: 24 24
+  
 CombatBox < UICheckBox
   size: 20 20
   image-clip: 0 0 20 20
@@ -91,7 +97,8 @@ CombatBox < UICheckBox
 
 InventoryButton < Button
   font: verdana-11px-antialised
-  height: 20
+  height: 18
+  margin-top: 1
 
 SoulCapLabel < GameLabel
   text-align: center
@@ -124,6 +131,7 @@ MiniWindow
   height: 200
   @onClose: modules.game_inventory.onMiniWindowClose()
   &save: true
+  &autoOpen: 3
   --&forceOpen: true
 
   MiniWindowContents
@@ -254,6 +262,7 @@ MiniWindow
         anchors.top: parent.top
         
       Panel
+        id: buttonsPanel
         margin-top: 4
         margin-right: 5
         anchors.fill: parent
@@ -266,10 +275,6 @@ MiniWindow
           @onClick: g_game.stop(); g_game.cancelAttackAndFollow()
 
         InventoryButton
-          !text: tr('Quests')
-          @onClick: g_game.requestQuestLog()
-
-        InventoryButton
           !text: tr('Options')
           @onClick: modules.client_options.toggle()
 
@@ -280,3 +285,15 @@ MiniWindow
         InventoryButton
           !text: tr('Logout')
           @onClick: modules.game_interface.tryLogout()
+
+      MarketButton
+        anchors.left: buttonsPanel.left
+        anchors.bottom: buttonsPanel.bottom        
+        margin-bottom: 3
+        margin-left: 3
+        
+      PurseButton
+        anchors.right: buttonsPanel.right
+        anchors.bottom: buttonsPanel.bottom        
+        margin-bottom: 3
+        margin-right: 2

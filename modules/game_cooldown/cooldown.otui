@@ -28,6 +28,7 @@ MiniWindow
   icon: /images/topbuttons/cooldowns
   @onClose: modules.game_cooldown.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   MiniWindowContents
     SpellGroupIcon

@@ -64,7 +64,7 @@ function init()
     g_window.setFullscreen(true)
   else
     -- window size
-    local size = { width = 800, height = 600 }
+    local size = { width = 1024, height = 600 }
     size = g_settings.getSize('window-size', size)
     g_window.resize(size)
 

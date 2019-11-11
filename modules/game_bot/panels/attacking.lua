@@ -10,7 +10,7 @@ Panels.MonsterEditor = function(monster, config, callback, parent)
   local window = context.setupUI([[
 MainWindow
   id: monsterEditor
-  size: 450 430
+  size: 450 450
   !text: tr("Edit monster")
   
   Label
@@ -164,11 +164,23 @@ MainWindow
     step: 1
     
   Label
+    id: dangerText
+    anchors.left: parent.left
+    anchors.right: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-right: 5
+    margin-top: 10
+    text: If total danger is high (>8) bot won't auto loot until it's low again and will be trying to minimize it
+    text-align: center
+    text-wrap: true
+    text-auto-resize: true
+
+  Label
     id: attackSpellText
     anchors.left: parent.left
     anchors.right: parent.horizontalCenter
     anchors.top: prev.bottom
-    margin-right: 10
+    margin-right: 5
     margin-top: 10
     text: Attack spell and attack rune are only used when you have more than 30% health
     text-align: center
@@ -600,7 +612,6 @@ Panel
         local status, result = pcall(function() return json.decode(command.text) end)
         if not status then
           context.error("Invalid monster config: " .. commands[i].command .. ", error: " .. result)
-          print(command.text)
         else
           monsters[commands[i].command] = result
           table.insert(labels, commands[i].command)
@@ -634,7 +645,7 @@ Panel
       ui.config:addOption(name)
     end
     
-    if not context.storage.attacking.activeConfig and #context.storage.attacking.configs > 0 then
+    if (not context.storage.attacking.activeConfig or context.storage.attacking.activeConfig == 0) and #context.storage.attacking.configs > 0 then
        context.storage.attacking.activeConfig = 1
     end
     
@@ -687,12 +698,26 @@ Panel
     if not context.storage.attacking.activeConfig or not context.storage.attacking.configs[context.storage.attacking.activeConfig] then
       return
     end
-    context.storage.attacking.enabled = false
-    table.remove(context.storage.attacking.configs, context.storage.attacking.activeConfig)
-    context.storage.attacking.activeConfig = 0
-    refreshConfig()
+    local questionWindow = nil
+    local closeWindow = function()
+      questionWindow:destroy()
+    end
+    local removeConfig = function()
+      closeWindow()
+      if not context.storage.attacking.activeConfig or not context.storage.attacking.configs[context.storage.attacking.activeConfig] then
+        return
+      end
+      context.storage.attacking.enabled = false
+      table.remove(context.storage.attacking.configs, context.storage.attacking.activeConfig)
+      context.storage.attacking.activeConfig = 0
+      refreshConfig()
+    end
+    questionWindow = context.displayGeneralBox(tr('Remove config'), tr('Do you want to remove current attacking config?'), {
+      { text=tr('Yes'), callback=removeConfig },
+      { text=tr('No'), callback=closeWindow },
+      anchor=AnchorHorizontalCenter}, removeConfig, closeWindow)
   end
-
+  
   
   ui.mAdd.onClick = function()
     if not context.storage.attacking.activeConfig or not context.storage.attacking.configs[context.storage.attacking.activeConfig] then
@@ -745,7 +770,7 @@ Panel
       return false
     end
     
-    if monster:isPlayer() and config.monstersOnly then
+    if monster:isPlayer() and (config.monstersOnly == true or config.monstersOnly == nil) then
       return false
     end
 
@@ -770,7 +795,7 @@ Panel
       return false
     end 
 
-    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, maxDistance + 2, { ignoreNonPathable = true, precision=1, allowOnlyVisibleTiles = true })
+    local pathTo = context.findPath(context.player:getPosition(), {x=mpos.x, y=mpos.y, z=mpos.z}, maxDistance + 2, { ignoreNonPathable = true, precision=1, allowOnlyVisibleTiles = true, ignoreCost = true })
     if not pathTo or #pathTo > maxDistance + 1 then
       return false
     end
@@ -900,7 +925,7 @@ Panel
       end
       
       local topItem = tile:getTopUseThing()
-      if not topItem:isContainer() then
+      if not topItem or not topItem:isContainer() then
         table.remove(lootContainers, 1)
         return true
       end

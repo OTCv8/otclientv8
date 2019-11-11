@@ -40,6 +40,7 @@ MiniWindow
   icon: /images/topbuttons/skills
   @onClose: modules.game_skills.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   MiniWindowContents
     padding-left: 5

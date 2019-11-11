@@ -1,6 +1,6 @@
 MainWindow
   id: feedbackWindow
-  size: 300 280
+  size: 400 280
   !text: tr("Feedback/Bug report")
 
   Label
@@ -11,7 +11,7 @@ MainWindow
     text-auto-resize: true
     text-align: left
     text-wrap: true
-    !text: tr("Bellow enter your feedback or bug report. Please include as much details as possible.")
+    !text: tr("Bellow enter your feedback or bug report. Please include as much details as possible. Thank you!")
 
   MultilineTextEdit
     id: text
