@@ -82,14 +82,12 @@ StaticMainWindow
     id: accountStatusCaption
     !text: tr('Account Status') .. ':'
     anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 1
+    anchors.bottom: separator.top
+    margin-bottom: 5
 
   Label
     id: accountStatusLabel
     !text: tr('Free Account')
-    anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: separator.top
     margin-bottom: 5
@@ -105,16 +103,16 @@ StaticMainWindow
     anchors.bottom: next.top
     margin-bottom: 10
 
-  //CheckBox
-  //  id: charAutoLoginBox
-  //  !text: tr('Auto login')
-  //  !tooltip: tr('Auto login selected character on next charlist load')
-  //  anchors.left: parent.left
-  //  anchors.right: parent.right
-  //  anchors.bottom: next.top
-  //  margin-bottom: 6
-  //  margin-left: 18
-  //  margin-right: 18
+  Button
+    id: autoReconnect
+    !text: tr('Auto reconnect: On')
+    width: 140
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    image-color: green
+    $!on:
+      image-color: red    
+      !text: tr('Auto reconnect: Off')
 
   Button
     id: buttonOk

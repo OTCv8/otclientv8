@@ -5,6 +5,7 @@ MiniWindow
   icon: /images/topbuttons/bot
   @onClose: modules.game_bot.onMiniWindowClose()
   &save: true
+  &autoOpen: 10
 
   MiniWindowContents   
     margin-left: 5

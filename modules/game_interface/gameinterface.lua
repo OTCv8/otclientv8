@@ -728,6 +728,13 @@ function getRightPanel()
   return gameRightPanels:getChildByIndex(-1)
 end
 
+function getLeftPanel()
+  if gameLeftPanels:getChildCount() >= 1 then
+    return gameLeftPanels:getChildByIndex(-1)
+  end
+  return getRightPanel()
+end
+
 function getContainerPanel()
   local containerPanel = g_settings.getNumber("containerPanel")
   if containerPanel >= 5 then

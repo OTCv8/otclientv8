@@ -43,6 +43,7 @@ MiniWindow
   icon: /images/topbuttons/battle
   @onClose: modules.game_battle.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   Panel
     id: filterPanel

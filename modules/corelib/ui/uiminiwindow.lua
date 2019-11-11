@@ -166,6 +166,10 @@ function UIMiniWindow:setup()
       if selfSettings.locked then
         self:lock(true)
       end
+    else 
+      if not self.forceOpen and self.autoOpen ~= nil and (self.autoOpen == 0 or self.autoOpen == false) then
+        self:close(true)
+      end
     end
   end
 

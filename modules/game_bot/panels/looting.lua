@@ -229,7 +229,7 @@ Panel
       ui.config:addOption(name)
     end
     
-    if not context.storage.looting.activeConfig and #context.storage.looting.configs > 0 then
+    if (not context.storage.looting.activeConfig or context.storage.looting.activeConfig == 0) and #context.storage.looting.configs > 0 then
        context.storage.looting.activeConfig = 1
     end
     
@@ -286,12 +286,25 @@ Panel
     if not context.storage.looting.activeConfig or not context.storage.looting.configs[context.storage.looting.activeConfig] then
       return
     end
-    context.storage.looting.enabled = false
-    table.remove(context.storage.looting.configs, context.storage.looting.activeConfig)
-    context.storage.looting.activeConfig = 0
-    refreshConfig()
+    local questionWindow = nil
+    local closeWindow = function()
+      questionWindow:destroy()
+    end
+    local removeConfig = function()
+      closeWindow()
+      if not context.storage.looting.activeConfig or not context.storage.looting.configs[context.storage.looting.activeConfig] then
+        return
+      end
+      context.storage.looting.enabled = false
+      table.remove(context.storage.looting.configs, context.storage.looting.activeConfig)
+      context.storage.looting.activeConfig = 0
+      refreshConfig()
+    end
+    questionWindow = context.displayGeneralBox(tr('Remove config'), tr('Do you want to remove current looting config?'), {
+      { text=tr('Yes'), callback=removeConfig },
+      { text=tr('No'), callback=closeWindow },
+      anchor=AnchorHorizontalCenter}, removeConfig, closeWindow)
   end
-
   refreshConfig()
 
   context.onContainerOpen(function(container, prevContainer)
@@ -360,7 +373,7 @@ Panel
             if item:getId() == foundItem:getId() then
               if foundItem:isStackable() then
                 if item:getCount() ~= 100  then
-                  g_game.move(foundItem, container:getSlotPosition(j), foundItem:getCount())
+                  g_game.move(foundItem, container:getSlotPosition(j - 1), foundItem:getCount())
                   return
                 end
               else

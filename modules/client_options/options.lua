@@ -3,7 +3,7 @@ local defaultOptions = {
   showFps = true,
   showPing = true,
   fullscreen = false,
-  classicView = false,
+  classicView = true,
   classicControl = true,
   smartWalk = false,
   extentedPreWalking = true,
@@ -16,12 +16,13 @@ local defaultOptions = {
   showPrivateMessagesInConsole = true,
   showPrivateMessagesOnScreen = true,
   rightPanels = 1,
-  leftPanels = 0,
+  leftPanels = 2,
   containerPanel = 8,
   backgroundFrameRate = 100,
-  enableAudio = false,
+  enableAudio = true,
   enableMusicSound = false,
   musicSoundVolume = 100,
+  botSoundVolume = 100,
   enableLights = false,
   floorFading = 500,
   crosshair = 2,
@@ -235,6 +236,11 @@ function setOption(key, value, force)
       g_sounds.getChannel(SoundChannels.Music):setGain(value/100)
     end
     audioPanel:getChildById('musicSoundVolumeLabel'):setText(tr('Music volume: %d', value))
+  elseif key == 'botSoundVolume' then
+    if g_sounds ~= nil then
+      g_sounds.getChannel(SoundChannels.Bot):setGain(value/100)
+    end
+    audioPanel:getChildById('botSoundVolumeLabel'):setText(tr('Bot sound volume: %d', value))    
   elseif key == 'showHealthManaCircle' then
     modules.game_healthinfo.healthCircle:setVisible(value)
     modules.game_healthinfo.healthCircleFront:setVisible(value)

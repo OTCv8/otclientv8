@@ -113,6 +113,7 @@ end
 
 function setPingVisible(enable)
   topMenu.pingLabel:setVisible(enable)
+  topMenu.reportBug:setVisible(enable)
 end
 
 function setFpsVisible(enable)

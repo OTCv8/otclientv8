@@ -84,7 +84,7 @@ context.onContainerOpen = function(callback)
   return context.callback("onContainerOpen", callback)
 end
 
--- onContainerUpdateItem -- callback = function(container)
+-- onContainerClose -- callback = function(container)
 context.onContainerClose = function(callback)
   return context.callback("onContainerClose", callback)
 end

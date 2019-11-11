@@ -190,6 +190,8 @@ function UIMiniWindowContainer:order()
   for i=1,#children do
     if children[i].miniIndex then
       self:swapInsert(children[i], children[i].miniIndex)
+    elseif children[i].autoOpen then
+      self:swapInsert(children[i], children[i].autoOpen)    
     end
   end
 end

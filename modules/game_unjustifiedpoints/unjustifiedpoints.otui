@@ -18,6 +18,7 @@ MiniWindow
   icon: /images/topbuttons/unjustifiedpoints
   @onClose: modules.game_unjustifiedpoints.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   MiniWindowContents
     Label

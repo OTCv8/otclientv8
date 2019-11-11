@@ -94,7 +94,6 @@ local function updateTabs(tabBar)
   end
   updateNavigation(tabBar)
   updateMargins(tabBar)
-
   if not tabBar.currentTab and #tabBar.tabs > 0 then
     tabBar:selectTab(tabBar.tabs[1])
   end
@@ -338,19 +337,18 @@ function UIMoveableTabBar:removeTab(tab)
   if tabTable == nil then
     return
   end
-
+  table.remove(tabTable, index)
   if self.currentTab == tab then
     self:selectPrevTab()
     if #self.tabs == 1 then
       self.currentTab = nil
     end
   end
-  table.remove(tabTable, index)
   if tab.blinkEvent then
     removeEvent(tab.blinkEvent)
   end
-  tab:destroy()
   updateTabs(self)
+  tab:destroy()
 end
 
 function UIMoveableTabBar:getTab(text)

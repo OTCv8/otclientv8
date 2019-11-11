@@ -82,7 +82,7 @@ function init()
   botButton:setOn(false)
   botButton:hide()
 
-  botWindow = g_ui.loadUI('bot', modules.game_interface.getRightPanel())
+  botWindow = g_ui.loadUI('bot', modules.game_interface.getLeftPanel())
   botWindow:setup()
 
   contentsPanel = botWindow.contentsPanel
@@ -352,6 +352,10 @@ function clearConfig()
   local gameMapPanel = modules.game_interface.getMapPanel()
   if gameMapPanel then
     gameMapPanel:unlockVisibleFloor()   
+  end
+  if g_sounds then
+    local botSoundChannel = g_sounds.getChannel(SoundChannels.Bot)
+    botSoundChannel:stop()
   end
 end
 

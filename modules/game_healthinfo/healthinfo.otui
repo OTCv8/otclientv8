@@ -134,6 +134,7 @@ MiniWindow
   height: 123
   @onClose: modules.game_healthinfo.onMiniWindowClose()
   &save: true
+  &autoOpen: 2
 
   MiniWindowContents
     HealthBar

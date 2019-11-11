@@ -26,11 +26,6 @@ Panel
     !text: tr('Enable smart walking')
     !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
 
-  OptionCheckBox
-    id: realDirection
-    !text: tr('Show real direction (ignore walk direction)')
-    !tooltip: tr('Shows real creature direction while it\'s walking')
-
   Label
     anchors.top: prev.bottom
     anchors.left: parent.left

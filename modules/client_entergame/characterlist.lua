@@ -6,9 +6,12 @@ local loadBox
 local characterList
 local errorBox
 local waitingWindow
+local autoReconnectButton
 local updateWaitEvent
 local resendWaitEvent
 local loginEvent
+local autoReconnectEvent
+local lastLogout = 0
 
 -- private functions
 local function tryLogin(charInfo, tries)
@@ -118,6 +121,7 @@ function onGameLoginError(message)
     errorBox = nil
     CharacterList.showAgain()
   end
+  scheduleAutoReconnect()
 end
 
 function onGameLoginToken(unknown)
@@ -138,6 +142,7 @@ function onGameConnectionError(message, code)
     errorBox = nil
     CharacterList.showAgain()
   end
+  scheduleAutoReconnect()
 end
 
 function onGameUpdateNeeded(signature)
@@ -146,7 +151,37 @@ function onGameUpdateNeeded(signature)
   errorBox.onOk = function()
     errorBox = nil
     CharacterList.showAgain()
+  end  
+end
+
+function onGameEnd()
+  CharacterList.showAgain()
+  scheduleAutoReconnect()
+end
+
+function onLogout()
+  lastLogout = g_clock.millis()
+end
+
+function scheduleAutoReconnect()
+  if lastLogout + 2000 > g_clock.millis() then
+    return
   end
+  if autoReconnectEvent then
+    removeEvent(autoReconnectEvent)    
+  end
+  autoReconnectEvent = scheduleEvent(executeAutoReconnect, 2500)
+end
+
+function executeAutoReconnect()  
+  if not autoReconnectButton or not autoReconnectButton:isOn() then
+    return
+  end
+  if errorBox then
+    errorBox:destroy()
+    errorBox = nil
+  end
+  CharacterList.doLogin()
 end
 
 -- public functions
@@ -157,7 +192,8 @@ function CharacterList.init()
   connect(g_game, { onConnectionError = onGameConnectionError })
   connect(g_game, { onGameStart = CharacterList.destroyLoadBox })
   connect(g_game, { onLoginWait = onLoginWait })
-  connect(g_game, { onGameEnd = CharacterList.showAgain })
+  connect(g_game, { onGameEnd = onGameEnd })
+  connect(g_game, { onLogout = onLogout })
 
   if G.characters then
     CharacterList.create(G.characters, G.characterAccount)
@@ -171,7 +207,8 @@ function CharacterList.terminate()
   disconnect(g_game, { onConnectionError = onGameConnectionError })
   disconnect(g_game, { onGameStart = CharacterList.destroyLoadBox })
   disconnect(g_game, { onLoginWait = onLoginWait })
-  disconnect(g_game, { onGameEnd = CharacterList.showAgain })
+  disconnect(g_game, { onGameEnd = onGameEnd })
+  disconnect(g_game, { onLogout = onLogout })
 
   if charactersWindow then
     characterList = nil
@@ -217,6 +254,7 @@ function CharacterList.create(characters, account, otui)
 
   charactersWindow = g_ui.displayUI(otui)
   characterList = charactersWindow:getChildById('characters')
+  autoReconnectButton = charactersWindow:getChildById('autoReconnect')
 
   -- characters
   G.characters = characters
@@ -224,7 +262,6 @@ function CharacterList.create(characters, account, otui)
 
   characterList:destroyChildren()
   local accountStatusLabel = charactersWindow:getChildById('accountStatusLabel')
-
   local focusLabel
   for i,characterInfo in ipairs(characters) do
     local widget = g_ui.createWidget('CharacterWidget', characterList)
@@ -262,6 +299,11 @@ function CharacterList.create(characters, account, otui)
     characterList:focusChild(focusLabel, KeyboardFocusReason)
     addEvent(function() characterList:ensureChildVisible(focusLabel) end)
   end
+  
+  characterList.onChildFocusChange = function()
+    removeEvent(autoReconnectEvent)
+    autoReconnectEvent = nil
+  end
 
   -- account
   local status = ''
@@ -286,6 +328,12 @@ function CharacterList.create(characters, account, otui)
   else
     accountStatusLabel:setOn(false)
   end
+  
+  autoReconnectButton.onClick = function(widget)
+    local autoReconnect = not g_settings.getBoolean('autoReconnect', true)
+    autoReconnectButton:setOn(autoReconnect)
+    g_settings.set('autoReconnect', autoReconnect)
+  end
 end
 
 function CharacterList.destroy()
@@ -303,9 +351,15 @@ function CharacterList.show()
   charactersWindow:show()
   charactersWindow:raise()
   charactersWindow:focus()
+  
+  local autoReconnect = g_settings.getBoolean('autoReconnect', true)
+  autoReconnectButton:setOn(autoReconnect)
 end
 
 function CharacterList.hide(showLogin)
+  removeEvent(autoReconnectEvent)
+  autoReconnectEvent = nil
+
   showLogin = showLogin or false
   charactersWindow:hide()
 
@@ -328,6 +382,9 @@ function CharacterList.isVisible()
 end
 
 function CharacterList.doLogin()
+  removeEvent(autoReconnectEvent)
+  autoReconnectEvent = nil
+
   local selected = characterList:getFocusedChild()
   if selected then
     local charInfo = { worldHost = selected.worldHost,

@@ -22,7 +22,6 @@ TopMenuPanel
     text-auto-resize: true
     anchors.top: parent.top
     anchors.left: leftGameButtonsPanel.right
-    anchors.right: rightGameButtonsPanel.left
 
   TopMenuPingLabel
     color: white
@@ -30,7 +29,19 @@ TopMenuPanel
     text-auto-resize: true
     anchors.top: fpsLabel.bottom
     anchors.left: fpsLabel.left
-    anchors.right: fpsLabel.right
+
+  Button
+    id: reportBug
+    text: Report bug
+    text-align: center
+    color: white
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: leftGameButtonsPanel.right
+    margin-left: 80
+    margin-top: 5
+    margin-bottom: 5
+    @onClick: modules.client_feedback.show()
 
   TopMenuButtonsPanel
     id: rightButtonsPanel

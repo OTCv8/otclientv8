@@ -34,6 +34,7 @@ inventoryWindow = nil
 inventoryPanel = nil
 inventoryButton = nil
 purseButton = nil
+marketButton = nil
 
 combatControlsWindow = nil
 fightOffensiveBox = nil
@@ -66,8 +67,9 @@ function init()
     inventoryButton = modules.client_topmenu.addRightGameToggleButton('inventoryButton', tr('Inventory') .. ' (Ctrl+I)', '/images/topbuttons/inventory', toggle)
     inventoryButton:setOn(true)
   end
-  --[[
-  purseButton = inventoryPanel:getChildById('purseButton')
+  
+  purseButton = inventoryWindow:recursiveGetChildById('purseButton')
+  marketButton = inventoryWindow:recursiveGetChildById('marketButton')
   local function purseFunction()
     local purse = g_game.getLocalPlayer():getInventoryItem(InventorySlotPurse)
     if purse then
@@ -75,8 +77,8 @@ function init()
     end
   end
   purseButton.onClick = purseFunction
-  ]]--
--- controls
+  
+  -- controls
   fightOffensiveBox = inventoryWindow:recursiveGetChildById('fightOffensiveBox')
   fightBalancedBox = inventoryWindow:recursiveGetChildById('fightBalancedBox')
   fightDefensiveBox = inventoryWindow:recursiveGetChildById('fightDefensiveBox')
@@ -203,7 +205,8 @@ function refresh()
     onStatesChange(player, player:getStates(), 0)
   end
 
-  --purseButton:setVisible(g_game.getFeature(GamePurseSlot))
+  purseButton:setVisible(g_game.getFeature(GamePurseSlot))
+  marketButton:setVisible(g_game.getFeature(GamePurseSlot))
 end
 
 function toggle()
