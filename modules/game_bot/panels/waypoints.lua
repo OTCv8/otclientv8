@@ -5,7 +5,7 @@ Panels.Waypoints = function(parent)
   local ui = context.setupUI([[
 Panel
   id: waypoints
-  height: 223
+  height: 206
   
   BotLabel
     anchors.top: parent.top
@@ -35,7 +35,7 @@ Panel
     anchors.left: parent.left
     text: Add
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: edit
@@ -43,7 +43,7 @@ Panel
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: remove
@@ -51,7 +51,7 @@ Panel
     anchors.right: parent.right
     text: Remove
     width: 60
-    height: 20
+    height: 17
   
   TextList
     id: list
@@ -88,7 +88,7 @@ Panel
     text: Goto
     width: 61
     margin-top: 1
-    height: 20
+    height: 17
 
   Button
     id: wUse
@@ -96,7 +96,7 @@ Panel
     anchors.left: prev.right
     text: Use
     width: 61
-    height: 20
+    height: 17
 
   Button
     id: wUseWith
@@ -104,7 +104,7 @@ Panel
     anchors.left: prev.right
     text: UseWith
     width: 61
-    height: 20
+    height: 17
 
   Button
     id: wWait
@@ -113,7 +113,7 @@ Panel
     text: Wait
     width: 61
     margin-top: 1
-    height: 20
+    height: 17
     
   Button
     id: wSay
@@ -121,7 +121,7 @@ Panel
     anchors.left: prev.right
     text: Say
     width: 61
-    height: 20
+    height: 17
 
   Button
     id: wNpc
@@ -129,7 +129,7 @@ Panel
     anchors.left: prev.right
     text: Say NPC
     width: 61
-    height: 20
+    height: 17
     
   Button
     id: wLabel
@@ -138,7 +138,7 @@ Panel
     text: Label
     width: 61
     margin-top: 1
-    height: 20
+    height: 17
     
   Button
     id: wFollow
@@ -146,7 +146,7 @@ Panel
     anchors.left: prev.right
     text: Follow
     width: 61
-    height: 20
+    height: 17
 
   Button
     id: wFunction
@@ -154,7 +154,7 @@ Panel
     anchors.left: prev.right
     text: Function
     width: 61
-    height: 20
+    height: 17
     
   BotSwitch
     id: recording
@@ -162,7 +162,7 @@ Panel
     anchors.left: parent.left
     anchors.right: parent.right
     text: Auto Recording
-    height: 20
+    height: 17
 
 ]], parent)
 

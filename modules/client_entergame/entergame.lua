@@ -9,10 +9,6 @@ local protocolLogin
 local server = nil
 local versionsFound = false
 
-local newLogin = nil
-local newLoginUrl = nil
-local newLoginEvent
-
 local customServerSelectorPanel
 local serverSelectorPanel
 local serverSelector
@@ -21,6 +17,8 @@ local serverHostTextEdit
 local rememberPasswordBox
 local protos = {"740", "760", "772", "800", "810", "854", "860", "1077", "1090", "1096", "1098", "1099", "1100"}
 
+local webSocket
+local webSocketLoginPacket
 
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
@@ -125,6 +123,10 @@ local function onHTTPResult(data, err)
   if #incorrectThings > 0 then
     g_logger.info(incorrectThings)
     if Updater then
+      if webSocket then
+        webSocket:close()
+        webSocket = nil
+      end
       return Updater.updateThings(things, incorrectThings)
     else
       return EnterGame.onError(incorrectThings)
@@ -175,6 +177,10 @@ local function onHTTPResult(data, err)
     end
   end
   
+  if webSocket then
+    webSocket:close()
+    webSocket = nil
+  end
   onCharacterList(nil, characters, account, nil)  
 end
 
@@ -244,7 +250,10 @@ end
 function EnterGame.terminate()
   g_keyboard.unbindKeyDown('Ctrl+G')
   
-  removeEvent(newLoginEvent)
+  if webSocket then
+    webSocket.close()
+    webSocket = nil
+  end
   
   enterGame:destroy()
   if newLogin then
@@ -269,7 +278,7 @@ function EnterGame.show()
   enterGame:raise()
   enterGame:focus()
   enterGame:getChildById('accountNameTextEdit'):focus()
-  EnterGame.checkNewLogin()
+  EnterGame.checkWebsocket()
 end
 
 function EnterGame.hide()
@@ -294,33 +303,74 @@ function EnterGame.clearAccountFields()
   g_settings.remove('password')
 end
 
-function EnterGame.hideNewLogin()
-  newLogin:hide()
-  newLoginUrl = nil
-end
-
-function EnterGame.checkNewLoginEvent()
-  newLoginEvent = scheduleEvent(function() EnterGame.checkNewLoginEvent() end, 1000)
-  EnterGame.checkNewLogin()
-end
-
-function EnterGame.checkNewLogin()
-  if not newLoginUrl then
+function EnterGame.checkWebsocket()
+  if enterGame:isHidden() then return end
+  local url = serverHostTextEdit:getText()
+  if url:find("ws://") == nil and url:find("wss://") == nil then
+    if webSocket then
+      webSocket:close()
+      webSocket = nil
+    end
     return
   end
-  local url = newLoginUrl  
-  HTTP.postJSON(newLoginUrl, { quick = 1 }, function(data, err)
-    if url ~= newLoginUrl then return end
-    if err then return end
-    if not data["qrcode"] then return end
-    newLogin.qrcode:setImageSourceBase64(data["qrcode"])
-    newLogin.code:setText(data["code"])
-    if enterGame:isHidden() then return end
-    if newLogin:isHidden() then
-      newLogin:show()
-      newLogin:raise()
+  if webSocket then
+    if webSocket.url == url then
+      if newLogin:isHidden() and newLogin.code:getText():len() > 1 then
+        newLogin:show()
+        newLogin:raise()
+      end
+      return
     end
-  end)
+    webSocket:close()
+    webSocket = nil
+  end
+  newLogin.code:setText("")
+  webSocket = HTTP.WebSocketJSON(url, {
+    onOpen = function(message, webSocketId)
+      if webSocket and webSocket.id == webSocketId then
+        webSocket.send({type="init", uid=G.uuid, version=APP_VERSION})
+      end
+    end,
+    onMessage = function(message, webSocketId)
+      if webSocket and webSocket.id == webSocketId then
+        if message.type == "login" then
+          webSocketLoginPacket = nil
+          onHTTPResult(message, nil)
+        elseif message.type == "quick_login" and message.code and message.qrcode then
+          EnterGame.showNewLogin(message.code, message.qrcode)
+        end
+      end
+    end,
+    onClose = function(message, webSocketId)
+      if webSocket and webSocket.id == webSocketId then
+        webSocket = nil
+        if webSocketLoginPacket then
+          webSocketLoginPacket = nil
+          onHTTPResult(nil, "WebSocket disconnected")
+        end
+        EnterGame.checkWebsocket() -- reconnect
+      end
+    end,
+    onError = function(message, webSocketId)
+      if webSocket and webSocket.id == webSocketId then
+        -- handle error
+      end
+    end
+  })
+end
+
+function EnterGame.hideNewLogin()
+  newLogin:hide()
+end
+
+function EnterGame.showNewLogin(code, qrcode)
+  if enterGame:isHidden() then return end
+  newLogin.code:setText(code)
+  newLogin.qrcode:setQRCode(qrcode, 1)
+  if newLogin:isHidden() then
+    newLogin:show()
+    newLogin:raise()
+  end
 end
 
 function EnterGame.onServerChange()
@@ -338,8 +388,7 @@ function EnterGame.onServerChange()
   end
   if Servers and Servers[server] ~= nil then
     serverHostTextEdit:setText(Servers[server])
-    newLoginUrl = Servers[server]
-    EnterGame.checkNewLogin()
+    EnterGame.checkWebsocket()
   end
 end
 
@@ -371,6 +420,9 @@ function EnterGame.doLogin()
   g_settings.set('client-version', G.clientVersion)
   g_settings.save()
 
+  if G.host:find("ws://") ~= nil or G.host:find("wss://") ~= nil then
+    return EnterGame.doLoginWs()      
+  end
   if G.host:find("http") ~= nil then
     return EnterGame.doLoginHttp()      
   end
@@ -444,6 +496,36 @@ function EnterGame.doLogin()
     loadBox = nil
     EnterGame.show()
   end
+end
+
+
+function EnterGame.doLoginWs()
+  -- PREVIEW, need to implement websocket reconnect and error handling
+  if G.host == nil or G.host:len() < 10 then
+    return EnterGame.onError("Invalid server url: " .. G.host)    
+  end
+  if not webSocket then
+    return EnterGame.onError("There's no websocket connection to: " .. G.host)    
+  end
+  
+  loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to login server...'))
+  connect(loadBox, { onCancel = function(msgbox)
+                                  loadBox = nil
+                                  webSocketLoginPacket = nil
+                                  EnterGame.show()
+                                end })                                
+                                  
+  local data = {
+    type = "login",
+    account = G.account,
+    password = G.password,
+    token = G.authenticatorToken,
+    version = APP_VERSION,
+    uid = G.UUID
+  }          
+  webSocketLoginPacket = data
+  webSocket.send(data)
+  EnterGame.hide()
 end
 
 function EnterGame.doLoginHttp()

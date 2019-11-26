@@ -48,6 +48,11 @@ function init()
   end
   
   updateFps()
+
+  if not Services or not Services.feedback or Services.feedback:len() < 4 then
+    topMenu.reportBug:setVisible(false)
+    topMenu.reportBug:setWidth(0)
+  end
   
   if HIDE_TOPMENU then
     topMenu:setHeight(0) 

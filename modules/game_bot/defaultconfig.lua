@@ -10,9 +10,9 @@ botDefaultConfig = {
 --#panels
 
 local healTab = addTab("HP")
-local attackTab = addTab("Atck")
-local warTab = addTab("War")
+local batTab = addTab("Batt")
 local caveTab = addTab("Cave")
+local toolsTab = addTab("Tools")
 
 Panels.TradeMessage()
 Panels.AutoStackItems()
@@ -45,12 +45,12 @@ Panels.Equip(healTab)
 Panels.Equip(healTab)
 Panels.Eating(healTab)
 
-Panels.AttackSpell(attackTab)
-Panels.AttackItem(attackTab)
+Panels.AttackSpell(batTab)
+Panels.AttackItem(batTab)
 
-Panels.AttackLeaderTarget(warTab)
-Panels.LimitFloor(warTab)
-Panels.AntiPush(warTab)
+Panels.AttackLeaderTarget(batTab)
+Panels.LimitFloor(batTab)
+Panels.AntiPush(batTab)
 
 local waypoints = Panels.Waypoints(caveTab)
 local attacking = Panels.Attacking(caveTab)
@@ -60,6 +60,18 @@ addButton("tutorial", "Help & Tutorials", function()
 end, caveTab)
 
 --#macros
+
+macro(1000, "exchange money", function()
+  local containers = getContainers()
+  for i, container in pairs(containers) do
+    for j, item in ipairs(container:getItems()) do
+      if item:isStackable() and (item:getId() == 3035 or item:getId() == 3031) and item:getCount() == 100 then
+        g_game.use(item)
+        return
+      end
+    end
+  end
+end)
 
 macro(1000, "this macro does nothing", "f7", function()
 

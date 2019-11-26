@@ -96,24 +96,32 @@ end)
 ### Regex
 If you're pro, there's also support for simple regex in lua which look like this:
 ```
-    g_lua.bindGlobalFunction("regexMatch", [](std::string s, const std::string& exp) {
-        int limit = 10000;
-        std::vector<std::vector<std::string>> ret;
-        if (s.empty() || exp.empty())
-            return ret;
-        try {
-            std::smatch m;
-            std::regex e(exp);
-            while (std::regex_search (s,m,e)) {
-                ret.push_back(std::vector<std::string>());
-                for (auto x:m)
-                    ret[ret.size() - 1].push_back(x);                
-                s = m.suffix().str();
-                if (--limit == 0)
-                    return ret;
-            }
-        } catch (...) {
-        }
-        return ret;
-    });
+let clients = new Set();
+
+require('uWebSockets.js').App().ws('/*', {
+  open: (ws, req) => {
+    clients.add(ws);
+  },
+  message: (ws, message, isBinary) => {
+    console.log("Message: " + message);
+    let ok = ws.send(message, isBinary);
+  },
+  close: (ws, code, message) => {
+    clients.delete(ws);
+  }
+}).any('/*', (res, req) => {
+  /* Let's deny all Http */
+  res.end('Nothing to see here!');  
+}).listen(9000, (listenSocket) => {
+  if (listenSocket) {
+    console.log('Listening to port 9000');
+  }
+});
+
+
+setInterval(() => {
+    for(let client of clients) {
+        client.send("hello", false);
+    }    
+}, 1000);
 ```
