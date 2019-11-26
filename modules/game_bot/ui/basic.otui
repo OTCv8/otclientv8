@@ -1,9 +1,10 @@
 BotButton < Button
+  height: 17
   margin-top: 2
 
 BotSwitch < Button
   margin-top: 2
-  height: 20
+  height: 17
   image-color: green
   $!on:
     image-color: red
@@ -17,7 +18,7 @@ SmallBotSwitch < Button
     
 BotLabel < Label
   margin-top: 2
-  height: 20
+  height: 15
   text-auto-resize: true
   text-align: center
   text-wrap: true

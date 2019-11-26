@@ -4,21 +4,33 @@ StaticWindow
   margin-right: 20
   id: newLoginPanel
   width: 230
-  height: 330
+  height: 350
   !text: tr('Quick Login & Registration')
   
   Label
     id: qrcode
     width: 200
-    height: 180
+    height: 200
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
+    image-fixed-ratio: true
+    image-smooth: false
     margin-top: 5
     
   Label
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    anchors.right: prev.right
+    id: quathlogo
+    width: 66
+    height: 40
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.horizontalCenter: prev.horizontalCenter
+    image-fixed-ratio: true
+    image-smooth: false
+    image-source: /images/ui/qauth
+    
+  Label
+    anchors.top: qrcode.bottom
+    anchors.left: qrcode.left
+    anchors.right: qrcode.right
     text-align: center
     text-auto-resize: true
     !text: tr("Scan QR code or process\nbellow code to register or login")

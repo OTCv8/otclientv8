@@ -15,9 +15,12 @@ Panels.Haste = function(parent)
 end
 
 Panels.ManaShield = function(parent)
+  local lastManaShield = 0
   context.macro(100, "Auto Mana Shield", nil, function()
-    if not context.hasManaShield() then
-      context.saySpell("utamo vita", 200)
+    if not context.hasManaShield() or context.now > lastManaShield + 90000 then
+      if context.saySpell("utamo vita", 200) then
+        lastManaShield = context.now
+      end
     end
   end, parent)
 end

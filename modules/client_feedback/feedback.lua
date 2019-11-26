@@ -25,7 +25,7 @@ function terminate()
 end
 
 function show()
-  if Services.feedback == nil or Services.feedback:len() < 4 then
+  if not Services or not Services.feedback or Services.feedback:len() < 4 then
     return
   end
 

@@ -14,7 +14,7 @@ context.playSound = function(file)
   end
   botSoundChannel:setEnabled(true)
   botSoundChannel:stop(0)
-  botSoundChannel:play(file, 0, 0)
+  botSoundChannel:play(file, 0, 1.0)
   return botSoundChannel
 end
 

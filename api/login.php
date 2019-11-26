@@ -108,12 +108,6 @@ if ($conn->connect_error) {
     die("SQL connection failed: " . $conn->connect_error);
 }
 
-if($data->quick == 1) { 
-    require_once("quick.php");
-    
-    die();
-}
-
 $account = $data->account;
 if($encryption == "sha1")
     $password = sha1($data->password);

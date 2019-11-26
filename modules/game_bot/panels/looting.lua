@@ -5,7 +5,7 @@ Panels.Looting = function(parent)
   local ui = context.setupUI([[
 Panel
   id: looting
-  height: 190
+  height: 180
   
   BotLabel
     anchors.top: parent.top
@@ -35,7 +35,7 @@ Panel
     anchors.left: parent.left
     text: Add
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: edit
@@ -43,7 +43,7 @@ Panel
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: remove
@@ -51,7 +51,7 @@ Panel
     anchors.right: parent.right
     text: Remove
     width: 60
-    height: 20
+    height: 17
   
   ScrollablePanel
     id: items
@@ -90,7 +90,6 @@ Panel
     height: 33
     margin-top: 2
     
-
 ]], parent)
   
   local lootContainers = { ui.containers.item1, ui.containers.item2, ui.containers.item3, ui.containers.item4, ui.containers.item5 }

@@ -50,11 +50,7 @@ StaticMainWindow
   @onSetup: |
     g_keyboard.bindKeyPress('Up', function() self:getChildById('characters'):focusPreviousChild(KeyboardFocusReason) end, self)
     g_keyboard.bindKeyPress('Down', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)
-    if g_game.getFeature(GamePreviewState) then
-      self:setSize({width = 350, height = 400})
-    else
-      self:setSize({width = 250, height = 248})
-    end
+    self:setSize({width = 350, height = 400})
 
   TextList
     id: characters

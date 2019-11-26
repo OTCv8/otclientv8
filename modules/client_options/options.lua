@@ -303,8 +303,8 @@ function setOption(key, value, force)
     end
   --elseif key == 'ignoreServerDirection' then
   --  g_game.ignoreServerDirection(value)
-  elseif key == 'realDirection' then
-    g_game.showRealDirection(value)
+  --elseif key == 'realDirection' then
+  --  g_game.showRealDirection(value)
   elseif key == 'hotkeyDelay' then
     generalPanel:getChildById('hotkeyDelayLabel'):setText(tr('Hotkey delay: %s ms', value))  
   elseif key == 'walkFirstStepDelay' then

@@ -456,7 +456,7 @@ Panels.Attacking = function(parent)
   local ui = context.setupUI([[
 Panel
   id: attacking
-  height: 150
+  height: 140
   
   BotLabel
     anchors.top: parent.top
@@ -486,7 +486,7 @@ Panel
     anchors.left: parent.left
     text: Add
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: edit
@@ -494,7 +494,7 @@ Panel
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: remove
@@ -502,7 +502,7 @@ Panel
     anchors.right: parent.right
     text: Remove
     width: 60
-    height: 20
+    height: 17
   
   TextList
     id: list
@@ -531,7 +531,7 @@ Panel
     anchors.left: parent.left
     text: Add
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: mEdit
@@ -539,7 +539,7 @@ Panel
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 60
-    height: 20
+    height: 17
 
   Button
     id: mRemove
@@ -547,7 +547,7 @@ Panel
     anchors.right: parent.right
     text: Remove
     width: 60
-    height: 20
+    height: 17
 
 ]], parent)
   
@@ -897,7 +897,10 @@ Panel
     if #lootContainers == 0 or not context.storage.looting.enabled then
       return false
     end
-
+    if modules.game_walking.lastManualWalk + 500 > context.now then
+      return true
+    end
+    
     local pos = context.player:getPosition()
     table.sort(lootContainers, function(pos1, pos2)
       local dist1 = math.max(math.abs(pos.x-pos1.x), math.abs(pos.y-pos1.y))
@@ -993,7 +996,7 @@ Panel
     end
     
     local topItem = tile:getTopUseThing()
-    if not topItem:isContainer() then
+    if not topItem or not topItem:isContainer() then
       return
     end
     
