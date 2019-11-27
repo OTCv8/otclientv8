@@ -276,9 +276,9 @@ Panels.Equip = function(parent)
       if slotItem and (slotItem:getId() == item1 or slotItem:getId() == item2) then
         return
       end
-      local newItem = context.findItem(context.storage[panelName].item1, 0)
+      local newItem = context.findItem(context.storage[panelName].item1)
       if not newItem then
-        newItem = context.findItem(context.storage[panelName].item2, 0)
+        newItem = context.findItem(context.storage[panelName].item2)
         if not newItem then
           return
         end

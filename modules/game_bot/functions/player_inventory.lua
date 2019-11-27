@@ -28,6 +28,15 @@ context.getFinger = function() return context.getInventoryItem(context.SlotFinge
 context.getAmmo = function() return context.getInventoryItem(context.SlotAmmo) end
 context.getPurse = function() return context.getInventoryItem(context.SlotPurse) end
 
-
 context.getContainers = function() return g_game.getContainers() end
 context.getContainer = function(index) return g_game.getContainer(index) end
+
+context.moveToSlot = function(item, slot, count)
+  if not item then
+    return
+  end
+  if count == nil then
+    count = item:getCount()
+  end
+  return g_game.move(item, {x=65535, y=slot, z=0}, count)
+end

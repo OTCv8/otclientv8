@@ -14,6 +14,7 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Rewritten path finding and auto walking
 - Rewritten walking system with animations
 - HTTP/HTTPS lua API with JSON support
+- WebSocket lua API
 - Auto updater with failsafe (recovery) mode
 - New filesystem
 - File encryption and compression
@@ -28,6 +29,7 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Much more client options
 - Removed a lot of useless and outdated things
 - Advanced bot (https://github.com/OTCv8/otclientv8_bot)
+- Linux version
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 - Bot protection (extra paid option)
 - [Soon] Mobile application for quick authorization
