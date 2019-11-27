@@ -1,0 +1,36 @@
+{
+  "port": 88,
+  "sql": {
+    "host": "otclient.ovh",
+    "user": "otclient",
+    "password": "otclient",
+    "database": "otclient"
+  },
+  "maxLogins": 10,
+  "blockTime": 60,
+  "hash": "sha1",
+  "serverName": "OTClientV8",
+  "serverIP": "otclient.ovh",
+  "serverPort": 7172,
+  "version": 1099,
+  "things": {
+    "sprites": [ "1099/Tibia.spr", "63d38646597649a55a8be463d6c0fb49" ],
+    "data": [ "1099/Tibia.dat", "ae7157cfff42f14583d6363e77044df7" ]
+  },
+  "customProtocol": null,
+  "options": {
+    "allowFullView": true
+  },
+  "features": {
+    "22": true,
+    "25": true,
+    "30": true,
+    "80": true,
+    "90": true,
+    "95": true
+  },
+  "proxies": {
+
+  },
+  "rsa": "109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "otcv8socks",
+  "version": "1.0.0",
+  "description": "Websockets server for otclientv8",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
+  },
+  "devDependencies": {
+    "@types/mysql2": "github:types/mysql2",
+    "@types/node": "^8.0.14",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "mysql2": "^2.0.1",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v16.4.0"
+  }
+}

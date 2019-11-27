@@ -130,7 +130,12 @@ context.useRune = function(itemid, target, lastSpellTimeout)
 end
 context.userune = context.useRune
 
-context.findItem = g_game.findItemInContainers
+context.findItem = function(itemId, subType)
+  if subType == nil then
+    subType = -1
+  end
+  return g_game.findItemInContainers(itemId, subType)
+end
 
 context.attack = g_game.attack
 context.cancelAttack = g_game.cancelAttack

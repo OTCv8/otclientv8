@@ -310,6 +310,7 @@ function EnterGame.checkWebsocket()
     if webSocket then
       webSocket:close()
       webSocket = nil
+      newLogin.code:setText("")
     end
     return
   end
@@ -328,13 +329,14 @@ function EnterGame.checkWebsocket()
   webSocket = HTTP.WebSocketJSON(url, {
     onOpen = function(message, webSocketId)
       if webSocket and webSocket.id == webSocketId then
-        webSocket.send({type="init", uid=G.uuid, version=APP_VERSION})
+        webSocket.send({type="init", uid=G.UUID, version=APP_VERSION})
       end
     end,
     onMessage = function(message, webSocketId)
       if webSocket and webSocket.id == webSocketId then
         if message.type == "login" then
           webSocketLoginPacket = nil
+          EnterGame.hide()
           onHTTPResult(message, nil)
         elseif message.type == "quick_login" and message.code and message.qrcode then
           EnterGame.showNewLogin(message.code, message.qrcode)
