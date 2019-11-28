@@ -56,8 +56,11 @@ function HTTP.downloadImage(url, callback)
   return operation
 end
 
-function HTTP.webSocket(url, callbacks, jsonWebsocket)
-  local operation = g_http.ws(url, HTTP.websocketTimeout)
+function HTTP.webSocket(url, callbacks, timeout, jsonWebsocket)
+  if not timeout or timeout < 1 then
+    timeout = HTTP.websocketTimeout
+  end
+  local operation = g_http.ws(url, timeout)
   HTTP.operations[operation] = {type="ws", json=jsonWebsocket, url=url, callbacks=callbacks}  
   return {
     id = operation,
@@ -75,8 +78,8 @@ function HTTP.webSocket(url, callbacks, jsonWebsocket)
 end
 HTTP.WebSocket = HTTP.webSocket
 
-function HTTP.webSocketJSON(url, callbacks)
-  return HTTP.webSocket(url, callbacks, true)
+function HTTP.webSocketJSON(url, callbacks, timeout)
+  return HTTP.webSocket(url, callbacks, timeout, true)
 end
 HTTP.WebSocketJSON = HTTP.webSocketJSON
 

@@ -92,6 +92,9 @@ context.sayNPC = context.talkNpc
 context.talkNPC = context.talkNpc
 
 context.saySpell = function(text, lastSpellTimeout)
+  if not text or text:len() < 1 then
+    return
+  end
   if context.lastSpell == nil then
     context.lastSpell = 0
   end

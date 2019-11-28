@@ -871,7 +871,8 @@ function refreshViewMode()
     gameBottomPanel:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
     bottomSplitter:addAnchor(AnchorLeft, 'gameLeftPanels', AnchorRight)
     bottomSplitter:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
-
+    bottomSplitter:setMarginLeft(0)
+    
     modules.client_topmenu.getTopMenu():setImageColor('white')
     gameBottomPanel:setImageColor('white')
     g_game.changeMapAwareRange(19, 15)
