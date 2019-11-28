@@ -8,6 +8,7 @@ configEditorText = nil
 configList = nil
 botTabs = nil
 botPanel = nil
+local botWebSockets = {}
 local botMessages = nil
 local configCopy = ""
 local enableButton = nil
@@ -343,6 +344,11 @@ function clearConfig()
   
   botMessages:destroyChildren()
   botMessages:updateLayout()
+  
+  for socket in pairs(botWebSockets) do
+    g_http.cancel(socket)
+    botWebSockets[socket] = nil
+  end
 
   for i, widget in pairs(g_ui.getRootWidget():getChildren()) do
     if widget.botWidget then
@@ -385,7 +391,7 @@ function refreshConfig()
   end
   errorOccured = false
   g_game.enableTileThingLuaCallback(false)
-  local status, result = pcall(function() return executeBot(config.script, config.storage, botTabs, botMsgCallback, saveConfig) end)
+  local status, result = pcall(function() return executeBot(config.script, config.storage, botTabs, botMsgCallback, saveConfig, botWebSockets) end)
   if not status then    
     errorOccured = true
     statusLabel:setText("Error: " .. tostring(result))

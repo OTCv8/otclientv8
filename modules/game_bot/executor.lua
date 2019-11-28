@@ -1,8 +1,9 @@
-function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
+function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, websockets)
   local context = {}
   context.tabs = tabs
   context.panel = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel
   context.saveConfig = saveConfigCallback
+  context._websockets = websockets
   
   context.storage = storage
   if context.storage._macros == nil then
@@ -65,6 +66,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback)
   context.StaticText = StaticText
   context.Config = Config
   context.HTTP = HTTP
+  context.modules = modules
 
   -- log functions
   context.info = function(text) return msgCallback("info", tostring(text)) end
