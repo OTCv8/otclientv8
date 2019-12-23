@@ -131,6 +131,7 @@ function sendStats()
       display_height = g_window.getDisplayHeight(),
       cpu = g_platform.getCPUName(),
       mem = g_platform.getTotalSystemMemory(),
+      mem_usage = g_platform.getMemoryUsage(),
       os_name = g_platform.getOSName()
     }
   } 

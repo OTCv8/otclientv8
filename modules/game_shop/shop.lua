@@ -19,7 +19,7 @@ local function sendAction(action, data)
     data = {}
   end
   if protocolGame then
-    protocolGame:sendExtendedOpcode(SHOP_EXTENTED_OPCODE, json.encode({action = action, data = data}))
+    protocolGame:sendExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, {action = action, data = data})
   end  
 end
 
@@ -27,7 +27,7 @@ end
 function init()
   connect(g_game, {  onGameStart = check, onGameEnd = hide  })
 
-  ProtocolGame.registerExtendedOpcode(SHOP_EXTENTED_OPCODE, onExtendedOpcode)
+  ProtocolGame.registerExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
 
   if g_game.isOnline() then
     check()
@@ -37,7 +37,7 @@ end
 function terminate()
   disconnect(g_game, {  onGameStart = check, onGameEnd = hide  })
 
-  ProtocolGame.unregisterExtendedOpcode(SHOP_EXTENTED_OPCODE, onExtendedOpcode)
+  ProtocolGame.unregisterExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
   
   if shopButton then
     shopButton:destroy()
@@ -87,19 +87,13 @@ function toggle()
   check()
 end
 
-function onExtendedOpcode(protocol, code, buffer)
+function onExtendedJSONOpcode(protocol, code, json_data)
   if not shop then
     shop = g_ui.displayUI('shop')
     shop:hide()
     shopButton = modules.client_topmenu.addRightGameToggleButton('shopButton', tr('Shop'), '/images/topbuttons/shop', toggle)
 
     connect(shop.categories, { onChildFocusChange = changeCategory })
-  end
-
-  local json_status, json_data = pcall(function() return json.decode(buffer) end)
-  if not json_status then
-    g_logger.error("SHOP json error: " .. json_data)
-    return false
   end
 
   local action = json_data['action']
@@ -316,6 +310,7 @@ function addOffer(category, data)
   offer.description:setText(data["description"])  
   if category ~= 0 then
     offer.onDoubleClick = buyOffer
+    offer.buyButton.onClick = function() buyOffer(offer) end
   end
 end
 

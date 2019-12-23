@@ -17,6 +17,7 @@ local SHOP_AD = { -- can be nil
   url = "http://otclient.ovh",
   text = ""
 }
+local MAX_PACKET_SIZE = 50000
 
 --[[ SQL TABLE
 
@@ -217,10 +218,36 @@ function sendJSON(player, action, data, forceStatus)
   end
   player:setStorageValue(1150001, os.time())
   
+
+  local buffer = json.encode({action = action, data = data, status = status})  
+  local s = {}
+  for i=1, #buffer, MAX_PACKET_SIZE do
+     s[#s+1] = buffer:sub(i,i+MAX_PACKET_SIZE - 1)
+  end
   local msg = NetworkMessage()
+  if #s == 1 then
+    msg:addByte(50)
+    msg:addByte(SHOP_EXTENDED_OPCODE)
+    msg:addString(s[1])
+    msg:sendToPlayer(player)
+    return  
+  end
+  -- split message if too big
   msg:addByte(50)
   msg:addByte(SHOP_EXTENDED_OPCODE)
-  msg:addString(json.encode({action = action, data = data, status = status}))
+  msg:addString("S" .. s[1])
+  msg:sendToPlayer(player)
+  for i=2,#s - 1 do
+    msg = NetworkMessage()
+    msg:addByte(50)
+    msg:addByte(SHOP_EXTENDED_OPCODE)
+    msg:addString("P" .. s[i])
+    msg:sendToPlayer(player)
+  end
+  msg = NetworkMessage()
+  msg:addByte(50)
+  msg:addByte(SHOP_EXTENDED_OPCODE)
+  msg:addString("E" .. s[#s])
   msg:sendToPlayer(player)
 end
 

@@ -19,6 +19,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
     onKeyUp = {},
     onKeyPress = {},
     onTalk = {},
+    onTextMessage = {},
     onAddThing = {},
     onRemoveThing = {},
     onCreatureAppear = {},
@@ -169,6 +170,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
           callback(name, level, mode, text, channelId, pos)
         end
       end,
+      onTextMessage = function(mode, text)
+        for i, callback in ipairs(context._callbacks.onTextMessage) do
+          callback(mode, text)
+        end
+      end,      
       onAddThing = function(tile, thing)
         for i, callback in ipairs(context._callbacks.onAddThing) do
           callback(tile, thing)
