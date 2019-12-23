@@ -80,12 +80,22 @@ ShopOffer < Panel
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     margin-left: 55
+    margin-right: 55
     text-align: topleft
-    text: UAHSbjaS ASDJHASD ASKJD ssssUAHSbjaS ASDJHASD ASKJD ssssUAHSbjaS ASDJHASD ASKJD ssss
     text-auto-resize: true
     text-wrap: true
     color: white
     font: verdana-11px-rounded
+    
+  Button
+    id: buyButton
+    text: BUY
+    height: 25
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: prev.right
+    anchors.right: parent.right    
+    margin-right: 15
+    text-align: center
     
 ShopOfferItem < ShopOffer
   UIItem

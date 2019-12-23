@@ -39,6 +39,11 @@ context.onTalk = function(callback)
   return context.callback("onTalk", callback)
 end
 
+-- onTextMessage(callback) -- callback = function(mode, text)
+context.onTextMessage = function(callback) 
+  return context.callback("onTextMessage", callback)
+end
+
 -- onAddThing(callback) -- callback = function(tile, thing)
 context.onAddThing = function(callback) 
   return context.callback("onAddThing", callback)

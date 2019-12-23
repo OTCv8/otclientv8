@@ -34,6 +34,7 @@ function init()
     onGameStart = online, 
     onGameEnd = offline, 
     onTalk = botOnTalk,
+    onTextMessage = botOnTextMessage,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -161,6 +162,7 @@ function terminate()
     onGameStart = online, 
     onGameEnd = offline, 
     onTalk = botOnTalk,
+    onTextMessage = botOnTextMessage,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -477,6 +479,11 @@ end
 function botOnTalk(name, level, mode, text, channelId, pos)
   if compiledConfig == nil then return false end
   safeBotCall(function() compiledConfig.callbacks.onTalk(name, level, mode, text, channelId, pos) end)
+end
+
+function botOnTextMessage(mode, text)
+  if compiledConfig == nil then return false end
+  safeBotCall(function() compiledConfig.callbacks.onTextMessage(mode, text) end)
 end
 
 function botAddThing(tile, thing)

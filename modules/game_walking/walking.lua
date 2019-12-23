@@ -367,7 +367,7 @@ end
 
 function turn(dir, repeated)
   local player = g_game.getLocalPlayer()
-  if player:isWalking() and player:getWalkDirection() == dir then
+  if player:isWalking() and player:getWalkDirection() == dir and not player:isServerWalking() then
     return
   end
   

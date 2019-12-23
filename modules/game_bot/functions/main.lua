@@ -64,12 +64,10 @@ context.macro = function(timeout, name, hotkey, callback, parent)
 end
 
 -- hotkey(keys, callback)
--- hotkey(keys, callback, parent)
 -- hotkey(keys, name, callback)
 -- hotkey(keys, name, callback, parent)
 context.hotkey = function(keys, name, callback, parent, single)
   if type(name) == 'function' then
-    parent = callback
     callback = name
     name = ""
   end
@@ -110,12 +108,10 @@ context.hotkey = function(keys, name, callback, parent, single)
 end
 
 -- singlehotkey(keys, callback)
--- singlehotkey(keys, callback, parent)
 -- singlehotkey(keys, name, callback)
 -- singlehotkey(keys, name, callback, parent)
 context.singlehotkey = function(keys, name, callback, parent)
   if type(name) == 'function' then
-    parent = callback
     callback = name
     name = ""
   end

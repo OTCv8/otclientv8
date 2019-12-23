@@ -42,15 +42,15 @@ if Services.crash ~= nil and Services.crash:len() > 4 then
   local normalLog = g_logger.getLastLog()
   local crashed = false
   if crashLog:len() > 0 then
-    g_http.post(Services.crash .. "?txt=0", crashLog)
+    g_http.post(Services.crash .. "?txt=0&version=" .. g_app.getVersion(), crashLog)
     crashed = true
   end
   if crashLogTxt:len() > 0 then
-    g_http.post(Services.crash .. "?txt=1", crashLogTxt)
+    g_http.post(Services.crash .. "?txt=1&version=" .. g_app.getVersion(), crashLogTxt)
     crashed = true
   end
   if crashed and normalLog:len() > 0 then
-    g_http.post(Services.crash .. "?txt=2", normalLog)
+    g_http.post(Services.crash .. "?txt=2&version=" .. g_app.getVersion(), normalLog)
   end
   g_resources.deleteCrashLog()
 end
