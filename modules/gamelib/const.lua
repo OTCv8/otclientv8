@@ -162,6 +162,10 @@ GamePrey = 78
 GameExtendedOpcode = 80
 GameMinimapLimitedToSingleFloor = 81
 
+GameDoubleLevel = 83
+GameDoubleSoul = 84
+GameDoublePlayerGoodsMoney = 85
+
 GameNewWalking = 90
 GameSlowerManualWalking = 91
 GameExtendedNewWalking = 92

@@ -1,6 +1,6 @@
 # OTClientV8
 
-Tibia client design for versions 7.40 - 10.99
+Tibia client design for versions 7.40 - 11.00
 It's based on https://github.com/edubart/otclient and it's not backward compatible.
 
 ## DISCORD: https://discord.gg/feySup6
@@ -42,7 +42,11 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 # Paid version
 The difference between paid version and this one is that the 1st one comes with c++ sources and has better support.  You may need c++ source if you want to add some more advanced modifications, better encryption, bot protection or some other things. The free version doesn't offer technical support, you need to follow tutorials and in case of any bug or problem you should submit an issue on github. Visit http://otclient.ovh if you want to know more about paid version and other extra services.
 
-# Quick Start
+# Quick Start for players
+
+Download whole repository and run binary.
+
+# Quick Start for server owners
 
 Open `init.lua` and edit:
 
