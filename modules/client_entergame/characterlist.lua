@@ -31,14 +31,6 @@ local function tryLogin(charInfo, tries)
 
   CharacterList.hide()
   
-  -- proxies for not http login users
-  if charInfo.worldHost == "0.0.0.0" and g_proxy then
-    g_proxy.clear()
-    -- g_proxy.addProxy(proxyHost, proxyPort, proxyPriority)
-    g_proxy.addProxy("163.172.147.135", 7162, 0)
-    g_proxy.addProxy("158.69.68.42", 7162, 0)
-  end
-
   g_game.loginWorld(G.account, G.password, charInfo.worldName, charInfo.worldHost, charInfo.worldPort, charInfo.characterName, G.authenticatorToken, G.sessionKey)
   g_logger.info("Login to " .. charInfo.worldHost .. ":" .. charInfo.worldPort)
   loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to game server...'))
@@ -243,9 +235,11 @@ function CharacterList.terminate()
   CharacterList = nil
 end
 
-function CharacterList.create(characters, account, otui)
+function CharacterList.create(characters, account, otui, websocket)
   if not otui then otui = 'characterlist' end
-
+  if websocket then
+    websocket:close()
+  end
   if charactersWindow then
     charactersWindow:destroy()
   end

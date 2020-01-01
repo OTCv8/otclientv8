@@ -14,11 +14,11 @@ Services = {
 
 -- Servers accept http login url, websocket login url or ip:port:version
 Servers = {
-  OTClientV8 = "http://otclient.ovh/api/login.php",
-  OTClientV8Websocket = "wss://otclient.ovh:3000/",
-  OTClientV8proxy = "http://otclient.ovh/api/login.php?proxy=1",
-  OTClientV8c = "otclient.ovh:7171:1099:25:30:80:90",
-  OTClientV8Test = "http://otclient.ovh/api/login2.php",
+--  OTClientV8 = "http://otclient.ovh/api/login.php",
+--  OTClientV8Websocket = "wss://otclient.ovh:3000/",
+--  OTClientV8proxy = "http://otclient.ovh/api/login.php?proxy=1",
+--  OTClientV8ClassicWithFeatures = "otclient.ovh:7171:1099:25:30:80:90",
+--  OTClientV8Classic = "otclient.ovh:7171:1099"
 }
 ALLOW_CUSTOM_SERVERS = true -- if true it shows option ANOTHER on server list
 -- CONFIG END

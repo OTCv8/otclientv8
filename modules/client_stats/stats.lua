@@ -116,6 +116,7 @@ function sendStats()
       classic = tostring(g_settings.getBoolean("classicView")),
       fullscreen = tostring(g_window.isFullscreen()),
       vsync = tostring(g_settings.getBoolean("vsync")),
+      autoReconnect = tostring(g_settings.getBoolean("autoReconnect")),
       window_width = g_window.getWidth(),
       window_height = g_window.getHeight(),
       player_name = g_game.getCharacterName(),
@@ -132,7 +133,8 @@ function sendStats()
       cpu = g_platform.getCPUName(),
       mem = g_platform.getTotalSystemMemory(),
       mem_usage = g_platform.getMemoryUsage(),
-      os_name = g_platform.getOSName()
+      os_name = g_platform.getOSName(),
+      uptime = g_clock.seconds()
     }
   } 
   if g_proxy then

@@ -3,11 +3,11 @@ StaticWindow
   anchors.verticalCenter: parent.verticalCenter
   margin-right: 20
   id: newLoginPanel
-  width: 230
-  height: 350
+  width: 240
+  height: 320
   !text: tr('Quick Login & Registration')
   
-  Label
+  UIButton
     id: qrcode
     width: 200
     height: 200
@@ -17,7 +17,7 @@ StaticWindow
     image-smooth: false
     margin-top: 5
     
-  Label
+  UIButton
     id: quathlogo
     width: 66
     height: 40
@@ -33,28 +33,18 @@ StaticWindow
     anchors.right: qrcode.right
     text-align: center
     text-auto-resize: true
-    !text: tr("Scan QR code or process\nbellow code to register or login")
+    !text: tr("Scan or click QR code\nto register or login")
     height: 40
     margin-top: 10
     margin-bottom: 5
-
-  Label
-    id: code
-    height: 20
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    anchors.right: prev.right
-    text-align: center
-    font: sans-bold-16px
-    margin-top: 10
-    text: XXXXXX
     
-  Label
+  Button
     anchors.top: prev.bottom
-    anchors.left: prev.left
-    anchors.right: prev.right
+    anchors.left: parent.left
+    anchors.right: parent.right
     text-align: center
-    !text: tr("Click to get Android/iOS app")
+    !text: tr("Click to get PC/Android/iOS app")
     height: 20
     margin-top: 10
     color: #FFFFFF
+    @onClick: g_platform.openUrl("http://qauth.co")

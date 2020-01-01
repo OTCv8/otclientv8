@@ -67,7 +67,12 @@ end
 function bindKeys()
   gameRootPanel:setAutoRepeatDelay(10)
 
-  g_keyboard.bindKeyPress('Escape', function() g_game.cancelAttackAndFollow() end, gameRootPanel)
+  local lastAction = 0
+  g_keyboard.bindKeyPress('Escape', function() 
+    if lastAction + 50 > g_clock.millis() then return end 
+    lastAction = g_clock.millis()
+    g_game.cancelAttackAndFollow() 
+  end, gameRootPanel)
   g_keyboard.bindKeyPress('Ctrl+=', function() if g_game.getFeature(GameNoDebug) then return end gameMapPanel:zoomIn() end, gameRootPanel)
   g_keyboard.bindKeyPress('Ctrl+-', function() if g_game.getFeature(GameNoDebug) then return end gameMapPanel:zoomOut() end, gameRootPanel)
   g_keyboard.bindKeyDown('Ctrl+Q', function() tryLogout(false) end, gameRootPanel)

@@ -7,6 +7,7 @@ lastFinishedStep = 0
 autoWalkEvent = nil
 firstStep = true
 walkLock = 0
+walkEvent = nil
 lastWalk = 0
 lastTurn = 0
 lastTurnDirection = 0
@@ -202,7 +203,7 @@ function changeWalkDir(dir, pop)
 end
 
 function smartWalk(dir)
-  scheduleEvent(function() 
+  walkEvent = scheduleEvent(function() 
     if g_keyboard.getModifiers() == KeyboardNoModifier then
       local direction = smartWalkDir or dir
       walk(direction)
@@ -370,6 +371,8 @@ function turn(dir, repeated)
   if player:isWalking() and player:getWalkDirection() == dir and not player:isServerWalking() then
     return
   end
+  
+  removeEvent(walkEvent)
   
   if not repeated or (lastTurn + 100 < g_clock.millis()) then
     g_game.turn(dir)
