@@ -11,7 +11,7 @@ end
 
 context.addTab = function(name)
   context.tabs:setOn(true)
-  return context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel
+  return context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel.content
 end
 
 context.addSwitch = function(id, text, onClickCallback, parent)

@@ -285,10 +285,14 @@ function onUseWith(clickedWidget, mousePosition)
   if clickedWidget:getClassName() == 'UIGameMap' then
     local tile = clickedWidget:getTile(mousePosition)
     if tile then      
-      if selectedThing:isFluidContainer() or selectedThing:isMultiUse() then
-        g_game.useWith(selectedThing, tile:getTopMultiUseThing(), selectedSubtype)
+      if selectedThing:isFluidContainer() or selectedThing:isMultiUse() then      
+        if selectedThing:getId() == 3180 or selectedThing:getId() == 3156 then
+          -- special version for mwall
+          g_game.useWith(selectedThing, tile:getTopUseThing(), selectedSubtype)      
+        else
+          g_game.useWith(selectedThing, tile:getTopMultiUseThingEx(clickedWidget:getPositionOffset(mousePosition)), selectedSubtype)
+        end
       else
-        print("normal")
         g_game.useWith(selectedThing, tile:getTopUseThing(), selectedSubtype)
       end
     end

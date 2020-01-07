@@ -13,6 +13,7 @@ searchText = nil
 setupPanel = nil
 quantity = nil
 quantityScroll = nil
+idLabel = nil
 nameLabel = nil
 priceLabel = nil
 moneyLabel = nil
@@ -49,6 +50,7 @@ function init()
 
   setupPanel = npcWindow:recursiveGetChildById('setupPanel')
   quantityScroll = setupPanel:getChildById('quantityScroll')
+  idLabel = setupPanel:getChildById('id')
   nameLabel = setupPanel:getChildById('name')
   priceLabel = setupPanel:getChildById('price')
   moneyLabel = setupPanel:getChildById('money')
@@ -119,6 +121,23 @@ end
 
 function hide()
   npcWindow:hide()
+
+  local layout = itemsPanel:getLayout()
+  layout:disableUpdates()
+
+  clearSelectedItem()
+
+  searchText:clearText()
+  setupPanel:disable()
+  itemsPanel:destroyChildren()
+
+  if radioItems then
+    radioItems:destroy()
+    radioItems = nil
+  end
+
+  layout:enableUpdates()
+  layout:update()  
 end
 
 function onItemBoxChecked(widget)
@@ -226,6 +245,7 @@ function setShowYourCapacity(state)
 end
 
 function clearSelectedItem()
+  idLabel:clearText()
   nameLabel:clearText()
   weightLabel:clearText()
   priceLabel:clearText()
@@ -288,6 +308,7 @@ function canTradeItem(item)
 end
 
 function refreshItem(item)
+  idLabel:setText(item.ptr:getId())
   nameLabel:setText(item.name)
   weightLabel:setText(string.format('%.2f', item.weight) .. ' ' .. WEIGHT_UNIT)
   priceLabel:setText(formatCurrency(getItemPrice(item)))
@@ -420,11 +441,11 @@ end
 
 function closeNpcTrade()
   g_game.closeNpcTrade()
-  hide()
+  addEvent(hide)
 end
 
 function onCloseNpcTrade()
-  hide()
+  addEvent(hide)
 end
 
 function onPlayerGoods(money, items)

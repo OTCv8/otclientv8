@@ -1,7 +1,27 @@
 function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, websockets)
+  -- load lua and otui files
+  local configFiles = g_resources.listDirectoryFiles("/bot/" .. config, true, false)  
+  local luaFiles = {}
+  local uiFiles = {}
+  for i, file in ipairs(configFiles) do
+    local ext = file:split(".")
+    if ext[#ext]:lower() == "lua" then
+      table.insert(luaFiles, file)
+    end
+    if ext[#ext]:lower() == "ui" or ext[#ext]:lower() == "otui" then
+      table.insert(uiFiles, file)
+    end    
+  end
+  
+  if #luaFiles == 0 then
+    return error("Config (/bot/" .. config .. ") doesn't have lua files")
+  end
+  
+  -- init bot variables
   local context = {}
+  context.configDir = "/bot/".. config
   context.tabs = tabs
-  context.panel = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel
+  context.panel = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel.content
   context.saveConfig = saveConfigCallback
   context._websockets = websockets
   
@@ -10,7 +30,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
     context.storage._macros = {} -- active macros
   end
 
-  -- 
+  -- macros, hotkeys, scheduler, callbacks
   context._macros = {}
   context._hotkeys = {}
   context._scheduler = {}
@@ -87,8 +107,15 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
   dofiles("panels")
   G.botContext = nil
 
-  -- run script
-  assert(load(config, nil, nil, context))()
+  -- run ui scripts
+  for i, file in ipairs(uiFiles) do
+    g_ui.importStyle(file)
+  end
+
+  -- run lua script
+  for i, file in ipairs(luaFiles) do
+    assert(load(g_resources.readFileContents(file), file, nil, context))()  
+  end
 
   return {
     script = function()      

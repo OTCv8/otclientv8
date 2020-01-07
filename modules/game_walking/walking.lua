@@ -383,7 +383,7 @@ function turn(dir, repeated)
     end
     lastTurnDirection = dir
     nextWalkDir = nil
-    player:lockWalk(150)
+    player:lockWalk(g_settings.getNumber('walkCtrlTurnDelay'))
   end
 end
 

@@ -235,11 +235,8 @@ function CharacterList.terminate()
   CharacterList = nil
 end
 
-function CharacterList.create(characters, account, otui, websocket)
+function CharacterList.create(characters, account, otui)
   if not otui then otui = 'characterlist' end
-  if websocket then
-    websocket:close()
-  end
   if charactersWindow then
     charactersWindow:destroy()
   end

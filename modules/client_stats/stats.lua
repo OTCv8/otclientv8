@@ -134,6 +134,7 @@ function sendStats()
       mem = g_platform.getTotalSystemMemory(),
       mem_usage = g_platform.getMemoryUsage(),
       os_name = g_platform.getOSName(),
+      platform = g_window.getPlatformType(),
       uptime = g_clock.seconds()
     }
   } 

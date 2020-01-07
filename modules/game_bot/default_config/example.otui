@@ -1,0 +1,5 @@
+ExampleLabel2 < Label
+  text: LOL
+  height: 200
+  width: 50
+  

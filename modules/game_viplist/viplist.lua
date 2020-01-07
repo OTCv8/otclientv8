@@ -243,9 +243,12 @@ function sortBy(state)
   refresh()
 end
 
-function onAddVip(id, name, state, description, iconId, notify)
-  local vipList = vipWindow:getChildById('contentsPanel')
+function onAddVip(id, name, state, description, iconId, notify)  
+  if not name or name:len() == 0 then
+    return
+  end
   
+  local vipList = vipWindow:getChildById('contentsPanel')
   local childrenCount = vipList:getChildCount()
   for i=1,childrenCount do
     local child = vipList:getChildByIndex(i)

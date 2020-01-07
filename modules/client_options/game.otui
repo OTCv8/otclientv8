@@ -88,6 +88,25 @@ Panel
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
+    id: walkCtrlTurnDelayLabel
+    margin-top: 10
+    @onSetup: |
+      local value = modules.client_options.getOption('walkTurnDelay')
+      self:setText(tr('Walk delay after ctrl turn: %s ms', value))
+
+  OptionScrollbar
+    id: walkCtrlTurnDelay
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 3
+    minimum: 0
+    maximum: 300    
+
+  Label
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
     id: walkStairsDelayLabel
     margin-top: 10
     @onSetup: |

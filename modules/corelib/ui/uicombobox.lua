@@ -19,6 +19,10 @@ function UIComboBox:clearOptions()
   self:clearText()
 end
 
+function UIComboBox:clear()
+  return self:clearOptions()
+end
+
 function UIComboBox:getOptionsCount()
   return #self.options
 end
@@ -106,12 +110,6 @@ function UIComboBox:removeOption(text)
       return
     end
   end
-end
-
-function UIComboBox:clear()
-  self.options = {}
-  self.currentIndex = -1
-  self:setText("")
 end
 
 function UIComboBox:onMousePress(mousePos, mouseButton)

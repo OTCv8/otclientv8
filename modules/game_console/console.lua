@@ -898,6 +898,7 @@ end
 function sendCurrentMessage()
   local message = consoleTextEdit:getText()
   if #message == 0 then return end
+  if not isChatEnabled() then return end
   consoleTextEdit:clearText()
 
   -- send message
@@ -1071,6 +1072,10 @@ function setIgnoreNpcMessages(ignore)
 end
 
 function navigateMessageHistory(step)
+  if not isChatEnabled() then
+    return
+  end
+
   local numCommands = #messageHistory
   if numCommands > 0 then
     currentMessageIndex = math.min(math.max(currentMessageIndex + step, 0), numCommands)

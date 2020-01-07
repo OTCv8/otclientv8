@@ -95,6 +95,9 @@ function onContainerOpen(container, previousContainer)
     containerWindow:hide()
   end
   containerWindow.onDrop = function(container, widget, mousePos)
+    if containerPanel:getChildByPos(mousePos) then
+      return false
+    end
     local child = containerPanel:getChildByIndex(-1)
     if child then
       child:onDrop(widget, mousePos, true)        
