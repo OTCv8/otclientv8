@@ -112,7 +112,6 @@ ItemsRow < Panel
     id: item1
     anchors.top: parent.top
     anchors.left: parent.left
-    margin-left: 3
 
   BotItem
     id: item2

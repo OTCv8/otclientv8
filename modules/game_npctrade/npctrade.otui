@@ -101,9 +101,20 @@ MainWindow
     image-color: #ffffff88
 
     Label
-      !text: tr('Name') .. ':'
+      !text: tr('Id') .. ':'
       anchors.left: parent.left
       anchors.top: parent.top
+      margin-top: 5
+      margin-left: 5
+      width: 85
+
+    NPCOfferLabel
+      id: id
+
+    Label
+      !text: tr('Name') .. ':'
+      anchors.left: parent.left
+      anchors.top: prev.bottom
       margin-top: 5
       margin-left: 5
       width: 85

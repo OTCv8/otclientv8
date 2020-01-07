@@ -1,0 +1,121 @@
+MainWindow
+  id: editWindow
+  size: 550 580
+  !text: tr("Config editor")
+  @onEscape: self:hide()
+  @onEnter: self:hide()
+
+  Label
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    !text: tr("Bot configs are stored in:")
+
+  TextEdit
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+    height: 20
+    width: 400
+    margin-top: 5
+    editable: false
+    !text: g_resources.getWriteDir() .. "bot"
+    text-align: center
+
+  Button
+    id: documentationButton
+    !text: tr('Click here to open bot directory')
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 5
+    width: 250
+    @onClick: g_platform.openDir(g_resources.getWriteDir() .. "bot")
+
+  Label
+    margin-top: 5
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    !text: tr("Every directory in bot directory is treated as different config.\nTo create new config just create new directory.")
+
+  Label
+    margin-top: 5
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    height: 175
+    image-source: configs.png
+    image-fixed-ratio: true
+    image-size: 500 175
+
+  Label
+    margin-top: 5
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    !text: tr("Inside config directory put .lua and .otui files.\nEvery file will be loaded and executed in alphabetical order, .otui first and then .lua.")
+
+  Label
+    margin-top: 5
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    height: 150
+    image-source: scripts.png
+    image-fixed-ratio: true
+    image-size: 500 150
+
+  Label
+    margin-top: 5 
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    !text: tr("To reload configs just press On and Off in bot window.\nTo learn more about bot click Tutorials button.")
+
+  Button
+    !text: tr('Tutorials')
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    width: 100
+    @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?tutorials")
+
+  Button
+    !text: tr('Scripts')
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    margin-left: 10 
+    width: 100
+    @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?scripts")
+
+  Button
+    !text: tr('Forum')
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    margin-left: 10 
+    width: 100
+    @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?forum")
+
+  Button
+    !text: tr('Discord')
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    margin-left: 10 
+    width: 100
+    @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?discord")
+  
+  Button
+    id: cancelButton
+    !text: tr('Close')
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    width: 60
+    @onClick: self:getParent():hide()

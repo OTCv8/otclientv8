@@ -7,18 +7,27 @@ HTTP = {
 }
 
 function HTTP.get(url, callback)
+  if not g_http or not g_http.get then
+    return error("HTTP.get is not supported")
+  end
   local operation = g_http.get(url, HTTP.timeout)
   HTTP.operations[operation] = {type="get", url=url, callback=callback}  
   return operation
 end
 
 function HTTP.getJSON(url, callback)
+  if not g_http or not g_http.get then
+    return error("HTTP.getJSON is not supported")
+  end
   local operation = g_http.get(url, HTTP.timeout)
   HTTP.operations[operation] = {type="get", json=true, url=url, callback=callback}  
   return operation
 end
 
 function HTTP.post(url, data, callback)
+  if not g_http or not g_http.post then
+    return error("HTTP.post is not supported")
+  end
   if type(data) == "table" then
     data = json.encode(data)
   end
@@ -28,6 +37,9 @@ function HTTP.post(url, data, callback)
 end
 
 function HTTP.postJSON(url, data, callback)
+  if not g_http or not g_http.post then
+    return error("HTTP.postJSON is not supported")
+  end
   if type(data) == "table" then
     data = json.encode(data)
   end
@@ -37,12 +49,18 @@ function HTTP.postJSON(url, data, callback)
 end
 
 function HTTP.download(url, file, callback, progressCallback)
+  if not g_http or not g_http.download then
+    return error("HTTP.download is not supported")
+  end
   local operation = g_http.download(url, file, HTTP.timeout)
   HTTP.operations[operation] = {type="download", url=url, file=file, callback=callback, progressCallback=progressCallback}  
   return operation
 end
 
 function HTTP.downloadImage(url, callback)
+  if not g_http or not g_http.download then
+    return error("HTTP.downloadImage is not supported")
+  end
   if HTTP.images[url] ~= nil then
     if callback then
       callback('/downloads/' .. HTTP.images[url], nil)
@@ -57,6 +75,9 @@ function HTTP.downloadImage(url, callback)
 end
 
 function HTTP.webSocket(url, callbacks, timeout, jsonWebsocket)
+  if not g_http or not g_http.ws then
+    return error("WebSocket is not supported")
+  end
   if not timeout or timeout < 1 then
     timeout = HTTP.websocketTimeout
   end
@@ -84,6 +105,9 @@ end
 HTTP.WebSocketJSON = HTTP.webSocketJSON
 
 function HTTP.cancel(operationId)
+  if not g_http or not g_http.cancel then
+    return
+  end
   return g_http.cancel(operationId)
 end
 

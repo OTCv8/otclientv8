@@ -1,6 +1,6 @@
 # OTClientV8
 
-Tibia client design for versions 7.40 - 11.00
+Tibia client designed for versions 7.40 - 11.00. 
 It's based on https://github.com/edubart/otclient and it's not backward compatible.
 
 ## DISCORD: https://discord.gg/feySup6

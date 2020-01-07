@@ -6,6 +6,10 @@ local installedLocales
 local currentLocale
 
 function sendLocale(localeName)
+  if not g_game.getFeature(GameExtendedOpcode) then
+    return
+  end
+
   local protocolGame = g_game.getProtocolGame()
   if protocolGame then
     protocolGame:sendExtendedOpcode(ExtendedIds.Locale, localeName)

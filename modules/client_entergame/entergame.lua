@@ -17,9 +17,6 @@ local serverHostTextEdit
 local rememberPasswordBox
 local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "1077", "1090", "1096", "1098", "1099", "1100"}
 
-local webSocket
-local webSocketLoginPacket
-
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
   if errorCode then
@@ -54,12 +51,8 @@ local function onCharacterList(protocol, characters, account, otui)
     loadBox = nil
   end
     
-  CharacterList.create(characters, account, otui, webSocket)
+  CharacterList.create(characters, account, otui)
   CharacterList.show()
-
-  if webSocket then
-    webSocket = nil
-  end
 
   g_settings.save()
 end
@@ -137,10 +130,6 @@ local function onHTTPResult(data, err)
   if #incorrectThings > 0 then
     g_logger.info(incorrectThings)
     if Updater then
-      if webSocket then
-        webSocket:close()
-        webSocket = nil
-      end
       return Updater.updateThings(things, incorrectThings)
     else
       return EnterGame.onError(incorrectThings)
@@ -186,7 +175,7 @@ local function onHTTPResult(data, err)
     g_proxy.clear()
     if proxies then
       for i, proxy in ipairs(proxies) do
-        g_proxy.addProxy(tonumber(proxy["localPort"]), proxy["host"], tonumber(proxy["port"]), tonumber(proxy["priority"]))
+        g_proxy.addProxy(proxy["host"], tonumber(proxy["port"]), tonumber(proxy["priority"]))
       end
     end
   end
@@ -198,7 +187,6 @@ end
 -- public functions
 function EnterGame.init()
   enterGame = g_ui.displayUI('entergame')
-  newLogin = g_ui.displayUI('entergame_new')
   
   serverSelectorPanel = enterGame:getChildById('serverSelectorPanel')
   customServerSelectorPanel = enterGame:getChildById('customServerSelectorPanel')
@@ -260,15 +248,7 @@ end
 function EnterGame.terminate()
   g_keyboard.unbindKeyDown('Ctrl+G')
   
-  if webSocket then
-    webSocket.close()
-    webSocket = nil
-  end
-  
   enterGame:destroy()
-  if newLogin then
-    newLogin:destroy()
-  end
   if loadBox then
     loadBox:destroy()
     loadBox = nil
@@ -288,12 +268,10 @@ function EnterGame.show()
   enterGame:raise()
   enterGame:focus()
   enterGame:getChildById('accountNameTextEdit'):focus()
-  EnterGame.checkWebsocket()
 end
 
 function EnterGame.hide()
   enterGame:hide()
-  newLogin:hide()
 end
 
 function EnterGame.openWindow()
@@ -313,80 +291,8 @@ function EnterGame.clearAccountFields()
   g_settings.remove('password')
 end
 
-function EnterGame.checkWebsocket()
-  if enterGame:isHidden() then return end
-  local url = serverHostTextEdit:getText()
-  if url:find("ws://") == nil and url:find("wss://") == nil then
-    if webSocket then
-      webSocket:close()
-      webSocket = nil
-    end
-    return
-  end
-  if webSocket then
-    if webSocket.url == url then
-      return
-    end
-    webSocket:close()
-    webSocket = nil
-  end
-  webSocket = HTTP.WebSocketJSON(url, {
-    onOpen = function(message, webSocketId)
-      if webSocket and webSocket.id == webSocketId then
-        webSocket.send({type="init", uid=G.UUID, version=APP_VERSION})
-      end
-    end,
-    onMessage = function(message, webSocketId)
-      if webSocket and webSocket.id == webSocketId then
-        if message.type == "login" then
-          webSocketLoginPacket = nil
-          EnterGame.hide()
-          onHTTPResult(message, nil)
-        elseif message.type == "quick_login" and message.qrcode then
-          EnterGame.showNewLogin(message.qrcode)
-        end
-      end
-    end,
-    onClose = function(message, webSocketId)
-      if webSocket and webSocket.id == webSocketId then
-        webSocket = nil
-        if webSocketLoginPacket then
-          webSocketLoginPacket = nil
-          onHTTPResult(nil, "WebSocket disconnected")
-        end
-        EnterGame.checkWebsocket() -- reconnect
-      end
-    end,
-    onError = function(message, webSocketId)
-      if webSocket and webSocket.id == webSocketId then
-        -- handle error
-      end
-    end
-  })
-end
-
-function EnterGame.hideNewLogin()
-  newLogin:hide()
-end
-
-function EnterGame.showNewLogin(qrcode)
-  if enterGame:isHidden() then return end
-  newLogin.qrcode:setQRCode("https://quath.co/0/" .. qrcode, 1)
-  newLogin.qrcode:setEnabled(true)
-  local clickFunction = function()
-    g_platform.openUrl("qauth://" .. qrcode)
-  end
-  newLogin.qrcode.onClick = clickFunction
-  newLogin.quathlogo.onClick = clickFunction
-  if newLogin:isHidden() then
-    newLogin:show()
-    newLogin:raise()
-  end
-end
-
 function EnterGame.onServerChange()
   server = serverSelector:getText()
-  EnterGame.hideNewLogin()
   if server == tr("Another") then
     if not customServerSelectorPanel:isOn() then
       serverHostTextEdit:setText("")
@@ -399,7 +305,6 @@ function EnterGame.onServerChange()
   end
   if Servers and Servers[server] ~= nil then
     serverHostTextEdit:setText(Servers[server])
-    EnterGame.checkWebsocket()
   end
 end
 
@@ -507,36 +412,6 @@ function EnterGame.doLogin()
     loadBox = nil
     EnterGame.show()
   end
-end
-
-
-function EnterGame.doLoginWs()
-  -- PREVIEW, need to implement websocket reconnect and error handling
-  if G.host == nil or G.host:len() < 10 then
-    return EnterGame.onError("Invalid server url: " .. G.host)    
-  end
-  if not webSocket then
-    return EnterGame.onError("There's no websocket connection to: " .. G.host)    
-  end
-  
-  loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to login server...'))
-  connect(loadBox, { onCancel = function(msgbox)
-                                  loadBox = nil
-                                  webSocketLoginPacket = nil
-                                  EnterGame.show()
-                                end })                                
-                                  
-  local data = {
-    type = "login",
-    account = G.account,
-    password = G.password,
-    token = G.authenticatorToken,
-    version = APP_VERSION,
-    uid = G.UUID
-  }          
-  webSocketLoginPacket = data
-  webSocket.send(data)
-  EnterGame.hide()
 end
 
 function EnterGame.doLoginHttp()

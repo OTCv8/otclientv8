@@ -48,7 +48,8 @@ local defaultOptions = {
   walkFirstStepDelay = 200,
   walkTurnDelay = 100,
   walkStairsDelay = 50,
-  walkTeleportDelay = 200  
+  walkTeleportDelay = 200,
+  walkCtrlTurnDelay = 150
 }
 
 local optionsWindow
@@ -315,6 +316,8 @@ function setOption(key, value, force)
     generalPanel:getChildById('walkStairsDelayLabel'):setText(tr('Walk delay after floor change: %s ms', value))  
   elseif key == 'walkTeleportDelay' then
     generalPanel:getChildById('walkTeleportDelayLabel'):setText(tr('Walk delay after teleport: %s ms', value))  
+  elseif key == 'walkCtrlTurnDelay' then
+    generalPanel:getChildById('walkCtrlTurnDelayLabel'):setText(tr('Walk delay after ctrl turn: %s ms', value))  
   end  
 
   -- change value for keybind updates
