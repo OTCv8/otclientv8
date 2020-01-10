@@ -20,6 +20,7 @@ Servers = {
 --  OTClientV8ClassicWithFeatures = "otclient.ovh:7171:1099:25:30:80:90",
 --  OTClientV8Classic = "otclient.ovh:7171:1099"
 }
+USE_NEW_ENERGAME = false -- uses entergamev2 based on websockets instead of entergame
 ALLOW_CUSTOM_SERVERS = true -- if true it shows option ANOTHER on server list
 -- CONFIG END
 

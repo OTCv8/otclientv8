@@ -6,7 +6,7 @@ local defaultOptions = {
   classicView = true,
   classicControl = true,
   smartWalk = false,
-  extentedPreWalking = true,
+  dash = false,
   autoChaseOverride = true,
   showStatusMessagesInConsole = true,
   showEventMessagesInConsole = true,
@@ -292,7 +292,7 @@ function setOption(key, value, force)
     addEvent(function()
       modules.game_interface.updateStretchShrink()
     end)
-  elseif key == 'extentedPreWalking' then
+  elseif key == 'dash' then
     if value then
       g_game.setMaxPreWalkingSteps(2)
     else 

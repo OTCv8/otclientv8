@@ -23,6 +23,7 @@ function init()
   g_ui.importStyle("ui/basic.otui")
   g_ui.importStyle("ui/panels.otui")
   g_ui.importStyle("ui/config.otui")
+  g_ui.importStyle("ui/icons.otui")
   
   connect(g_game, { 
     onGameStart = online, 
@@ -89,10 +90,15 @@ function clear()
   
   for i, socket in pairs(botWebSockets) do
     g_http.cancel(socket)
+    botWebSockets[i] = nil
   end
-  botWebSockets = {}
 
   for i, widget in pairs(g_ui.getRootWidget():getChildren()) do
+    if widget.botWidget then
+      widget:destroy()
+    end
+  end
+  for i, widget in pairs(modules.game_interface.gameMapPanel:getChildren()) do
     if widget.botWidget then
       widget:destroy()
     end
@@ -149,7 +155,8 @@ function refresh()
   end
   configList:setCurrentOption(settings[index].config)
   if configList:getCurrentOption().text ~= settings[index].config then
-    settings[index].enabled = false    
+    settings[index].config = configList:getCurrentOption().text
+    settings[index].enabled = false
   end
   
   enableButton:setOn(settings[index].enabled)

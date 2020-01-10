@@ -266,38 +266,44 @@ function walk(dir)
     g_game.cancelFollow()
   end
 
-  if player:isAutoWalking() or player:isServerWalking() then
+  if player:isAutoWalking() then
     if lastStop + 100 < g_clock.millis() then
       lastStop = g_clock.millis()
-      if player:isAutoWalking() then
-        player:stopAutoWalk()
-      end
+      player:stopAutoWalk()
       g_game.stop()
     end
-    return
   end
   
   if player:isWalkLocked() then
     nextWalkDir = nil
     return
   end
-  
+   
+  local dash = false
+  local ignoredCanWalk = false
+  if not g_game.getFeature(GameNewWalking) then
+    dash = g_settings.getBoolean("dash", true)
+  end
+
   local ticksToNextWalk = player:getStepTicksLeft()
   if not player:canWalk(dir) then -- canWalk return false when previous  walk is not finished or not confirmed by server
-    if ticksToNextWalk < 500 and lastWalkDir ~= dir then
-      nextWalkDir = dir
+    if dash then 
+      ignoredCanWalk = true
+    else
+      if ticksToNextWalk < 500 and lastWalkDir ~= dir then
+        nextWalkDir = dir
+      end
+      if ticksToNextWalk < 30 and lastFinishedStep + 400 > g_clock.millis() and nextWalkDir == nil then -- clicked walk 20 ms too early, try to execute again as soon possible to keep smooth walking
+        nextWalkDir = dir
+      end
+      return
     end
-    if ticksToNextWalk < 30 and lastFinishedStep + 400 > g_clock.millis() and nextWalkDir == nil then -- clicked walk 20 ms too early, try to execute again as soon possible to keep smooth walking
-      nextWalkDir = dir
-    end
-    return
   end
   
   --if nextWalkDir ~= nil and lastFinishedStep + 200 < g_clock.millis() then
   --  print("Cancel " .. nextWalkDir)
   --  nextWalkDir = nil
   --end
-
   if nextWalkDir ~= nil and nextWalkDir ~= lastWalkDir then 
     dir = nextWalkDir
   end
@@ -336,25 +342,34 @@ function walk(dir)
     walkLock = lastWalk + g_settings.getNumber('walkFirstStepDelay')
     return
   end
+  
+  if dash and lastWalkDir == dir and lastWalk + 30 > g_clock.millis() then
+    walkLock = lastWalk + g_settings.getNumber('walkFirstStepDelay')
+    return
+  end  
 
-  firstStep = not player:isWalking() and lastFinishedStep + 100 < g_clock.millis() and walkLock + 100 < g_clock.millis()
+  firstStep = (not player:isWalking() and lastFinishedStep + 100 < g_clock.millis() and walkLock + 100 < g_clock.millis()) or (player:isServerWalking() and not dash)
   nextWalkDir = nil
   removeEvent(autoWalkEvent)
   autoWalkEvent = nil
-
   local preWalked = false
   if toTile and toTile:isWalkable() then
-    player:preWalk(dir)
-    preWalked = true
+    if not player:isServerWalking() and not ignoredCanWalk then
+      player:preWalk(dir)
+      preWalked = true
+    end
   else
     local playerTile = player:getTile()
     if (playerTile and playerTile:hasElevation(3) and canChangeFloorUp(toPos)) or canChangeFloorDown(toPos) or (toTile and toTile:isEmpty() and not toTile:isBlocking()) then
       player:lockWalk(100)
+    elseif player:isServerWalking() then
+      g_game.stop()
+      return
     else
       return
     end
   end
-  
+
   g_game.walk(dir, preWalked)  
   
   if not firstStep and lastWalkDir ~= dir then

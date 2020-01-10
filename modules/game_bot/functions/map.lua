@@ -132,7 +132,6 @@ context.findPath = function(startPos, destPos, maxDist, params)
   local destPosStr = destPos.x .. "," .. destPos.y .. "," .. destPos.z
   params["destination"] = destPosStr
   local paths = context.findAllPaths(startPos, maxDist, params)
-  
   local marginMin = params.marginMin or params.minMargin
   local marginMax = params.marginMax or params.maxMargin
   if type(marginMin) == 'number' and type(marginMax) == 'number' then
@@ -143,6 +142,7 @@ context.findPath = function(startPos, destPos, maxDist, params)
         if math.abs(x) >= marginMin or math.abs(y) >= marginMin then
           local dest = (destPos.x + x) .. "," .. (destPos.y + y) .. "," .. destPos.z
           local node = paths[dest]
+          print(node)
           if node and (not bestCandidate or bestCandidate[1] > node[1]) then
             bestCandidate = node
             bestCandidatePos = dest
@@ -195,3 +195,7 @@ context.autoWalk = function(destination, maxDist, params)
   return true
 end
 
+context.getTileUnderCursor = function()
+  if not modules.game_interface.gameMapPanel.mousePos then return end
+  return modules.game_interface.gameMapPanel:getTile(modules.game_interface.gameMapPanel.mousePos)
+end

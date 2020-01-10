@@ -17,8 +17,8 @@ Panel
     !tooltip: tr('Disable chat and allow walk using WSAD keys')
 
   OptionCheckBox
-    id: extentedPreWalking
-    !text: tr('Enable smooth walking (DASH)')
+    id: dash
+    !text: tr('Enable fast walking (DASH)')
     !tooltip: tr('Allows to execute next move without server confirmation of previous one')
 
   OptionCheckBox

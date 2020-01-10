@@ -59,7 +59,7 @@ Panel
     anchors.right: parent.right
     anchors.left: parent.left
     vertical-scrollbar: scrollBar
-    margin-right: 10
+    margin-right: 5
     margin-top: 2
     height: 70
     layout:
@@ -67,7 +67,7 @@ Panel
       cell-size: 34 34
       flow: true
 
-  VerticalScrollBar
+  BotSmallScrollBar
     id: scrollBar
     anchors.top: prev.top
     anchors.bottom: prev.bottom

@@ -8,12 +8,24 @@ context.callback = function(callbackType, callback)
   if callbackType == "onAddThing" or callbackType == "onRemoveThing" then
     g_game.enableTileThingLuaCallback(true)
   end
+
+  local desc = "lua"
+  local info = debug.getinfo(2, "Sl")
+  if info then
+    desc = info.short_src .. ":" .. info.currentline
+  end
+  
   local callbackData = {}
   table.insert(context._callbacks[callbackType], function(...)
     if not callbackData.delay or callbackData.delay < context.now then
       local prevExecution = context._currentExecution
       context._currentExecution = callbackData       
+      local start = g_clock.realMillis()
       callback(...)
+      local executionTime = g_clock.realMillis() - start
+      if executionTime > 100 then
+        context.warning("Slow " .. callbackType .. " (" .. executionTime .. "ms): " .. desc)
+      end
       context._currentExecution = prevExecution
     end
   end)

@@ -4,5 +4,6 @@ Module
   author: otclient.ovh
   website: http://otclient.ovh
   scripts: [ walking ]
+  dependencies: [ game_interface ]
   @onLoad: init()
   @onUnload: terminate()

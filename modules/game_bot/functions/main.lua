@@ -34,33 +34,89 @@ context.macro = function(timeout, name, hotkey, callback, parent)
     hotkey = retranslateKeyComboDesc(hotkey)
   end
   
-  local switch = nil
-  if name:len() > 0 then
-    if context.storage._macros[name] == nil then
-      context.storage._macros[name] = false
+  table.insert(context._macros, {
+    enabled = false,
+    name = name,
+    timeout = timeout,
+    lastExecution = context.now,
+    hotkey = hotkey,    
+  })
+  local macro = context._macros[#context._macros]
+
+  macro.isOn = function()
+    return macro.enabled
+  end
+  macro.isOff = function()
+    return not macro.enabled
+  end
+  macro.toggle = function(widget)
+    if macro.isOn() then
+      macro.setOff()
+    else
+      macro.setOn()
     end
-    switch = context._addMacroSwitch(name, hotkey, parent)
+  end
+  macro.setOn = function(val)
+    if val == false then
+      return macro.setOff()
+    end
+    macro.enabled = true
+    context.storage._macros[name] = true
+    if macro.switch then
+      macro.switch:setOn(true)
+    end
+    if macro.icon then
+      macro.icon.setOn(true)
+    end
+  end
+  macro.setOff = function(val)
+    if val == false then
+      return macro.setOn()
+    end
+    macro.enabled = false
+    context.storage._macros[name] = false
+    if macro.switch then
+      macro.switch:setOn(false)
+    end
+    if macro.icon then
+      macro.icon.setOn(false)
+    end
+  end
+    
+  if name:len() > 0 then
+    -- creature switch
+    local text = name
+    if hotkey:len() > 0 then
+      text = name .. " [" .. hotkey .. "]"
+    end
+    macro.switch = context.addSwitch("macro_" .. (#context._macros + 1), text, macro.toggle, parent)
+
+    -- load state
+    if context.storage._macros[name] == true then
+      macro.setOn()
+    end
+  end
+      
+  local desc = "lua"
+  local info = debug.getinfo(2, "Sl")
+  if info then
+    desc = info.short_src .. ":" .. info.currentline
   end
   
-  table.insert(context._macros, {
-    timeout = timeout,
-    name = name,
-    lastExecution = context.now,
-    hotkey = hotkey,
-    switch = switch
-  })
-  
-  local macroData = context._macros[#context._macros]
-  macroData.callback = function()
-    if not macroData.delay or macroData.delay < context.now then
-      context._currentExecution = macroData   
-      callback()
+  macro.callback = function(macro)
+    if not macro.delay or macro.delay < context.now then
+      context._currentExecution = macro
+      local start = g_clock.realMillis()
+      callback(macro)
+      local executionTime = g_clock.realMillis() - start
+      if executionTime > 100 then
+        context.warning("Slow macro (" .. executionTime .. "ms): " .. macro.name .. " - " .. desc)
+      end
       context._currentExecution = nil    
       return true
     end
   end
-  
-  return macroData
+  return macro
 end
 
 -- hotkey(keys, callback)
@@ -94,11 +150,22 @@ context.hotkey = function(keys, name, callback, parent, single)
     single = single
   }
   
+  local desc = "lua"
+  local info = debug.getinfo(2, "Sl")
+  if info then
+    desc = info.short_src .. ":" .. info.currentline
+  end
+
   local hotkeyData = context._hotkeys[keys]
   hotkeyData.callback = function()
     if not hotkeyData.delay or hotkeyData.delay < context.now then
       context._currentExecution = hotkeyData       
+      local start = g_clock.realMillis()
       callback()
+      local executionTime = g_clock.realMillis() - start
+      if executionTime > 100 then
+        context.warning("Slow hotkey (" .. executionTime .. "ms): " .. hotkeyData.name .. " - " .. desc)
+      end
       context._currentExecution = nil
       return true
     end

@@ -26,7 +26,6 @@ end
 -- public functions
 function init()
   connect(g_game, {  onGameStart = check, onGameEnd = hide  })
-
   ProtocolGame.registerExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
 
   if g_game.isOnline() then
