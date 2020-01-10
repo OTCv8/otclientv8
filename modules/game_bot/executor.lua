@@ -30,7 +30,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
     context.storage._macros = {} -- active macros
   end
 
-  -- macros, hotkeys, scheduler, callbacks
+  -- macros, hotkeys, scheduler, icons, callbacks
   context._macros = {}
   context._hotkeys = {}
   context._scheduler = {}
@@ -123,9 +123,9 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
       context.time = g_clock.millis()
       
       for i, macro in ipairs(context._macros) do
-        if macro.lastExecution + macro.timeout <= context.now and (macro.name == nil or macro.name:len() < 1 or context.storage._macros[macro.name]) then
+        if macro.lastExecution + macro.timeout <= context.now and (macro.name == nil or macro.name:len() < 1 or macro.enabled) then
           local status, result = pcall(function()
-            if macro.callback() then
+            if macro.callback(macro) then
                 macro.lastExecution = context.now
             end
           end)

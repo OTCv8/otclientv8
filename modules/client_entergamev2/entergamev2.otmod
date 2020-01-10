@@ -1,0 +1,10 @@
+Module
+  name: client_entergamev2
+  description: Manages enter game and character list windows
+  author: otclient.ovh
+  website: http://otclient.ovh
+  sandboxed: true
+  scripts: [ entergamev2 ]
+  @onLoad: init()
+  @onUnload: terminate()
+  

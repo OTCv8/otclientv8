@@ -25,7 +25,7 @@ end
 
 function UIWindow:onDragEnter(mousePos)
   if self.static then
-    return
+    return false
   end
   self:breakAnchors()
   self.movingReference = { x = mousePos.x - self:getX(), y = mousePos.y - self:getY() }

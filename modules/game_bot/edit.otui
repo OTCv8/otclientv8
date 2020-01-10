@@ -82,34 +82,42 @@ MainWindow
     !text: tr("To reload configs just press On and Off in bot window.\nTo learn more about bot click Tutorials button.")
 
   Button
-    !text: tr('Tutorials')
+    !text: tr('Documentation')
     anchors.bottom: parent.bottom
     anchors.left: parent.left
-    width: 100
+    width: 118
+    @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?documentation")
+
+  Button
+    !text: tr('Tutorials')
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    margin-left: 5 
+    width: 80
     @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?tutorials")
 
   Button
     !text: tr('Scripts')
     anchors.bottom: parent.bottom
     anchors.left: prev.right
-    margin-left: 10 
-    width: 100
+    margin-left: 5 
+    width: 80
     @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?scripts")
 
   Button
     !text: tr('Forum')
     anchors.bottom: parent.bottom
     anchors.left: prev.right
-    margin-left: 10 
-    width: 100
+    margin-left: 5 
+    width: 80
     @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?forum")
 
   Button
     !text: tr('Discord')
     anchors.bottom: parent.bottom
     anchors.left: prev.right
-    margin-left: 10 
-    width: 100
+    margin-left: 5 
+    width: 80
     @onClick: g_platform.openUrl("http://otclient.ovh/bot.php?discord")
   
   Button

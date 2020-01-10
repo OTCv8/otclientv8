@@ -3,6 +3,7 @@ local context = G.botContext
 context.BotServer = {}
 context.BotServer.url = "ws://bot.otclient.ovh:8000/"
 context.BotServer.timeout = 3
+context.BotServer.ping = 0
 context.BotServer._callbacks = {}
 context.BotServer._lastMessageId = 0
 context.BotServer._wasConnected = true -- show first warning
@@ -24,6 +25,7 @@ context.BotServer.init = function(name, channel)
       end
       context.BotServer._wasConnected = true
       if message["type"] == "ping" then
+        context.BotServer.ping = message["ping"]
         return context.BotServer._websocket.send({type="ping"})
       end
       if message["type"] == "message" then

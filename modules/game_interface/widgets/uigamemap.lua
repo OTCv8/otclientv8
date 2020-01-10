@@ -112,7 +112,6 @@ function UIGameMap:onMouseRelease(mousePosition, mouseButton)
   if not self.allowNextRelease and not self.markingMouseRelease then
     return true
   end
-
   local autoWalkPos = self:getPosition(mousePosition)
   local positionOffset = self:getPositionOffset(mousePosition)
 

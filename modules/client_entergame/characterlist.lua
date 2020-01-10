@@ -176,6 +176,7 @@ end
 
 -- public functions
 function CharacterList.init()
+  if USE_NEW_ENERGAME then return end
   connect(g_game, { onLoginError = onGameLoginError })
   connect(g_game, { onLoginToken = onGameLoginToken })
   connect(g_game, { onUpdateNeeded = onGameUpdateNeeded })
@@ -191,6 +192,7 @@ function CharacterList.init()
 end
 
 function CharacterList.terminate()
+ if USE_NEW_ENERGAME then return end
   disconnect(g_game, { onLoginError = onGameLoginError })
   disconnect(g_game, { onLoginToken = onGameLoginToken })
   disconnect(g_game, { onUpdateNeeded = onGameUpdateNeeded })
