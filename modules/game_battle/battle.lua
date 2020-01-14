@@ -3,7 +3,6 @@ battleButton = nil
 battlePanel = nil
 filterPanel = nil
 toggleFilterButton = nil
-creatureAgeList = {}
 battleButtonsList = {}
 
 mouseWidget = nil
@@ -233,12 +232,8 @@ function checkCreatures()
   local dimension = modules.game_interface.getMapPanel():getVisibleDimension()
   local spectators = g_map.getSpectatorsInRangeEx(player:getPosition(), false, math.floor(dimension.width / 2), math.floor(dimension.width / 2), math.floor(dimension.height / 2), math.floor(dimension.height / 2))
   
-  creatures = {}
+  local creatures = {}
   for _, creature in ipairs(spectators) do
-    if creatureAgeList[creature] == nil then
-      creatureAgeList[creature] = creatureAgeCounter
-      creatureAgeCounter = creatureAgeCounter + 1
-    end
     if doCreatureFitFilters(creature) then
       table.insert(creatures, creature)	
     end
@@ -335,23 +330,23 @@ function sortCreatures(creatures)
 	local playerPos = player:getPosition()
     table.sort(creatures, function(a, b) 
       if getDistanceBetween(playerPos, a:getPosition()) == getDistanceBetween(playerPos, b:getPosition()) then
-        return creatureAgeList[a] > creatureAgeList[b]
+        return a:getAge() > b:getAge()
       end
       return getDistanceBetween(playerPos, a:getPosition()) > getDistanceBetween(playerPos, b:getPosition()) 
     end)
   elseif getSortType() == 'health' then
     table.sort(creatures, function(a, b) 
       if a:getHealthPercent() == b:getHealthPercent() then
-        return creatureAgeList[a] > creatureAgeList[b]
+        return a:getAge() > b:getAge()
       end
       return a:getHealthPercent() > b:getHealthPercent() 
     end)
   elseif getSortType() == 'age' then
-    table.sort(creatures, function(a, b) return creatureAgeList[a] > creatureAgeList[b] end)
+    table.sort(creatures, function(a, b) return a:getAge() > b:getAge() end)
   else -- name
     table.sort(creatures, function(a, b)
       if a:getName():lower() == b:getName():lower() then
-        return creatureAgeList[a] > creatureAgeList[b]
+        return a:getAge() > b:getAge()
       end
       return a:getName():lower() > b:getName():lower() 
     end)

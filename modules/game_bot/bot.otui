@@ -1,3 +1,23 @@
+BotTabBar < MoveableTabBar
+  tab-spacing: 1
+  margin-left: 1
+  margin-right: 1
+  movable: false
+  height: 20
+  
+  $on:
+    visible: true
+    margin-top: 2
+
+  $!on:
+    visible: false
+    margin-top: -20
+
+BotTabBarButton < MoveableTabBarButton
+  padding: 3
+  text-horizontal-auto-resize: true
+
+
 MiniWindow
   id: botWindow
   !text: tr('Bot')
@@ -88,24 +108,12 @@ MiniWindow
       margin-left: 2
       margin-right: 2
     
-    MoveableTabBar
+    BotTabBar
       id: botTabs
       anchors.top: prev.bottom
       anchors.left: parent.left
       anchors.right: parent.right
-      tab-spacing: 1
-      margin-left: 1
-      margin-right: 1
-      height: 20
-      movable: false
-      
-      $on:
-        visible: true
-        margin-top: 2
-
-      $!on:
-        visible: false
-        margin-top: -20
+      margin-right: -20
       
     Panel
       id: botPanel

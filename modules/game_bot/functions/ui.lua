@@ -10,9 +10,24 @@ context.setupUI = function(otml, parent)
 end
 
 context.addTab = function(name)
+  local tab = context.tabs:getTab(name)
+  if tab then -- return existing tab
+    return tab.tabPanel.content
+  end
+  
   context.tabs:setOn(true)
-  return context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel.content
+  local newTab = context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel.content
+  print(#(context.tabs.tabs))
+  if #(context.tabs.tabs) > 5 then
+    for k,tab in pairs(context.tabs.tabs) do
+      tab:setPadding(3)
+      tab:setFont('cipsoftFont')
+    end
+  end
+  
+  return newTab
 end
+context.getTab = context.addTab
 
 context.addSwitch = function(id, text, onClickCallback, parent)
   if not parent then

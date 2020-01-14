@@ -16,16 +16,17 @@ context.NPC.isTrading = function()
 end
 context.NPC.hasTrade = context.NPC.isTrading
 context.NPC.hasTradeWindow = context.NPC.isTrading
-
+context.NPC.isTradeOpen = context.NPC.isTrading
 
 context.NPC.getSellItems = function()
   if not context.NPC.isTrading() then return {} end
   local items = {}
   for i, item in ipairs(modules.game_npctrade.tradeItems[modules.game_npctrade.SELL]) do
     table.insert(items, {
+      item = item.ptr,
       id = item.ptr:getId(),
-      name = item.name,
       count = item.ptr:getCount(),
+      name = item.name,
       subType = item.ptr:getSubType(),
       weight = item.weight / 100,
       price = item.price 
@@ -36,11 +37,13 @@ end
 
 context.NPC.getBuyItems = function()
   if not context.NPC.isTrading() then return {} end
+  local items = {}
   for i, item in ipairs(modules.game_npctrade.tradeItems[modules.game_npctrade.BUY]) do
     table.insert(items, {
+      item = item.ptr,
       id = item.ptr:getId(),
-      name = item.name,
       count = item.ptr:getCount(),
+      name = item.name,
       subType = item.ptr:getSubType(),
       weight = item.weight / 100,
       price = item.price 
@@ -67,7 +70,15 @@ end
 
 context.NPC.sell = function(item, count, ignoreEquipped)
   if type(item) == 'number' then
+    for i, entry in ipairs(context.NPC.getSellItems()) do
+       if entry.id == item then
+         item = entry.item
+         break
+       end
+    end
+    if type(item) == 'number' then
      item = Item.create(item)
+    end
   end
   if count == 0 then
     count = 1
@@ -83,7 +94,15 @@ end
 
 context.NPC.buy = function(item, count, ignoreCapacity, withBackpack)
   if type(item) == 'number' then
+    for i, entry in ipairs(context.NPC.getBuyItems()) do
+       if entry.id == item then
+         item = entry.item
+         break
+       end
+    end
+    if type(item) == 'number' then
      item = Item.create(item)
+    end
   end
   if count == nil or count <= 0 then
     count = 1

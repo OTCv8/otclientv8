@@ -424,7 +424,7 @@ function onOpenNpcTrade(items)
       newItem.price = item[4]
       table.insert(tradeItems[BUY], newItem)
     end
-
+    
     if item[5] > 0 then
       local newItem = {}
       newItem.ptr = item[1]
@@ -551,8 +551,10 @@ function sellAll()
   for itemid,item in pairs(playerItems) do
     local item = Item.create(itemid)
     local amount = getSellQuantity(item)
-    if amount > 0 then
-      g_game.sellItem(item, amount, ignoreEquipped:isChecked())
+    while amount > 0 do
+      local maxAmount = math.min(amount, getMaxAmount())
+      g_game.sellItem(item, maxAmount, ignoreEquipped:isChecked())
+      amount = amount - maxAmount
     end
   end
 end

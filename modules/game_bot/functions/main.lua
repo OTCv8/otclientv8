@@ -95,6 +95,8 @@ context.macro = function(timeout, name, hotkey, callback, parent)
     if context.storage._macros[name] == true then
       macro.setOn()
     end
+  else
+    macro.enabled = true -- unnamed macros are enabled by default
   end
       
   local desc = "lua"
