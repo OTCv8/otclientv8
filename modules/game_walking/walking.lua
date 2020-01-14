@@ -20,7 +20,8 @@ function init()
     onPositionChange = onPositionChange,
     onWalk = onWalk,
     onTeleport = onTeleport,
-    onWalkFinish = onWalkFinish
+    onWalkFinish = onWalkFinish,
+    onCancelWalk = onCancelWalk
   })
 
   modules.game_interface.getRootPanel().onFocusChange = stopSmartWalk
@@ -253,6 +254,10 @@ function onWalkFinish(player)
     removeEvent(autoWalkEvent)
     autoWalkEvent = addEvent(function() if nextWalkDir ~= nil then walk(nextWalkDir) end end, false)
   end
+end
+
+function onCancelWalk(player)
+  player:lockWalk(50)
 end
 
 function walk(dir) 

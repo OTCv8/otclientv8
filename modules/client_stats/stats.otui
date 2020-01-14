@@ -38,6 +38,10 @@ MainWindow
       text: -
       anchors.top: parent.top
 
+    DebugText
+      id: luaRamUsage
+      text: -
+
     DebugLabel
       !text: tr('Render')
 
@@ -89,7 +93,7 @@ MainWindow
       text: -
       
     DebugLabel
-      !text: tr('Widgets')
+      !text: tr('Widgets & Objects')
 
     DebugText
       id: widgetsInfo

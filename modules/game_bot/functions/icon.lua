@@ -10,8 +10,6 @@ context.addIcon = function(id, options, callback)
     text: string
     x: float (0.0 - 1.0)
     y: float (0.0 - 1.0)
-    width: number
-    height: number
     hotkey: string
     switchable: true / false [default: true]
     movable: true / false [default: true]
@@ -63,6 +61,9 @@ context.addIcon = function(id, options, callback)
     widget.status:hide()
     widget.status:setOn(true)
   else
+    if config.enabled ~= true then
+      config.enabled = false
+    end
     widget.status:setOn(config.enabled)
   end
   

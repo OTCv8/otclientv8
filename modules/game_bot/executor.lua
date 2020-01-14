@@ -67,6 +67,12 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
   context.table = table
   context.string = string
   context.tonumber = tonumber
+  context.type = type
+  context.pcall = pcall
+  context.load = function(str) return load(str, nil, nil, context) end
+  context.loadstring = context.load
+  context.assert = assert
+  context.gcinfo = gcinfo
   context.tr = tr
   context.json = json
   context.regexMatch = regexMatch
@@ -84,9 +90,16 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
   context.g_window = g_window
   context.g_mouse = g_mouse
 
+  context.Item = Item
+  context.Creature = Creature
+  context.ThingType = ThingType
+  context.Effect = Effect
+  context.Missile = Missile
+  context.Player = Player
+  context.Monster = Monster
   context.StaticText = StaticText
-  context.Config = Config
   context.HTTP = HTTP
+  context.OutputMessage = OutputMessage
   context.modules = modules
 
   -- log functions
@@ -123,7 +136,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
       context.time = g_clock.millis()
       
       for i, macro in ipairs(context._macros) do
-        if macro.lastExecution + macro.timeout <= context.now and (macro.name == nil or macro.name:len() < 1 or macro.enabled) then
+        if macro.lastExecution + macro.timeout <= context.now and macro.enabled then
           local status, result = pcall(function()
             if macro.callback(macro) then
                 macro.lastExecution = context.now

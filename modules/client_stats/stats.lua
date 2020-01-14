@@ -133,6 +133,7 @@ function sendStats()
       cpu = g_platform.getCPUName(),
       mem = g_platform.getTotalSystemMemory(),
       mem_usage = g_platform.getMemoryUsage(),
+      lua_mem_usage = gcinfo(),
       os_name = g_platform.getOSName(),
       platform = g_window.getPlatformType(),
       uptime = g_clock.seconds()
@@ -170,6 +171,7 @@ function update()
   end
   
   statsWindow.debugPanel.sleepTime:setText("Sleep: " .. math.round(g_stats.getSleepTime() / math.max(1, g_clock.micros() - lastSleepTimeReset), 2) .. "%")
+  statsWindow.debugPanel.luaRamUsage:setText("Ram usage by lua: " .. gcinfo() .. " kb")
   local adaptive = "Adaptive: " .. g_adaptiveRenderer.getLevel() .. " | " .. g_adaptiveRenderer.getDebugInfo()
   adaptiveRender:setText(adaptive)
   atlas:setText("Atlas: " .. g_atlas.getStats())
