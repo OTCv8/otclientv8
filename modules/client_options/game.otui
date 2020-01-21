@@ -62,7 +62,7 @@ Panel
     anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 3
-    minimum: 0
+    minimum: 50
     maximum: 300
 
   Label

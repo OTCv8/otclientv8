@@ -69,14 +69,19 @@ function init()
   end
   
   purseButton = inventoryWindow:recursiveGetChildById('purseButton')
-  marketButton = inventoryWindow:recursiveGetChildById('marketButton')
-  local function purseFunction()
+  purseButton.onClick = function()
     local purse = g_game.getLocalPlayer():getInventoryItem(InventorySlotPurse)
     if purse then
       g_game.use(purse)
     end
   end
-  purseButton.onClick = purseFunction
+  
+  marketButton = inventoryWindow:recursiveGetChildById('marketButton')  
+  marketButton.onClick = function()
+    if modules.game_shop then
+      modules.game_shop.toggle()
+    end
+  end
   
   -- controls
   fightOffensiveBox = inventoryWindow:recursiveGetChildById('fightOffensiveBox')
@@ -206,7 +211,7 @@ function refresh()
   end
 
   purseButton:setVisible(g_game.getFeature(GamePurseSlot))
-  marketButton:setVisible(g_game.getFeature(GamePurseSlot))
+  marketButton:setVisible(g_game.getFeature(GameIngameStore))
 end
 
 function toggle()

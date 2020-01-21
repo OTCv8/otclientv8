@@ -123,7 +123,7 @@ context.addIcon = function(id, options, callback)
     widget.onDragMove = function(widget, mousePos, moved)
       local parentRect = widget:getParent():getRect()
       local x = math.min(math.max(parentRect.x, mousePos.x - widget.movingReference.x), parentRect.x + parentRect.width - widget:getWidth())
-      local y = math.min(math.max(parentRect.y, mousePos.y - widget.movingReference.y), parentRect.y + parentRect.height - widget:getHeight())
+      local y = math.min(math.max(parentRect.y - widget:getParent():getMarginTop(), mousePos.y - widget.movingReference.y), parentRect.y + parentRect.height - widget:getHeight())
       widget:move(x, y)
       return true
     end
@@ -141,8 +141,8 @@ context.addIcon = function(id, options, callback)
       widget:addAnchor(AnchorHorizontalCenter, 'parent', AnchorHorizontalCenter)
       widget:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
       
-      widget:setMarginTop(height * (-0.5 + config.x))
-      widget:setMarginLeft(width * (-0.5 + config.y))
+      widget:setMarginTop(height * (-0.5 + config.y))
+      widget:setMarginLeft(width * (-0.5 + config.x))
       return true
     end
   end
@@ -153,7 +153,7 @@ context.addIcon = function(id, options, callback)
     local parentRect = parent:getRect()
     local width = parentRect.width - widget:getWidth()
     local height = parentRect.height - widget:getHeight()
-    widget:setMarginTop(height * (-0.5 + config.y))
+    widget:setMarginTop(-parent:getMarginTop() + height * (-0.5 + config.y))
     widget:setMarginLeft(width * (-0.5 + config.x))
   end
 

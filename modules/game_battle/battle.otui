@@ -54,6 +54,7 @@ MiniWindow
     height: 45
 
     Panel
+      id: buttons
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
       height: 20
@@ -88,6 +89,7 @@ MiniWindow
         @onCheckChange: modules.game_battle.checkCreatures()
 
     Panel
+      id: sortPanel
       anchors.top: prev.bottom
       anchors.left: parent.left
       anchors.right: parent.right
@@ -147,3 +149,4 @@ MiniWindow
       padding-right: 5
       layout:
         type: verticalBox
+        fit-children: true

@@ -170,6 +170,7 @@ GameNewWalking = 90
 GameSlowerManualWalking = 91
 GameExtendedNewWalking = 92
 GameBot = 95
+GameBiggerMapCache = 96
 GameForceLight = 97
 GameNoDebug = 98
 GameBotProtection = 99

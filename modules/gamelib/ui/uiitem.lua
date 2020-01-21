@@ -120,7 +120,7 @@ function UIItem:canAcceptDrop(widget, mousePos)
 end
 
 function UIItem:onClick(mousePos)
-  if not self.selectable then
+  if not self.selectable or not self.editable then
     return
   end
 

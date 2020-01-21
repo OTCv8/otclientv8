@@ -274,8 +274,8 @@ function onOverlayGeometryChange()
     topHealthBar:setMarginTop(15)
     topManaBar:setMarginTop(15)
   else
-    topHealthBar:setMarginTop(45)
-    topManaBar:setMarginTop(45)  
+    topHealthBar:setMarginTop(45 - overlay:getParent():getMarginTop())
+    topManaBar:setMarginTop(45 - overlay:getParent():getMarginTop())  
     minMargin = 200
   end
 
@@ -283,6 +283,6 @@ function onOverlayGeometryChange()
   local width = overlay:getWidth()
   
    
-  topHealthBar:setMarginLeft(math.max(minMargin, (width - height) / 2 + 2))
-  topManaBar:setMarginRight(math.max(minMargin, (width - height) / 2 + 2))
+  topHealthBar:setMarginLeft(math.max(minMargin, (width - height + 50) / 2 + 2))
+  topManaBar:setMarginRight(math.max(minMargin, (width - height + 50) / 2 + 2))
 end

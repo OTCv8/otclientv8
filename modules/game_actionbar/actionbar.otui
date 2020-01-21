@@ -1,0 +1,134 @@
+ActionButton < Panel
+  size: 36 36
+  font: cipsoftFont
+  anchors.top: parent.top
+  margin-left: 3
+  border-width: 1
+  border-color: #00000022
+  
+  $first:
+    anchors.left: parent.left
+
+  $!first:
+    anchors.left: prev.right
+    
+  Item
+    id: item
+    anchors.fill: parent
+    margin: 1 1 1 1
+    item-id: 3307
+    &selectable: true
+    &editable: false
+    virtual: true
+    
+  Label
+    id: text
+    anchors.fill: parent
+    margin: 3 3 3 3
+    text-auto-resize: true
+    text-wrap: true
+    text-align: center
+    font: verdana-9px
+
+  Label
+    id: hotkeyLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin: 2 3 3 3
+    text-auto-resize: true
+    text-wrap: false
+    font: small-9px
+    color: #D3D3D3
+    
+Panel
+  id: actionBar
+  anchors.left: parent.left
+  anchors.right: parent.right
+  image-source: /images/ui/panel_bottom
+  image-border: 6
+  focusable: false
+  
+  $first:
+    anchors.top: parent.top
+  
+  $!first:
+    anchors.top: prev.bottom
+
+  $on:
+    height: 40
+    visible: true
+    
+  $!on:
+    height: 0
+    visible: false
+
+  TabButton
+    id: prevButton
+    icon: /images/game/console/leftarrow
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 1
+
+  Panel
+    id: tabBar
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    anchors.right: next.left
+    margin-right: 3
+    margin-top: 2
+    clipping: true  
+
+    
+  TabButton
+    id: nextButton
+    icon: /images/game/console/rightarrow
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 1
+
+
+ActionAssignWindow < MainWindow
+  id: assignWindow
+  !text: tr('Button Assign')
+  size: 360 150
+  @onEscape: self:destroy()
+
+  Label
+    !text: tr('Please, press the key you wish to use for action')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-auto-resize: true
+    text-align: left
+
+  Label
+    id: comboPreview
+    !text: tr('Current action hotkey: %s', 'none')
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  HorizontalSeparator
+    id: separator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 10
+
+  Button
+    id: addButton
+    !text: tr('Add')
+    width: 64
+    anchors.right: next.left
+    anchors.bottom: parent.bottom
+    margin-right: 10
+
+  Button
+    id: cancelButton
+    !text: tr('Cancel')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: self:getParent():destroy()

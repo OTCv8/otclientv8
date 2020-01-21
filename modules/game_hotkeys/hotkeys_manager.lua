@@ -545,7 +545,6 @@ function updateHotkeyLabel(hotkeyLabel)
 end
 
 function updateHotkeyForm(reset)
-  local hasCustomAction = hotkeysWindow.action and hotkeysWindow.action.currentIndex > 1
   configValueChanged = true
   if hotkeysWindow.action then
     if currentHotkeyLabel then
@@ -560,6 +559,7 @@ function updateHotkeyForm(reset)
       hotkeysWindow.action:setCurrentIndex(1, true)
     end
   end
+  local hasCustomAction = hotkeysWindow.action and hotkeysWindow.action.currentIndex > 1
   if currentHotkeyLabel and not hasCustomAction then
     removeHotkeyButton:enable()
     if currentHotkeyLabel.itemId ~= nil then

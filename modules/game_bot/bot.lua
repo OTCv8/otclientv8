@@ -163,7 +163,6 @@ function refresh()
   
   configList.onOptionChange = function(widget)
     settings[index].config = widget:getCurrentOption().text
-    settings[index].enabled = false
     g_settings.setNode('bot', settings)
     g_settings.save()
     refresh()
@@ -178,7 +177,7 @@ function refresh()
   
   if not g_game.isOnline() or not settings[index].enabled then
     statusLabel:setOn(true)
-    statusLabel:setText("Status: disabled")
+    statusLabel:setText("Status: disabled\nPress off button to enable")
     return
   end
   
@@ -381,7 +380,9 @@ function initCallbacks()
   })
   
   connect(g_map, { 
-    onMissle = botOnMissle 
+    onMissle = botOnMissle,
+    onAnimatedText = botOnAnimatedText,
+    onStaticText = botOnStaticText
   })
 end
 
@@ -427,7 +428,9 @@ function terminateCallbacks()
   })
   
   disconnect(g_map, { 
-    onMissle = botOnMissle 
+    onMissle = botOnMissle,
+    onAnimatedText = botOnAnimatedText,
+    onStaticText = botOnStaticText
   })
 end
 
@@ -524,6 +527,16 @@ end
 function botOnMissle(missle)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onMissle(missle) end)
+end
+
+function botOnAnimatedText(thing, text)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onAnimatedText(thing, text) end)
+end
+
+function botOnStaticText(thing, text)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onStaticText(thing, text) end)
 end
 
 function botChannelList(channels)

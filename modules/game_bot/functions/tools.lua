@@ -8,3 +8,8 @@ context.displayGeneralBox = function(title, message, buttons, onEnterCallback, o
   box.botWidget = true
   return box
 end
+
+context.doScreenshot = function(filename)
+  g_app.doScreenshot(filename)
+end
+context.screenshot = context.doScreenshot

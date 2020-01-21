@@ -2,9 +2,14 @@
 local SHOP_EXTENTED_OPCODE = 201
 
 shop = nil
+local otcv8shop = false
 local shopButton = nil
 local msgWindow = nil
 local browsingHistory = false
+
+-- for classic store
+local storeUrl = ""
+local coinsPacketSize = 0
 
 local CATEGORIES = {}
 local HISTORY = {}
@@ -14,6 +19,10 @@ local AD = {}
 local selectedOffer = {}
 
 local function sendAction(action, data)
+  if not g_game.getFeature(GameExtendedOpcode) then
+    return
+  end
+  
   local protocolGame = g_game.getProtocolGame()
   if data == nil then
     data = {}
@@ -25,16 +34,37 @@ end
 
 -- public functions
 function init()
-  connect(g_game, {  onGameStart = check, onGameEnd = hide  })
-  ProtocolGame.registerExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
+  connect(g_game, {
+    onGameStart = check, 
+    onGameEnd = hide,
+    onStoreInit = onStoreInit,
+    onStoreCategories = onStoreCategories,
+    onStoreOffers = onStoreOffers,
+    onStoreTransactionHistory = onStoreTransactionHistory,    
+    onStorePurchase = onStorePurchase,
+    onStoreError = onStoreError,
+    onCoinBalance = onCoinBalance    
+  })
 
+  ProtocolGame.registerExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
+  
   if g_game.isOnline() then
     check()
   end
 end
 
 function terminate()
-  disconnect(g_game, {  onGameStart = check, onGameEnd = hide  })
+  disconnect(g_game, {
+    onGameStart = check, 
+    onGameEnd = hide,
+    onStoreInit = onStoreInit,
+    onStoreCategories = onStoreCategories,
+    onStoreOffers = onStoreOffers,
+    onStoreTransactionHistory = onStoreTransactionHistory,    
+    onStorePurchase = onStorePurchase,
+    onStoreError = onStoreError,
+    onCoinBalance = onCoinBalance    
+  })
 
   ProtocolGame.unregisterExtendedJSONOpcode(SHOP_EXTENTED_OPCODE, onExtendedJSONOpcode)
   
@@ -53,9 +83,7 @@ function terminate()
 end
 
 function check()
-  if not g_game.getFeature(GameExtendedOpcode) then
-    return
-  end
+  otcv8shop = false
   sendAction("init")
 end
 
@@ -70,6 +98,10 @@ function show()
   if not shop or not shopButton then
     return
   end
+  if g_game.getFeature(GameIngameStore) then
+    g_game.openStore(0)
+  end
+  
   shop:show()
   shop:raise()
   shop:focus()
@@ -86,14 +118,124 @@ function toggle()
   check()
 end
 
-function onExtendedJSONOpcode(protocol, code, json_data)
-  if not shop then
-    shop = g_ui.displayUI('shop')
-    shop:hide()
-    shopButton = modules.client_topmenu.addRightGameToggleButton('shopButton', tr('Shop'), '/images/topbuttons/shop', toggle)
+function createShop()
+  if shop then return end
+  shop = g_ui.displayUI('shop')
+  shop:hide()
+  shopButton = modules.client_topmenu.addRightGameToggleButton('shopButton', tr('Shop'), '/images/topbuttons/shop', toggle)
+  connect(shop.categories, { onChildFocusChange = changeCategory })
+end
 
-    connect(shop.categories, { onChildFocusChange = changeCategory })
+
+function onStoreInit(url, coins)
+  if otcv8shop then return end
+  storeUrl = url
+  if storeUrl:len() > 0 then
+    if storeUrl:sub(storeUrl:len(), storeUrl:len()) ~= "/" then
+      storeUrl = storeUrl .. "/"
+    end
+    storeUrl = storeUrl .. "64/"
+    if storeUrl:sub(1, 4):lower() ~= "http" then
+      storeUrl = "http://" .. storeUrl
+    end
   end
+  coinsPacketSize = coins
+  createShop()
+end
+
+function onStoreCategories(categories)
+  if otcv8shop then return end
+  local correctCategories = {}
+  for i, category in ipairs(categories) do
+    table.insert(correctCategories, {
+      type = "image",
+      image = storeUrl .. category.icon,
+      name = category.name,
+      offers = {}
+    })
+  end
+  processCategories(correctCategories)
+end
+
+function onStoreOffers(categoryName, offers)
+  if otcv8shop then return end
+  local updated = false
+    
+  for i, category in ipairs(CATEGORIES) do
+    if category.name == categoryName then
+      if #category.offers ~= #offers then
+        updated = true
+      end
+      for i=1,#category.offers do
+        if category.offers[i].title ~= offers[i].name or category.offers[i].id ~= offers[i].id or category.offers[i].cost ~= offers[i].price then
+          updated = true
+        end
+      end
+      if updated then    
+        for offer in pairs(category.offers) do
+          category.offers[offer] = nil
+        end
+        for i, offer in ipairs(offers) do
+          table.insert(category.offers, {
+            id=offer.id,
+            type="image",
+            image=storeUrl .. offer.icon,
+            cost=offer.price,
+            title=offer.name,
+            description=offer.description        
+          })
+        end
+      end
+    end
+  end
+  if not updated then
+    return
+  end
+  
+  local activeCategory = shop.categories:getFocusedChild()
+  changeCategory(activeCategory, activeCategory)
+end
+
+function onStoreTransactionHistory(currentPage, hasNextPage, offers)
+  if otcv8shop then return end
+  HISTORY = {}
+  for i, offer in ipairs(offers) do
+    table.insert(HISTORY, {
+      id=offer.id,
+      type="image",
+      image=storeUrl .. offer.icon,
+      cost=offer.price,
+      title=offer.name,
+      description=offer.description        
+    })
+  end
+  
+  if not browsingHistory then return end  
+  clearOffers()
+  shop.categories:focusChild(nil)
+  for i, transaction in ipairs(HISTORY) do
+    addOffer(0, transaction)
+  end
+end
+
+function onStorePurchase(message)
+  if otcv8shop then return end
+  processMessage({title="Successful shop purchase", msg=message})
+end
+
+function onStoreError(errorType, message)
+  if otcv8shop then return end
+  processMessage({title="Shop error", msg=message})
+end
+
+function onCoinBalance(coins, transferableCoins)
+  shop.infoPanel.points:setText(tr("Points:") .. " " .. coins)
+  shop.infoPanel.buy:hide()
+  shop.infoPanel:setHeight(20)
+end
+
+function onExtendedJSONOpcode(protocol, code, json_data)
+  createShop()
 
   local action = json_data['action']
   local data = json_data['data']
@@ -101,7 +243,8 @@ function onExtendedJSONOpcode(protocol, code, json_data)
   if not action or not data then
     return false
   end
-
+  
+  otcv8shop = true
   if action == 'categories' then
     processCategories(data)
   elseif action == 'history' then
@@ -166,17 +309,17 @@ function processHistory(data)
 end
 
 function processMessage(data)
-    if msgWindow then
-      msgWindow:destroy()
-    end
-      
-    local title = tr(data["title"])
-    local msg = data["msg"]
-    msgWindow = displayInfoBox(title, msg)
-    msgWindow:show()
-    msgWindow:raise()
-    msgWindow:focus()
-    msgWindow:raise()  
+  if msgWindow then
+    msgWindow:destroy()
+  end
+    
+  local title = tr(data["title"])
+  local msg = data["msg"]
+  msgWindow = displayInfoBox(title, msg)
+  msgWindow:show()
+  msgWindow:raise()
+  msgWindow:focus()
+  msgWindow:raise()  
 end
 
 function processStatus(data)
@@ -198,6 +341,7 @@ function processStatus(data)
     end
   else
     shop.infoPanel.buy:hide()
+    shop.infoPanel:setHeight(20)
   end
 end
 
@@ -268,7 +412,12 @@ function showHistory(force)
   if browsingHistory and not force then
     return
   end
+
+  if g_game.getFeature(GameIngameStore) and not otcv8shop then
+    g_game.openTransactionHistory(100)
+  end
   sendAction("history")
+
   browsingHistory = true
   clearOffers()
   shop.categories:focusChild(nil)
@@ -295,6 +444,7 @@ function addOffer(category, data)
     if data["image"]:sub(1, 4):lower() == "http" then
       HTTP.downloadImage(data['image'], function(path, err) 
         if err then g_logger.warning("HTTP error: " .. err) return end
+        if not offer.image then return end
         offer.image:setImageSource(path)
       end)
     elseif data["image"] and data["image"]:len() > 1 then
@@ -307,6 +457,7 @@ function addOffer(category, data)
   offer:setId("offer_" .. category .. "_" .. shop.offers:getChildCount())
   offer.title:setText(data["title"] .. " (" .. data["cost"] .. " points)")
   offer.description:setText(data["description"])  
+  offer.offerId = data["id"]
   if category ~= 0 then
     offer.onDoubleClick = buyOffer
     offer.buyButton.onClick = function() buyOffer(offer) end
@@ -318,6 +469,11 @@ function changeCategory(widget, newCategory)
   if not newCategory then
     return
   end
+  
+  if g_game.getFeature(GameIngameStore) and widget ~= newCategory and not otcv8shop then
+    g_game.requestStoreOffers(newCategory.name:getText())
+  end
+  
   browsingHistory = false
   local id = tonumber(newCategory:getId():split("_")[2])
   clearOffers()
@@ -341,7 +497,7 @@ function buyOffer(widget)
     return
   end
   
-  selectedOffer = {category=category, offer=offer, title=item.title, cost=item.cost}
+  selectedOffer = {category=category, offer=offer, title=item.title, cost=item.cost, id=widget.offerId}
   
   scheduleEvent(function()
       if msgWindow then
@@ -365,6 +521,19 @@ function buyConfirmed()
   msgWindow:destroy()
   msgWindow = nil
   sendAction("buy", selectedOffer)
+  if g_game.getFeature(GameIngameStore) and selectedOffer.id and not otcv8shop then
+    local offerName = selectedOffer.title:lower()
+    if string.find(offerName, "name") and string.find(offerName, "change") and modules.game_textedit then
+      modules.game_textedit.singlelineEditor("", function(newName)
+        if newName:len() == 0 then
+          return
+        end
+        g_game.buyStoreOffer(selectedOffer.id, 1, newName)        
+      end)
+    else
+      g_game.buyStoreOffer(selectedOffer.id, 0, "")
+    end
+  end
 end
 
 function buyCanceled()

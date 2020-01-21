@@ -15,7 +15,7 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
-local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "1077", "1090", "1096", "1098", "1099", "1100"}
+local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "961", "1077", "1090", "1096", "1098", "1099", "1100"}
 
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
@@ -247,7 +247,7 @@ function EnterGame.init()
 end
 
 function EnterGame.terminate()
-  if USE_NEW_ENERGAME then return end
+  if not enterGame then return end
   g_keyboard.unbindKeyDown('Ctrl+G')
   
   enterGame:destroy()
@@ -263,6 +263,7 @@ function EnterGame.terminate()
 end
 
 function EnterGame.show()
+  if not enterGame then return end
   if Updater and Updater.isVisible() or g_game.isOnline() then
     return EnterGame.hide()
   end
@@ -273,6 +274,7 @@ function EnterGame.show()
 end
 
 function EnterGame.hide()
+  if not enterGame then return end
   enterGame:hide()
 end
 

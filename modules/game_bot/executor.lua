@@ -52,6 +52,8 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
     onContainerClose = {},
     onContainerUpdateItem = {},
     onMissle = {},
+    onAnimatedText = {},
+    onStaticText = {},
     onChannelList = {},
     onOpenChannel = {},
     onCloseChannel = {},
@@ -273,6 +275,16 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
       onMissle = function(missle)
         for i, callback in ipairs(context._callbacks.onMissle) do
           callback(missle)
+        end
+      end,
+      onAnimatedText = function(thing, text)
+        for i, callback in ipairs(context._callbacks.onAnimatedText) do
+          callback(thing, text)
+        end
+      end,
+      onStaticText = function(thing, text)
+        for i, callback in ipairs(context._callbacks.onStaticText) do
+          callback(thing, text)
         end
       end,
       onChannelList = function(channels)
