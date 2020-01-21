@@ -6,7 +6,6 @@ APP_VERSION = 1337      -- client version for updater and login to identify outd
 Services = {
   website = "http://otclient.ovh", -- currently not used
   updater = "",
-  news = "http://otclient.ovh/api/news.php",
   stats = "",
   crash = "http://otclient.ovh/api/crash.php",
   feedback = "http://otclient.ovh/api/feedback.php"

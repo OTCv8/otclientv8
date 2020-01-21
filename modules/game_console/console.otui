@@ -57,10 +57,18 @@ ConsoleTabBarButton < MoveableTabBarButton
 
 Panel
   id: consolePanel
-  anchors.fill: parent
   image-source: /images/ui/panel_bottom
   image-border: 4
   phantom: false
+  
+  $first:
+    anchors.fill: parent
+    
+  $!first:
+    anchors.top: prev.bottom
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
 
   CheckBox
     id: toggleChat

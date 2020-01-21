@@ -14,7 +14,6 @@ ShopCategory < Panel
     anchors.bottom: parent.bottom
     margin-left: 40
     text-align: left
-    text: UAHSbjaS ASDJHASD ASKJD
     color: white
     font: verdana-11px-rounded    
     
@@ -69,7 +68,6 @@ ShopOffer < Panel
     margin-top: 4
     margin-left: 55
     text-align: topleft
-    text: UAHSbjaS ASDJHASD ASKJD
     color: white
     font: verdana-11px-rounded
 

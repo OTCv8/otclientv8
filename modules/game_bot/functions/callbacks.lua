@@ -116,6 +116,16 @@ context.onMissle = function(callback)
   return context.callback("onMissle", callback)
 end
 
+-- onAnimatedText -- callback = function(thing, text)
+context.onAnimatedText = function(callback)
+  return context.callback("onAnimatedText", callback)
+end
+
+-- onStaticText -- callback = function(thing, text)
+context.onStaticText = function(callback)
+  return context.callback("onStaticText", callback)
+end
+
 -- onChannelList -- callback = function(channels)
 context.onChannelList = function(callback)
   return context.callback("onChannelList", callback)

@@ -141,7 +141,7 @@ function bindWalkKey(key, dir)
   local gameRootPanel = modules.game_interface.getRootPanel()
   g_keyboard.bindKeyDown(key, function() changeWalkDir(dir) end, gameRootPanel, true)
   g_keyboard.bindKeyUp(key, function() changeWalkDir(dir, true) end, gameRootPanel, true)
-  g_keyboard.bindKeyPress(key, function() smartWalk(dir) end, gameRootPanel)
+  g_keyboard.bindKeyPress(key, function(c, k, ticks) smartWalk(dir, ticks) end, gameRootPanel)
 end
 
 function unbindWalkKey(key)
@@ -203,11 +203,11 @@ function changeWalkDir(dir, pop)
   end
 end
 
-function smartWalk(dir)
+function smartWalk(dir, ticks)
   walkEvent = scheduleEvent(function() 
     if g_keyboard.getModifiers() == KeyboardNoModifier then
       local direction = smartWalkDir or dir
-      walk(direction)
+      walk(direction, ticks)
       return true
     end
     return false
@@ -252,7 +252,7 @@ function onWalkFinish(player)
   lastFinishedStep = g_clock.millis()
   if nextWalkDir ~= nil then
     removeEvent(autoWalkEvent)
-    autoWalkEvent = addEvent(function() if nextWalkDir ~= nil then walk(nextWalkDir) end end, false)
+    autoWalkEvent = addEvent(function() if nextWalkDir ~= nil then walk(nextWalkDir, 0) end end, false)
   end
 end
 
@@ -260,10 +260,15 @@ function onCancelWalk(player)
   player:lockWalk(50)
 end
 
-function walk(dir) 
+function walk(dir, ticks) 
   lastManualWalk = g_clock.millis()
   local player = g_game.getLocalPlayer()
   if not player or g_game.isDead() or player:isDead() then
+    return
+  end
+
+  if player:isWalkLocked() then
+    nextWalkDir = nil
     return
   end
 
@@ -278,12 +283,7 @@ function walk(dir)
       g_game.stop()
     end
   end
-  
-  if player:isWalkLocked() then
-    nextWalkDir = nil
-    return
-  end
-   
+     
   local dash = false
   local ignoredCanWalk = false
   if not g_game.getFeature(GameNewWalking) then
@@ -291,11 +291,11 @@ function walk(dir)
   end
 
   local ticksToNextWalk = player:getStepTicksLeft()
-  if not player:canWalk(dir) then -- canWalk return false when previous  walk is not finished or not confirmed by server
+  if not player:canWalk(dir) then -- canWalk return false when previous walk is not finished or not confirmed by server
     if dash then 
       ignoredCanWalk = true
     else
-      if ticksToNextWalk < 500 and lastWalkDir ~= dir then
+      if ticksToNextWalk < 500 and (lastWalkDir ~= dir or ticks == 0) then
         nextWalkDir = dir
       end
       if ticksToNextWalk < 30 and lastFinishedStep + 400 > g_clock.millis() and nextWalkDir == nil then -- clicked walk 20 ms too early, try to execute again as soon possible to keep smooth walking
@@ -349,11 +349,14 @@ function walk(dir)
   end
   
   if dash and lastWalkDir == dir and lastWalk + 30 > g_clock.millis() then
-    walkLock = lastWalk + g_settings.getNumber('walkFirstStepDelay')
     return
   end  
-
-  firstStep = (not player:isWalking() and lastFinishedStep + 100 < g_clock.millis() and walkLock + 100 < g_clock.millis()) or (player:isServerWalking() and not dash)
+  
+  firstStep = (not player:isWalking() and lastFinishedStep + 100 < g_clock.millis() and walkLock + 100 < g_clock.millis())
+  if player:isServerWalking() and not dash then
+    walkLock = walkLock + math.max(g_settings.getNumber('walkFirstStepDelay'), 100)
+  end
+  
   nextWalkDir = nil
   removeEvent(autoWalkEvent)
   autoWalkEvent = nil

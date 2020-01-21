@@ -1,0 +1,9 @@
+Module
+  name: game_actionbar
+  description: Action bar
+  author: otclient@otclient.ovh
+  website: otclient.ovh
+  sandboxed: true
+  scripts: [ actionbar ]
+  @onLoad: init()
+  @onUnload: terminate()

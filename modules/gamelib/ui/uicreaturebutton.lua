@@ -35,12 +35,7 @@ function UICreatureButton:getCreatureId()
     return self.creature:getId()
 end
 
-function UICreatureButton:setup(creature, id)
-  if not id then
-    id = 0
-  end
-  self:setId('CreatureButton_' .. id)
-
+function UICreatureButton:setup(id)
   self.lifeBarWidget = self:getChildById('lifeBar')
   self.creatureWidget = self:getChildById('creature')
   self.labelWidget = self:getChildById('label')

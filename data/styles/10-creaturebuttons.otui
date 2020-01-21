@@ -4,14 +4,14 @@ CreatureButton < UICreatureButton
 
   UICreature
     id: creature
-    size: 20 20
+    size: 22 22
     anchors.left: parent.left
     anchors.top: parent.top
     phantom: true
 
   UIWidget
     id: spacer
-    width: 5
+    width: 3
     anchors.left: creature.right
     anchors.top: creature.top
     phantom: true

@@ -182,7 +182,9 @@ function HTTP.onDownload(operationId, url, err, path, checksum)
   end
   if operation.callback then
     if operation["type"] == "image" then
-      HTTP.images[url] = path
+      if not err then
+        HTTP.images[url] = path
+      end
       operation.callback('/downloads/' .. path, err)    
     else
       operation.callback(path, checksum, err)
