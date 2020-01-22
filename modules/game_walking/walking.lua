@@ -13,6 +13,7 @@ lastTurn = 0
 lastTurnDirection = 0
 lastStop = 0
 lastManualWalk = 0
+autoFinishNextServerWalk = 0
 turnKeys = {}
 
 function init()
@@ -227,11 +228,12 @@ function canChangeFloorUp(pos)
 end
 
 function onPositionChange(player, newPos, oldPos)
-
 end
 
 function onWalk(player, newPos, oldPos)
-
+  if autoFinishNextServerWalk + 200 > g_clock.millis() then
+    player:finishServerWalking()
+  end
 end
 
 function onTeleport(player, newPos, oldPos)
@@ -378,6 +380,11 @@ function walk(dir, ticks)
     end
   end
 
+  if player:isServerWalking() and not dash then
+    g_game.stop()
+    player:finishServerWalking()
+    autoFinishNextServerWalk = g_clock.millis() + 200
+  end
   g_game.walk(dir, preWalked)  
   
   if not firstStep and lastWalkDir ~= dir then
