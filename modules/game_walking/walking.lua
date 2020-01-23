@@ -289,7 +289,7 @@ function walk(dir, ticks)
   local dash = false
   local ignoredCanWalk = false
   if not g_game.getFeature(GameNewWalking) then
-    dash = g_settings.getBoolean("dash", true)
+    dash = g_settings.getBoolean("dash", false)
   end
 
   local ticksToNextWalk = player:getStepTicksLeft()

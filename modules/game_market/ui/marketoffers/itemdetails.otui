@@ -11,7 +11,7 @@ DetailsTableRow < TableRow
 DetailsTableColumn < TableColumn
   font: verdana-11px-monochrome
   background-color: alpha
-  text-offset: 5 2
+  text-offset: 2 2
   color: #cccccc
   width: 100
   focusable: false

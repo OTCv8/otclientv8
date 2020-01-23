@@ -81,6 +81,15 @@ local function parseMarketDetail(protocol, msg)
       msg:getU16()
     end
   end
+
+  if g_game.getClientVersion() >= 1100 then -- imbuements
+    if msg:peekU16() ~= 0x00 then
+      table.insert(descriptions, {MarketItemDescription.Last + 1, msg:getString()})
+    else
+      msg:getU16()
+    end  
+  end
+
   local time = (os.time() / 1000) * statistics.SECONDS_PER_DAY;
 
   local purchaseStats = {}
