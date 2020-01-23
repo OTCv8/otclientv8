@@ -144,7 +144,7 @@ function onStoreInit(url, coins)
 end
 
 function onStoreCategories(categories)
-  if otcv8shop then return end
+  if not shop or otcv8shop then return end
   local correctCategories = {}
   for i, category in ipairs(categories) do
     table.insert(correctCategories, {
@@ -158,7 +158,7 @@ function onStoreCategories(categories)
 end
 
 function onStoreOffers(categoryName, offers)
-  if otcv8shop then return end
+  if not shop or otcv8shop then return end
   local updated = false
     
   for i, category in ipairs(CATEGORIES) do
@@ -197,7 +197,7 @@ function onStoreOffers(categoryName, offers)
 end
 
 function onStoreTransactionHistory(currentPage, hasNextPage, offers)
-  if otcv8shop then return end
+  if not shop or otcv8shop then return end
   HISTORY = {}
   for i, offer in ipairs(offers) do
     table.insert(HISTORY, {
@@ -219,16 +219,17 @@ function onStoreTransactionHistory(currentPage, hasNextPage, offers)
 end
 
 function onStorePurchase(message)
-  if otcv8shop then return end
+  if not shop or otcv8shop then return end
   processMessage({title="Successful shop purchase", msg=message})
 end
 
 function onStoreError(errorType, message)
-  if otcv8shop then return end
+  if not shop or otcv8shop then return end
   processMessage({title="Shop error", msg=message})
 end
 
 function onCoinBalance(coins, transferableCoins)
+  if not shop or otcv8shop then return end
   shop.infoPanel.points:setText(tr("Points:") .. " " .. coins)
   shop.infoPanel.buy:hide()
   shop.infoPanel:setHeight(20)
@@ -461,6 +462,8 @@ function addOffer(category, data)
   if category ~= 0 then
     offer.onDoubleClick = buyOffer
     offer.buyButton.onClick = function() buyOffer(offer) end
+  else
+    offer.buyButton:hide()
   end
 end
 

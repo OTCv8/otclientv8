@@ -142,7 +142,6 @@ context.findPath = function(startPos, destPos, maxDist, params)
         if math.abs(x) >= marginMin or math.abs(y) >= marginMin then
           local dest = (destPos.x + x) .. "," .. (destPos.y + y) .. "," .. destPos.z
           local node = paths[dest]
-          print(node)
           if node and (not bestCandidate or bestCandidate[1] > node[1]) then
             bestCandidate = node
             bestCandidatePos = dest

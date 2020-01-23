@@ -3,7 +3,7 @@
 addIcon("dancing", {outfit={mount=0,feet=0,legs=0,body=176,type=128,auxType=0,addons=3,head=48}, hotkey="F5", text="dance"}, macro(100, "dance", function()
   turn(math.random(0,3))
 end))
-
+--[[
 addIcon("ctrl", {outfit={mount=0,feet=10,legs=10,body=176,type=129,auxType=0,addons=3,head=48}, text="press ctrl to move icon"}, function(widget, enabled)
   if enabled then
     info("icon on")  
@@ -36,3 +36,4 @@ addIcon("text", {text="text\nonly\nicon", switchable=true}, function(widget, ena
   info("icon with text clicked")
 end)
 
+]]--
