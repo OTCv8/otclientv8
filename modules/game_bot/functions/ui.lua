@@ -17,11 +17,10 @@ context.addTab = function(name)
   
   context.tabs:setOn(true)
   local newTab = context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel.content
-  print(#(context.tabs.tabs))
   if #(context.tabs.tabs) > 5 then
     for k,tab in pairs(context.tabs.tabs) do
       tab:setPadding(3)
-      tab:setFont('cipsoftFont')
+      tab:setFont('small-9px')
     end
   end
   
