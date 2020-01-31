@@ -928,7 +928,6 @@ function updateSize()
   local height = gameMapPanel:getHeight()
   local width = gameMapPanel:getWidth()
      
-  print("updatesize")
   if not classic then
     local rheight = gameRootPanel:getHeight()
     local rwidth = gameRootPanel:getWidth()
