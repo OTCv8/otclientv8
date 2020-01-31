@@ -60,6 +60,7 @@ function timeleftTranslation(timeleft, forPreyTimeleft) -- in seconds
 end  
 function init()
   connect(g_game, {
+    onGameStart = check,
     onGameEnd = hide,
     onResourceBalance = onResourceBalance,
     onPreyFreeRolls = onPreyFreeRolls,
@@ -73,11 +74,14 @@ function init()
 
   preyWindow = g_ui.displayUI('prey')
   preyWindow:hide()
-  preyButton = modules.client_topmenu.addRightGameToggleButton('preyButton', tr('Preys'), '/images/topbuttons/prey', toggle)
+  if g_game.isOnline() then
+    check()
+  end
 end
 
 function terminate()
   disconnect(g_game, {
+    onGameStart = check,
     onGameEnd = hide,
     onResourceBalance = onResourceBalance,
     onPreyFreeRolls = onPreyFreeRolls,
@@ -89,11 +93,24 @@ function terminate()
     onPreySelection = onPreySelection
   })
   
-  preyButton:destroy()
+  if preyButton then
+    preyButton:destroy()
+  end
   preyWindow:destroy()
   if msgWindow then
     msgWindow:destroy()
     msgWindow = nil
+  end
+end
+
+function check()
+  if g_game.getFeature(GamePrey) then
+    if not preyButton then
+      preyButton = modules.client_topmenu.addRightGameToggleButton('preyButton', tr('Preys'), '/images/topbuttons/prey', toggle)
+    end
+  elseif preyButton then
+    preyButton:destroy()
+    preyButton = nil
   end
 end
 
@@ -106,6 +123,9 @@ function hide()
 end
 
 function show()
+  if not g_game.getFeature(GamePrey) then
+    return hide()
+  end
   preyWindow:show()
   preyWindow:raise()
   preyWindow:focus()

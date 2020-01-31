@@ -113,9 +113,21 @@ context.setSpellTimeout = function()
   context.lastSpell = context.now
 end
 
-context.use = g_game.useInventoryItem
-context.usewith = g_game.useInventoryItemWith
-context.useWith = g_game.useInventoryItemWith
+context.use = function(thing, subtype)
+  if type(thing) == 'number' then  
+    return g_game.useInventoryItem(thing, subtype)
+  else
+    return g_game.use(thing)
+  end
+end
+context.usewith = function(thing, target, subtype)
+  if type(thing) == 'number' then  
+    return g_game.useInventoryItemWith(thing, target, subtype)
+  else
+    return g_game.useWith(item, target, subtype)
+  end
+end
+context.useWith = context.usewith
 
 context.useRune = function(itemid, target, lastSpellTimeout)
   if context.lastRuneUse == nil then
