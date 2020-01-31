@@ -9,16 +9,18 @@ ActionTypes = {
   USE = 0,
   USE_SELF = 1,
   USE_TARGET = 2,
-  USE_WITH = 3
+  USE_WITH = 3,
+  EQUIP = 4
 }
 
 ActionColors = {
-  empty = '#00000022',
-  text = '#88888844',
-  itemUse = '#8888FF44',
-  itemUseSelf = '#00FF0044',
-  itemUseTarget = '#FF000044',
-  itemUseWith = '#F5B32544'
+  empty = '#00000033',
+  text = '#88888866',
+  itemUse = '#8888FF66',
+  itemUseSelf = '#00FF0066',
+  itemUseTarget = '#FF000066',
+  itemUseWith = '#F5B32566',
+  itemEquip = '#FFFFFF66'
 }
 
 function init()
@@ -29,10 +31,7 @@ function init()
   bottomPanel:moveChildToIndex(actionPanel2, 1)
   
   actionConfig = g_configs.create("/actionbar.otml")
-  
-  setupActionPanel(1, actionPanel1)
-  setupActionPanel(2, actionPanel2)
-  
+    
   connect(g_game, {
     onGameStart = online,
     onGameEnd = offline
@@ -66,6 +65,9 @@ function terminate()
 end
 
 function show()
+  if not g_game.isOnline() then return end
+  setupActionPanel(1, actionPanel1)
+  setupActionPanel(2, actionPanel2)
   actionPanel1:setOn(g_settings.getBoolean("actionBar1", false))
   actionPanel2:setOn(g_settings.getBoolean("actionBar2", false))
 end
@@ -104,6 +106,7 @@ function setupActionPanel(index, panel)
   for i, buttonConfig in pairs(rawConfig) do -- sorting, because key in rawConfig is string
     config[tonumber(i)] = buttonConfig
   end
+  panel.tabBar:destroyChildren()
   for i=1,actionButtonsInPanel do
     local action = g_ui.createWidget('ActionButton', panel.tabBar)
     setupAction(index, action, config[i])
@@ -170,6 +173,8 @@ function setupActionType(action, actionType)
     action:setBorderColor(ActionColors.itemUseTarget)
   elseif action.actionType == ActionTypes.USE_WITH then
     action:setBorderColor(ActionColors.itemUseWith)
+  elseif action.actionType == ActionTypes.EQUIP then
+    action:setBorderColor(ActionColors.itemEquip)
   end
 end
 
@@ -239,6 +244,12 @@ function executeAction(action, ticks)
         item = tmpItem
       end
       modules.game_interface.startUseWith(item, action.item:getItemSubType() or - 1)
+    elseif action.actionType == ActionTypes.EQUIP then
+      if g_game.getClientVersion() >= 910 then
+        local item = Item.create(action.item:getItemId())
+        g_game.equipItem(item)
+        action.actionDelayTo = g_clock.millis() + actionDelay
+      end
     end
   end
 end
@@ -247,10 +258,18 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
   if mouseButton == MouseRightButton then
     local menu = g_ui.createWidget('PopupMenu')
     menu:setGameMenu(true)
-    if action.item:getItemId() > 0 and action.item:getItem():isMultiUse() then
-      menu:addOption(tr('Use on yourself'), function() return setupActionType(action, ActionTypes.USE_SELF) end)
-      menu:addOption(tr('Use on target'), function() return setupActionType(action, ActionTypes.USE_TARGET) end)
-      menu:addOption(tr('With crosshair'), function() return setupActionType(action, ActionTypes.USE_WITH) end)
+    if action.item:getItemId() > 0 then
+      if action.item:getItem():isMultiUse() then
+        menu:addOption(tr('Use on yourself'), function() return setupActionType(action, ActionTypes.USE_SELF) end)
+        menu:addOption(tr('Use on target'), function() return setupActionType(action, ActionTypes.USE_TARGET) end)
+        menu:addOption(tr('With crosshair'), function() return setupActionType(action, ActionTypes.USE_WITH) end)
+      end
+      if g_game.getClientVersion() >= 910 then
+        if not action.item:getItem():isMultiUse() then
+          menu:addOption(tr('Use'), function() return setupActionType(action, ActionTypes.USE) end)
+        end
+        menu:addOption(tr('Equip'), function() return setupActionType(action, ActionTypes.EQUIP) end)
+      end
     end
     menu:addSeparator()
     menu:addOption(tr('Set text'), function() 
@@ -324,7 +343,13 @@ function actionOnItemChange(widget)
         setupActionType(action, ActionTypes.USE_WITH)
       end
     else
-      setupActionType(action, ActionTypes.USE)      
+      if g_game.getClientVersion() >= 910 then
+        if not action.actionType or action.actionType <= ActionTypes.EQUIP then
+          setupActionType(action, ActionTypes.USE)
+        end
+      else
+        setupActionType(action, ActionTypes.USE)      
+      end
     end
   end
 end

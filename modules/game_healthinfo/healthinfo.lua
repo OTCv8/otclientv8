@@ -148,11 +148,11 @@ function onHealthChange(localPlayer, health, maxHealth)
     maxHealth = health
   end
 
-  healthBar:setText(health .. ' / ' .. maxHealth)
+  healthBar:setText(comma_value(health) .. ' / ' .. comma_value(maxHealth))
   healthBar:setTooltip(tr(healthTooltip, health, maxHealth))
   healthBar:setValue(health, 0, maxHealth)
 
-  topHealthBar:setText(health .. ' / ' .. maxHealth)
+  topHealthBar:setText(comma_value(health) .. ' / ' .. comma_value(maxHealth))
   topHealthBar:setTooltip(tr(healthTooltip, health, maxHealth))
   topHealthBar:setValue(health, 0, maxHealth)
 
@@ -182,11 +182,11 @@ function onManaChange(localPlayer, mana, maxMana)
   if mana > maxMana then
     maxMana = mana
   end
-  manaBar:setText(mana .. ' / ' .. maxMana)
+  manaBar:setText(comma_value(mana) .. ' / ' .. comma_value(maxMana))
   manaBar:setTooltip(tr(manaTooltip, mana, maxMana))
   manaBar:setValue(mana, 0, maxMana)
 
-  topManaBar:setText(mana .. ' / ' .. maxMana)
+  topManaBar:setText(comma_value(mana) .. ' / ' .. comma_value(maxMana))
   topManaBar:setTooltip(tr(manaTooltip, mana, maxMana))
   topManaBar:setValue(mana, 0, maxMana)
 
@@ -281,8 +281,7 @@ function onOverlayGeometryChange()
 
   local height = overlay:getHeight()
   local width = overlay:getWidth()
-  
-   
+     
   topHealthBar:setMarginLeft(math.max(minMargin, (width - height + 50) / 2 + 2))
   topManaBar:setMarginRight(math.max(minMargin, (width - height + 50) / 2 + 2))
 end

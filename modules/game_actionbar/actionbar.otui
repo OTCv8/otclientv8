@@ -16,7 +16,6 @@ ActionButton < Panel
     id: item
     anchors.fill: parent
     margin: 1 1 1 1
-    item-id: 3307
     &selectable: true
     &editable: false
     virtual: true

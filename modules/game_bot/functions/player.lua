@@ -78,7 +78,7 @@ context.yell = function(text) g_game.talkChannel(3, 0, text) end
 context.talkChannel = function(channel, text) g_game.talkChannel(7, channel, text) end
 context.sayChannel = context.talkChannel
 context.talkPrivate = function(receiver, text) g_game.talkPrivate(5, receiver, text) end
-context.sayPrivate = g_game.talkPrivate
+context.sayPrivate = context.talkPrivate
 
 context.talkNpc = function(text) 
   if g_game.getClientVersion() >= 810 then

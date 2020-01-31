@@ -320,7 +320,6 @@ function processMessage(data)
   msgWindow:show()
   msgWindow:raise()
   msgWindow:focus()
-  msgWindow:raise()  
 end
 
 function processStatus(data)

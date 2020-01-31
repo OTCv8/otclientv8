@@ -282,7 +282,18 @@ function onSkillButtonClick(button)
 end
 
 function onExperienceChange(localPlayer, value)
-  setSkillValue('experience', value)
+  local postFix = ""
+  if value > 1e15 then
+	postFix = "B"
+	value = math.floor(value / 1e9)
+  elseif value > 1e12 then
+	postFix = "M"
+	value = math.floor(value / 1e6)
+  elseif value > 1e9 then
+	postFix = "K"
+	value = math.floor(value / 1e3)
+  end
+  setSkillValue('experience', comma_value(value) .. postFix)
 end
 
 function onLevelChange(localPlayer, value, percent)

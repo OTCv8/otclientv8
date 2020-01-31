@@ -9,6 +9,10 @@ context.setupUI = function(otml, parent)
   return widget
 end
 
+context.importStyle = function(otml)
+  return g_ui.importStyleFromString(otml)
+end
+
 context.addTab = function(name)
   local tab = context.tabs:getTab(name)
   if tab then -- return existing tab

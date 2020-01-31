@@ -15,7 +15,7 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
-local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "961", "1077", "1090", "1096", "1098", "1099", "1100"}
+local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1077", "1090", "1096", "1098", "1099", "1100"}
 
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
@@ -289,7 +289,7 @@ end
 function EnterGame.clearAccountFields()
   enterGame:getChildById('accountNameTextEdit'):clearText()
   enterGame:getChildById('accountPasswordTextEdit'):clearText()
-  --enterGame:getChildById('authenticatorTokenTextEdit'):clearText()
+  enterGame:getChildById('accountTokenTextEdit'):clearText()
   enterGame:getChildById('accountNameTextEdit'):focus()
   g_settings.remove('account')
   g_settings.remove('password')
@@ -324,8 +324,7 @@ function EnterGame.doLogin()
   
   G.account = enterGame:getChildById('accountNameTextEdit'):getText()
   G.password = enterGame:getChildById('accountPasswordTextEdit'):getText()
-  --G.authenticatorToken = enterGame:getChildById('authenticatorTokenTextEdit'):getText()
-  G.authenticatorToken = ""
+  G.authenticatorToken = enterGame:getChildById('accountTokenTextEdit'):getText()
   G.stayLogged = true
   G.server = serverSelector:getText():trim()
   G.host = serverHostTextEdit:getText()
@@ -456,5 +455,7 @@ function EnterGame.onLoginError(err)
   end
   local errorBox = displayErrorBox(tr('Login Error'), err)
   errorBox.onOk = EnterGame.show
-  EnterGame.clearAccountFields()
+  if err:lower():find("invalid") or err:lower():find("not correct") or err:lower():find("or password") then
+    EnterGame.clearAccountFields()
+  end
 end

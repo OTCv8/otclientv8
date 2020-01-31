@@ -446,7 +446,11 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
           menu:addOption(tr('Dismount'), function() localPlayer:dismount() end)
         end
       end
-
+      
+      if g_game.getFeature(GamePrey) and modules.game_prey then
+        menu:addOption(tr('Open Prey Dialog'), function() modules.game_prey.show() end)
+      end
+      
       if creatureThing:isPartyMember() then
         if creatureThing:isPartyLeader() then
           if creatureThing:isPartySharedExperienceActive() then
@@ -860,15 +864,19 @@ function refreshViewMode()
     gameLeftPanels:setMarginTop(0)
     gameMapPanel:setMarginLeft(0)
     gameMapPanel:setMarginRight(0)
+    gameMapPanel:setMarginTop(0)
+    if modules.game_textmessage then
+      modules.game_textmessage.messagesPanel:setMarginTop(0)
+    end
   else
     gameLeftPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanels:getPaddingTop())
     gameRightPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanels:getPaddingTop())
   end
 
   gameMapPanel:setVisibleDimension({ width = 15, height = 11 })
-  gameMapPanel:setMarginTop(0)
   
   if classic then  
+    g_game.changeMapAwareRange(19, 15)
     gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
     gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanels', AnchorRight)
     gameMapPanel:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
@@ -882,7 +890,6 @@ function refreshViewMode()
     
     modules.client_topmenu.getTopMenu():setImageColor('white')
     gameBottomPanel:setImageColor('white')
-    g_game.changeMapAwareRange(19, 15)
   
     if modules.game_console then
       modules.game_console.switchMode(false)
@@ -921,6 +928,7 @@ function updateSize()
   local height = gameMapPanel:getHeight()
   local width = gameMapPanel:getWidth()
      
+  print("updatesize")
   if not classic then
     local rheight = gameRootPanel:getHeight()
     local rwidth = gameRootPanel:getWidth()
@@ -935,15 +943,20 @@ function updateSize()
     if g_game.getFeature(GameChangeMapAwareRange) then
       local maxWidth = tileSize * (awareRange.width - 1)
     end
-    gameMapPanel:setMarginTop(-tileSize * 2)    
+    gameMapPanel:setMarginTop(-tileSize * 2)
     if g_settings.getBoolean("cacheMap") then
       gameMapPanel:setMarginLeft(0)
       gameMapPanel:setMarginRight(0)    
     else
-      local margin =  math.max(0, math.floor((rwidth - maxWidth) / 2))
+      local margin = math.max(0, math.floor((rwidth - maxWidth) / 2))
       gameMapPanel:setMarginLeft(margin)
       gameMapPanel:setMarginRight(margin)
     end
+    
+    if modules.game_textmessage then
+      modules.game_textmessage.messagesPanel:setMarginTop(-gameMapPanel:getMarginTop())
+    end
+    
   end
   
     --[[
