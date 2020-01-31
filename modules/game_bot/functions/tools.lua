@@ -13,3 +13,7 @@ context.doScreenshot = function(filename)
   g_app.doScreenshot(filename)
 end
 context.screenshot = context.doScreenshot
+
+context.getVersion = function()
+  return g_app.getVersion()
+end

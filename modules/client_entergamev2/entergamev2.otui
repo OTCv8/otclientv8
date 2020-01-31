@@ -372,7 +372,19 @@ Characters < Panel
         !text: tr('Auto reconnect: Off')
         
     Button
-      id: createCharacter
+      id: showOutfits
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.bottom: parent.bottom
+      width: 140
+
+      $on:
+        !text: tr("Show outfits")      
+
+      $!on:
+        !text: tr("Hide outfits")
+
+    Button
+      id: connect
       anchors.right: parent.right
       anchors.bottom: parent.bottom
       !text: tr("Connect")

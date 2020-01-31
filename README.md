@@ -22,7 +22,7 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Refreshed interface
 - New crash and error handler
 - New HTTP login protocol
-- Ingame shop and news
+- Ingame shop
 - Updated hotkey manager
 - Updated and optimized battle list
 - Crosshair, floor fading, extra health/mana bars and panels
@@ -30,6 +30,7 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Removed a lot of useless and outdated things
 - Advanced bot (https://github.com/OTCv8/otclientv8_bot)
 - Linux version
+- Tibia 11.00 support (preys)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 - Bot protection (extra paid option)
 - [Soon] Mobile application for quick authorization

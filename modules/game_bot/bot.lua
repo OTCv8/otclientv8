@@ -128,11 +128,8 @@ function refresh()
   end
   
   -- get list of configs
+  createDefaultConfigs()
   local configs = g_resources.listDirectoryFiles("/bot", false, false)  
-  if #configs == 0 then
-    createDefaultConfig()
-    configs = g_resources.listDirectoryFiles("/bot", false, false)  
-  end
   
   -- clean
   configList.onOptionChange = nil
@@ -272,22 +269,25 @@ function edit()
   editWindow:raise()
 end
 
-function createDefaultConfig()
-  if not g_resources.directoryExists("/bot/default_config") then
-    g_resources.makeDir("/bot/default_config")
-    if not g_resources.directoryExists("/bot/default_config") then
-      return onError("Can't create default_config directory in " .. g_resources.getWriteDir())
+function createDefaultConfigs()
+  local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs", false, false)
+  for i, config_name in ipairs(defaultConfigFiles) do
+    if not g_resources.directoryExists("/bot/" .. config_name) then
+      g_resources.makeDir("/bot/" .. config_name)
+      if not g_resources.directoryExists("/bot/" .. config_name) then
+        return onError("Can't create /bot/" .. config_name .. " directory in " .. g_resources.getWriteDir())
+      end
     end
-  end
 
-  local defaultConfigFiles = g_resources.listDirectoryFiles("default_config", true, false)
-  for i, file in ipairs(defaultConfigFiles) do
-    local baseName = file:split("/")
-    baseName = baseName[#baseName]
-    local contents = g_resources.readFileContents(file)
-    if contents:len() > 0 then
-      g_resources.writeFileContents("/bot/default_config/" .. baseName, contents)
-    end
+    local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
+    for i, file in ipairs(defaultConfigFiles) do
+      local baseName = file:split("/")
+      baseName = baseName[#baseName]
+      local contents = g_resources.readFileContents(file)
+      if contents:len() > 0 then
+        g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+      end
+    end  
   end
 end
 

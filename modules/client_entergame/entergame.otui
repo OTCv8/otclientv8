@@ -1,6 +1,6 @@
 EnterGameWindow < StaticMainWindow
   !text: tr('Enter Game')
-  size: 240 310
+  size: 260 354
 
 EnterGameWindow
   id: enterGame
@@ -33,6 +33,20 @@ EnterGameWindow
     anchors.top: prev.bottom
     margin-top: 2
     
+  MenuLabel
+    !text: tr('Token')
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    text-auto-resize: true
+    margin-top: 8
+
+  TextEdit
+    id: accountTokenTextEdit
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
   Panel
     id: serverSelectorPanel
     anchors.left: parent.left
@@ -114,7 +128,7 @@ EnterGameWindow
       anchors.left: parent.left
       anchors.top: serverLabel.bottom
       margin-top: 2
-      width: 130
+      width: 150
 
     MenuLabel
       id: clientLabel
