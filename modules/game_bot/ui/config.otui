@@ -1,8 +1,6 @@
 BotConfig < Panel
-  anchors.top: parent.top
-  anchors.left: parent.left
-  anchors.right: parent.right
-  height: 40
+  id: botConfig
+  height: 45
 
   ComboBox
     id: list
@@ -31,21 +29,21 @@ BotConfig < Panel
     anchors.top: prev.bottom
     anchors.left: parent.left
     text: Add
-    width: 58
-    height: 17
+    width: 59
+    height: 20
 
   Button
     id: edit
     anchors.top: prev.top
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
-    width: 58
-    height: 17
+    width: 59
+    height: 20
 
   Button
     id: remove
     anchors.top: prev.top
     anchors.right: parent.right
     text: Remove
-    width: 58
-    height: 17
+    width: 59
+    height: 20

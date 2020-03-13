@@ -144,7 +144,7 @@ function setupAction(index, action, config)
 
   if config then
     action.hotkey = config.hotkey
-    if action.hotkey then
+    if action.hotkey and action.hotkey:len() > 0 then
       local gameRootPanel = modules.game_interface.getRootPanel()
       g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
     end
@@ -300,11 +300,11 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
       end
       assignWindow.addButton.onClick = function()
         local gameRootPanel = modules.game_interface.getRootPanel()
-        if action.hotkey then
+        if action.hotkey and action.hotkey:len() > 0 then
           g_keyboard.unbindKeyPress(action.hotkey, action.callback, gameRootPanel)
         end
         action.hotkey = assignWindow.comboPreview.keyCombo
-        if action.hotkey then
+        if action.hotkey and action.hotkey:len() > 0 then
           g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
         end
         action.hotkeyLabel:setText(action.hotkey or "")
@@ -318,7 +318,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
       action.text:setText("")
       action.hotkeyLabel:setText("")
       local gameRootPanel = modules.game_interface.getRootPanel()
-      if action.hotkey then
+      if action.hotkey and action.hotkey:len() > 0 then
         g_keyboard.unbindKeyPress(action.hotkey, action.callback, gameRootPanel)
       end
       action.hotkey = nil

@@ -1,0 +1,199 @@
+PreySelectionLabel < Label
+  font: verdana-11px-monochrome
+  background-color: alpha
+  text-offset: 34 0
+  margin-right: 5
+  text-align: center
+  text-wrap: true
+  focusable: true
+  height: 34
+
+  $focus:
+    background-color: #00000055
+    color: #ffffff
+    
+  UICreature
+    id: creature
+    size: 32 32
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 1
+    
+PreySlot < Panel
+  width: 190
+  height: 280
+  border: 1 black
+  padding: 5
+  
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left 
+    anchors.right: parent.right
+    text-align: center
+    !text: tr("Prey Inactive")
+
+  TextList
+    id: list
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 15
+    margin-right: 10
+    vertical-scrollbar: listScrollbar
+    height: 150
+    visible: false
+    focusable: false
+    
+  VerticalScrollBar
+    id: listScrollbar
+    anchors.top: prev.top
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+    pixels-scroll: true
+    visible: false    
+    step: 10
+    
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 40
+    height: 64
+    width: 64
+    visible: false
+
+  Label
+    id: description
+    margin-top: 30
+    margin-left: 5
+    margin-right: 5
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    visible: false
+  
+  Label
+    id: bonuses
+    margin-top: 5
+    margin-left: 5
+    margin-right: 5
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    visible: false
+
+  Button
+    id: button
+    margin-top: 5
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-left: 10
+    margin-right: 10
+    visible: false    
+
+  Label
+    id: bottomLabel
+    margin-left: 5
+    margin-right: 5
+    margin-bottom: 5
+    anchors.bottom: next.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+    text-wrap: true
+    visible: false    
+
+  Button
+    id: bottomButton
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-left: 10
+    margin-right: 10
+    text: 11
+    visible: false    
+    
+    $hidden:
+      height: 0
+      
+    $!hidden:
+      height: 22
+    
+MainWindow
+  id: preyWindow
+  !text: tr('Preys')
+  size: 600 405
+  background-color: #AAAAAA
+  @onEscape: modules.game_prey.hide()
+  
+  PreySlot
+    id: slot1
+    anchors.left: parent.left
+    anchors.top: parent.top
+
+  PreySlot
+    id: slot2
+    anchors.left: prev.right
+    anchors.top: prev.top
+
+  PreySlot
+    id: slot3
+    anchors.left: prev.right
+    anchors.top: prev.top
+    
+  HorizontalSeparator
+    id: mainSeparator
+    anchors.top: slot3.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    
+  Label
+    id: rerollPrice
+    anchors.top: mainSeparator.bottom
+    anchors.left: parent.left
+    margin-top: 5
+    width: 190
+    height: 30
+    text-align: center
+
+  Label
+    id: balance
+    anchors.top: mainSeparator.bottom
+    anchors.left: prev.right
+    margin-top: 5
+    width: 190
+    height: 30
+    text-align: center
+
+  Label
+    id: bonusRerolls
+    anchors.top: mainSeparator.bottom
+    anchors.left: prev.right
+    margin-top: 5
+    width: 190
+    height: 30
+    text-align: center
+    
+  HorizontalSeparator
+    anchors.bottom: buttonCancel.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 5
+
+  Button
+    id: buttonCancel
+    !text: tr('Close')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_prey.hide()

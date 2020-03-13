@@ -210,3 +210,78 @@ function table.equal(t1,t2,ignore_mt)
    end
    return true
 end
+
+function table.isList(t)
+  local size = #t
+  return table.size(t) == size and size > 0
+end
+
+function table.isStringList(t)
+  if not table.isList(t) then return false end
+  for k,v in ipairs(t) do
+    if type(v) ~= 'string' then
+      return false
+    end
+  end
+  return true
+end
+
+function table.isStringPairList(t)
+  if not table.isList(t) then return false end
+  for k,v in ipairs(t) do
+    if type(v) ~= 'table' or #v ~= 2 or type(v[1]) ~= 'string' or type(v[2]) ~= 'string' then
+      return false
+    end
+  end
+  return true
+end
+
+function table.encodeStringPairList(t)
+  local ret = ""
+  for k,v in ipairs(t) do
+    if v[2]:find("\n") then
+      ret = ret .. v[1] .. ":[[\n" .. v[2] .. "\n]]\n"
+    else
+      ret = ret .. v[1] .. ":" .. v[2] .. "\n"
+    end
+  end
+  return retend
+
+function table.decodeStringPairList(l)
+  local ret = {}
+  local r = regexMatch(l, "^([^:^\n]{1,20}):?(.*)$")
+  local multiline = ""
+  local multilineKey = ""
+  local multilineActive = false
+  for k,v in ipairs(r) do
+    if multilineActive then
+      local endPos = v[1]:find("%]%]")
+      if endPos then
+        if endPos > 1 then
+          table.insert(ret, {multilineKey, multiline .. "\n" .. v[1]:sub(1, endPos - 1)})       
+        else
+          table.insert(ret, {multilineKey, multiline})       
+        end
+        multilineActive = false
+        multiline = ""
+        multilineKey = ""
+      else
+        if multiline:len() == 0 then
+          multiline = v[1]
+        else
+          multiline = multiline .. "\n" .. v[1]        
+        end
+      end
+    else
+      local bracketPos = v[3]:find("%[%[")
+      if bracketPos == 1 then -- multiline begin
+        multiline = v[3]:sub(bracketPos + 2)
+        multilineActive = true
+        multilineKey = v[2]
+      elseif v[2]:len() > 0 and v[3]:len() > 0 then
+        table.insert(ret, {v[2], v[3]})
+      end
+    end    
+  end
+  return ret
+end

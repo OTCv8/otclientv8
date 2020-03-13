@@ -4,7 +4,7 @@ Module
   author: otclient.ovh
   website: http://otclient.ovh
   sandboxed: true
-  scripts: [ entergamev2 ]
+  scripts: [ protocol, entergamev2 ]
   @onLoad: init()
   @onUnload: terminate()
   

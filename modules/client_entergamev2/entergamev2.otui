@@ -60,7 +60,7 @@ EnterGame < Panel
     id: mainPanel
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
-    size: 250 210
+    size: 230 210
     !text: tr("Enter Game") 
     padding-top: 36
     padding-left: 16
@@ -130,7 +130,7 @@ EnterGame < Panel
     anchors.horizontalCenter: prev.horizontalCenter
     anchors.top: prev.bottom
     margin-top: 20
-    size: 200 50
+    size: 290 50
     image-source: /images/ui/window_headless
     image-border: 6
     padding-top: 8
@@ -138,9 +138,18 @@ EnterGame < Panel
   Button
     id: register
     anchors.verticalCenter: buttons.verticalCenter
-    anchors.horizontalCenter: buttons.horizontalCenter
+    anchors.left: buttons.left
+    margin-left: 10
     !text: tr("Create account")
-    size: 160 30
+    size: 130 30
+    
+  Button
+    id: register
+    anchors.verticalCenter: buttons.verticalCenter
+    anchors.right: buttons.right
+    margin-right: 10
+    !text: tr("Casts")
+    size: 130 30
     
 Registration < Panel
   anchors.fill: parent
@@ -226,7 +235,6 @@ Registration < Panel
       margin-top: 10
       margin-left: 50
       margin-right: 50
-      @onClick: EnterGame.doLogin()
 
   EnterGamePanel
     id: buttons
@@ -261,7 +269,6 @@ QuickLogin < EnterGamePanel
     image-fixed-ratio: true
     image-smooth: false
     margin-top: 5
-    qr: 123
     
   UIButton
     id: quathlogo
@@ -319,7 +326,6 @@ Characters < Panel
       anchors.right: parent.right
       text-auto-resize: true
       text-wrap: true
-      text: This is motd ;)
       text-align: center
           
     HorizontalSeparator
@@ -328,22 +334,45 @@ Characters < Panel
       anchors.right: parent.right
       anchors.top: prev.bottom
       margin-top: 5
-      height: 10
       
     ScrollablePanel
-      id: charactersPanel
+      id: outfitsPanel
       layout:
         type: grid
-        cell-size: 100 100
+        cell-size: 125 125
         cell-spacing: 1
         flow: true
-      vertical-scrollbar: charactersScroll      
+      vertical-scrollbar: outfitsScroll      
+      background-color: #444444
       anchors.top: prev.bottom
       anchors.bottom: bottomSeparator.top
       anchors.left: parent.left
       anchors.right: parent.right
-      margin-bottom: 10
       margin-right: 12
+      margin-bottom: 5
+      margin-top: 5
+      
+    VerticalScrollBar
+      id: outfitsScroll
+      anchors.top: outfitsPanel.top
+      anchors.bottom: outfitsPanel.bottom
+      anchors.left: outfitsPanel.right
+      step: 14
+      pixels-scroll: true
+
+    ScrollablePanel
+      id: charactersPanel
+      layout:
+        type: verticalBox
+      vertical-scrollbar: charactersScroll      
+      background-color: #444444
+      anchors.top: motdSeparator.bottom
+      anchors.bottom: bottomSeparator.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-right: 12
+      margin-bottom: 5
+      margin-top: 5
       
     VerticalScrollBar
       id: charactersScroll
@@ -351,14 +380,14 @@ Characters < Panel
       anchors.bottom: charactersPanel.bottom
       anchors.left: charactersPanel.right
       step: 14
-      pixels-scroll: true
+      pixels-scroll: true    
     
     HorizontalSeparator
       id: bottomSeparator
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.bottom: parent.bottom
-      height: 35
+      margin-bottom: 30
       
     Button
       id: autoReconnect
@@ -370,7 +399,7 @@ Characters < Panel
       $!on:
         image-color: red    
         !text: tr('Auto reconnect: Off')
-        
+
     Button
       id: showOutfits
       anchors.horizontalCenter: parent.horizontalCenter
@@ -378,10 +407,10 @@ Characters < Panel
       width: 140
 
       $on:
-        !text: tr("Show outfits")      
+        !text: tr("Hide big outfits")      
 
       $!on:
-        !text: tr("Hide outfits")
+        !text: tr("Show big outfits")
 
     Button
       id: connect
@@ -389,6 +418,7 @@ Characters < Panel
       anchors.bottom: parent.bottom
       !text: tr("Connect")
       width: 140
+      @onClick: modules.client_entergamev2.doGameLogin()
 
   EnterGamePanel
     id: buttons
@@ -409,10 +439,10 @@ Characters < Panel
     size: 140 30
 
   Button
-    id: casts
+    id: settings
     anchors.verticalCenter: buttons.verticalCenter
     anchors.horizontalCenter: buttons.horizontalCenter
-    !text: tr("Casts")
+    !text: tr("Account settings")
     size: 140 30
 
   Button
@@ -423,10 +453,11 @@ Characters < Panel
     !text: tr("Logout")
     size: 140 30
     
-EntergameCharacter < UIButton
+EntergameBigCharacter < UIButton
   border-width: 1
   padding: 1 1 1 1
   @onClick: self:setChecked(true)
+  @onDoubleClick: modules.client_entergamev2.doGameLogin()
   
   $checked:
     border-color: #ffffff
@@ -438,7 +469,7 @@ EntergameCharacter < UIButton
     id: outfit
     anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
-    size: 48 48
+    size: 70 70
     margin-bottom: 3
     phantom: true
 
@@ -447,39 +478,99 @@ EntergameCharacter < UIButton
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
-    text: Dagusia Druid
     text-align: center
     text-wrap: false
     height: 16
     font: terminus-10px
     border-width-bottom: 1
     border-color: #00000077
+    phantom: true
     
   Label
     id: line2
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    text: Level: 666
     text-align: center
     text-wrap: false
     height: 16
     font: terminus-10px
     border-width-bottom: 1
     border-color: #00000077
+    phantom: true
     
   Label
     id: line3
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    text: World: nemezis
     text-align: center
     text-wrap: false
     height: 16
     font: terminus-10px
     border-width-bottom: 1
     border-color: #00000077
+    phantom: true
+    
+EntergameCharacter < UIButton
+  padding: 3 3 3 3
+  @onClick: self:setChecked(true)
+  @onDoubleClick: modules.client_entergamev2.doGameLogin()
+  height: 34
+  
+  $checked:
+    background-color: #333333
+
+  $!checked:
+    background-color: #555555
+    
+  UICreature
+    id: outfit
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    size: 32 32
+    margin-top: -2
+    margin-bottom: -2
+    phantom: true
+
+  UILabel
+    id: line1
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    margin-left: 6
+    width: 150
+    text-align: left
+    phantom: true
+    
+  VerticalSeparator
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+
+  UILabel
+    id: line2
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    width: 150
+    text-align: center
+    phantom: true
+
+  VerticalSeparator
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+
+  UILabel
+    id: line3
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    text-align: center
+    phantom: true
     
 CreateCharacter < Panel
   anchors.fill: parent
@@ -503,12 +594,32 @@ CreateCharacter < Panel
       text-auto-resize: true
 
     TextEdit
-      id: accountNameTextEdit
+      id: name
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: prev.bottom
       margin-top: 2
 
+    MenuLabel
+      !text: tr('Gender')
+      anchors.left: prev.left
+      anchors.top: prev.bottom
+      margin-top: 8
+      text-auto-resize: true
+      
+    ComboBox
+      id: gender
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      menu-scroll: true
+      menu-height: 125
+      menu-scroll-step: 25
+      margin-right: 3
+      @onSetup: |
+        self:addOption("Male")
+        self:addOption("Female")
+      
     MenuLabel
       !text: tr('Vocation')
       anchors.left: prev.left
@@ -516,40 +627,42 @@ CreateCharacter < Panel
       margin-top: 8
       text-auto-resize: true
 
-    TextEdit
-      id: emailTextEdit
+    ComboBox
+      id: vocation
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: prev.bottom
-      margin-top: 2
-    
-    MenuLabel
-      !text: tr('Password')
-      anchors.left: prev.left
-      anchors.top: prev.bottom
-      margin-top: 8
-      text-auto-resize: true
-
-    PasswordTextEdit
-      id: accountPasswordTextEdit
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.top: prev.bottom
-      margin-top: 2
+      menu-scroll: true
+      menu-height: 125
+      menu-scroll-step: 25
+      margin-right: 3
+      @onSetup: |
+        self:addOption("Sorcerer")
+        self:addOption("Druid")
+        self:addOption("Paladin")
+        self:addOption("Knight")
       
     MenuLabel
-      !text: tr('Password confirmation')
+      !text: tr('Town')
       anchors.left: prev.left
       anchors.top: prev.bottom
       margin-top: 8
       text-auto-resize: true
 
-    PasswordTextEdit
-      id: accountPasswordTextEdit
+    ComboBox
+      id: town
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: prev.bottom
-      margin-top: 2
+      menu-scroll: true
+      menu-height: 125
+      menu-scroll-step: 25
+      margin-right: 3
+      @onSetup: |
+        self:addOption("Carlin")
+        self:addOption("Edron")
+        self:addOption("Thais")
+        self:addOption("Venore")
       
     HorizontalSeparator
       anchors.left: parent.left
@@ -558,6 +671,7 @@ CreateCharacter < Panel
       margin-top: 9
 
     Button
+      id: createButton
       !text: tr('Create character')
       anchors.left: parent.left
       anchors.right: parent.right
@@ -565,7 +679,89 @@ CreateCharacter < Panel
       margin-top: 10
       margin-left: 50
       margin-right: 50
-      @onClick: EnterGame.doLogin()
+
+  EnterGamePanel
+    id: buttons
+    anchors.horizontalCenter: prev.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 20
+    size: 200 50
+    image-source: /images/ui/window_headless
+    image-border: 6
+    padding-top: 8
+    
+  Button
+    id: back
+    anchors.verticalCenter: buttons.verticalCenter
+    anchors.horizontalCenter: buttons.horizontalCenter
+    !text: tr("Back")
+    size: 160 30
+    
+    
+AccountSettings < Panel
+  anchors.fill: parent
+  id: settings
+
+  EnterGamePanel
+    id: mainPanel
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    size: 250 173
+    !text: tr("Account settings") 
+    padding-top: 36
+    padding-left: 16
+    padding-right: 16
+    padding-bottom: 16
+    
+    MenuLabel
+      !text: tr('Email')
+      anchors.left: parent.left
+      anchors.top: parent.top
+      text-auto-resize: true
+
+    TextEdit
+      id: email
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 2
+      
+    MenuLabel
+      !text: tr('Security level')
+      anchors.left: prev.left
+      anchors.top: prev.bottom
+      margin-top: 8
+      text-auto-resize: true
+      
+    ComboBox
+      id: security
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      menu-scroll: true
+      menu-height: 125
+      menu-scroll-step: 25
+      margin-right: 3
+      @onSetup: |
+        self:addOption("Low")
+        self:addOption("Medium")
+        self:addOption("High")
+        
+    HorizontalSeparator
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 9
+
+    Button
+      id: updateButton
+      !text: tr('Update settings')
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 10
+      margin-left: 50
+      margin-right: 50
 
   EnterGamePanel
     id: buttons
@@ -597,3 +793,4 @@ Panel
   Registration
   Characters
   CreateCharacter
+  AccountSettings

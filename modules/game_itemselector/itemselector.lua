@@ -35,8 +35,7 @@ function show(itemWidget)
     end
   end
   local doneFunc = function()
-    itemWidget:setItemId(window.item:getItemId())
-    itemWidget:setItemCount(window.item:getItemCount())
+    itemWidget:setItem(Item.create(window.item:getItemId(), window.item:getItemCount()))
     destroy()
   end
 
@@ -45,8 +44,7 @@ function show(itemWidget)
   window.onEnter = doneFunc
   window.onEscape = destroy
   
-  window.item:setItemId(itemWidget:getItemId())
-  window.item:setItemCount(itemWidget:getItemCount())
+  window.item:setItem(Item.create(itemWidget:getItemId(), itemWidget:getItemCount()))
   
   window.itemId:setValue(itemWidget:getItemId())
   if itemWidget:getItemCount() > 1 then
