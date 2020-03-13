@@ -31,6 +31,7 @@ context.addIcon = function(id, options, callback)
   local config = context.storage._icons[id]  
   local widget = g_ui.createWidget("BotIcon", panel)
   widget.botWidget = true
+  widget.botIcon = true
 
   if type(config.x) ~= 'number' and type(config.y) ~= 'number' then
     if type(options.x) == 'number' and type(options.y) == 'number' then
@@ -138,22 +139,22 @@ context.addIcon = function(id, options, callback)
       
       config.x = math.min(1, math.max(0, x / width))
       config.y = math.min(1, math.max(0, y / height))
+
       widget:addAnchor(AnchorHorizontalCenter, 'parent', AnchorHorizontalCenter)
       widget:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
-      
-      widget:setMarginTop(height * (-0.5 + config.y))
+      widget:setMarginTop(math.max(height * (-0.5) - parent:getMarginTop(), height * (-0.5 + config.y)))
       widget:setMarginLeft(width * (-0.5 + config.x))
       return true
     end
   end
 
-  widget.onGeometryChange = function(widget, oldRect, newRect)
+  widget.onGeometryChange = function(widget)
     if widget:isDragging() then return end
     local parent = widget:getParent()
     local parentRect = parent:getRect()
     local width = parentRect.width - widget:getWidth()
     local height = parentRect.height - widget:getHeight()
-    widget:setMarginTop(-parent:getMarginTop() + height * (-0.5 + config.y))
+    widget:setMarginTop(math.max(height * (-0.5) - parent:getMarginTop(), height * (-0.5 + config.y)))
     widget:setMarginLeft(width * (-0.5 + config.x))
   end
 

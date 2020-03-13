@@ -165,6 +165,8 @@ GameMinimapLimitedToSingleFloor = 81
 GameDoubleLevel = 83
 GameDoubleSoul = 84
 GameDoublePlayerGoodsMoney = 85
+GameCreatureWalkthrough = 86 -- add Walkthrough for versions less than 854, unpass = msg->getU8(); in protocolgameparse.cpp
+GameDoubleTradeMoney = 87
 
 GameNewWalking = 90
 GameSlowerManualWalking = 91
@@ -174,9 +176,14 @@ GameBiggerMapCache = 96
 GameForceLight = 97
 GameNoDebug = 98
 GameBotProtection = 99
-GameFasterAnimations = 101
 
-LastGameFeature = 110
+GameFasterAnimations = 101
+GameCenteredOutfits = 102
+
+GamePacketSizeU32 = 110
+GamePacketCompression = 111
+
+LastGameFeature = 120
         
 TextColors = {
   red       = '#f55e5e', --'#c83200'

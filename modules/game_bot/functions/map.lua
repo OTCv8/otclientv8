@@ -183,7 +183,13 @@ context.findPath = function(startPos, destPos, maxDist, params)
 end
 context.getPath = context.findPath
 
+-- also works as autoWalk(dirs) where dirs is a list eg.: {1,2,3,0,1,1,2,}
 context.autoWalk = function(destination, maxDist, params) 
+  if type(destination) == "table" and table.isList(destination) and not maxDist and not params then
+    g_game.autoWalk(destination, {x=0,y=0,z=0})
+    return true
+  end
+
   -- Available params same as for findPath
   local path = context.findPath(context.player:getPosition(), destination, maxDist, params)
   if not path then

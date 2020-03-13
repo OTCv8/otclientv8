@@ -131,6 +131,10 @@ function ProtocolLogin:sendLoginPacket()
     msg:encryptRsa()
   end
 
+  if g_game.getFeature(GamePacketSizeU32) then
+    self:enableBigPackets()
+  end
+
   if g_game.getFeature(GameProtocolChecksum) then
     self:enableChecksum()
   end

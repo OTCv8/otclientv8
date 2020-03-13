@@ -317,6 +317,11 @@ function processMessage(data)
   local title = tr(data["title"])
   local msg = data["msg"]
   msgWindow = displayInfoBox(title, msg)
+  msgWindow.onDestroy = function(widget)
+    if widget == msgWindow then
+      msgWindow = nil
+    end
+  end
   msgWindow:show()
   msgWindow:raise()
   msgWindow:focus()

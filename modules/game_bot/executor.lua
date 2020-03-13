@@ -1,4 +1,4 @@
-function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, websockets)
+function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, reloadCallback, websockets)
   -- load lua and otui files
   local configFiles = g_resources.listDirectoryFiles("/bot/" .. config, true, false)  
   local luaFiles = {}
@@ -21,16 +21,18 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
   local context = {}
   context.configDir = "/bot/".. config
   context.tabs = tabs
-  context.panel = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel.content
+  context.mainTab = context.tabs:addTab("Main", g_ui.createWidget('BotPanel')).tabPanel.content
+  context.panel = context.mainTab
   context.saveConfig = saveConfigCallback
-  context._websockets = websockets
+  context.reload = reloadCallback
   
   context.storage = storage
   if context.storage._macros == nil then
     context.storage._macros = {} -- active macros
   end
 
-  -- macros, hotkeys, scheduler, icons, callbacks
+  -- websockets, macros, hotkeys, scheduler, icons, callbacks
+  context._websockets = websockets
   context._macros = {}
   context._hotkeys = {}
   context._scheduler = {}
@@ -71,9 +73,10 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
   context.tonumber = tonumber
   context.type = type
   context.pcall = pcall
-  context.load = function(str) return load(str, nil, nil, context) end
+  context.load = function(str) return assert(load(str, nil, nil, context)) end
   context.loadstring = context.load
   context.assert = assert
+  context.dofile = function(file) assert(load(g_resources.readFileContents("/bot/" .. config .. "/" .. file), file, nil, context))() end
   context.gcinfo = gcinfo
   context.tr = tr
   context.json = json
@@ -129,7 +132,8 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, webs
 
   -- run lua script
   for i, file in ipairs(luaFiles) do
-    assert(load(g_resources.readFileContents(file), file, nil, context))()  
+    assert(load(g_resources.readFileContents(file), file, nil, context))()
+    context.panel = context.mainTab -- reset default tab
   end
 
   return {
