@@ -129,6 +129,7 @@ function show()
   preyWindow:show()
   preyWindow:raise()
   preyWindow:focus()
+  g_game.preyRequest() -- update preys
 end
 
 function toggle()
