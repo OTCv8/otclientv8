@@ -32,20 +32,21 @@ function init()
   groupsCombo.onOptionChange = function(widget)
     imbueLevelsCombo:clear()
     if itemImbuements ~= nil then
-      local selectedGroup =  widget:getCurrentOption()["text"]
-      selectedImbue = itemImbuements[widget.currentIndex]
+      local selectedGroup = groupsCombo:getCurrentOption().text
       for _,imbuement in ipairs(itemImbuements) do
         if imbuement["group"] == selectedGroup then
-          emptyImbue.imbuement:addOption(imbuement["name"])
+          emptyImbue.imbuement:addOption(imbuement["name"])          
         end
       end
+      imbueLevelsCombo.onOptionChange(imbueLevelsCombo) -- update options
     end
   end
 
   imbueLevelsCombo.onOptionChange = function(widget)
     setProtection(false)
+    local selectedGroup = groupsCombo:getCurrentOption().text
     for _,imbuement in ipairs(itemImbuements) do
-      if imbuement["group"] == selectedImbue["group"] then
+      if imbuement["group"] == selectedGroup then
         if #imbuement["sources"] == widget.currentIndex then
           selectedImbue = imbuement
           for i,source in ipairs(imbuement["sources"]) do

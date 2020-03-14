@@ -5,6 +5,7 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 
 ## DISCORD: https://discord.gg/feySup6
 ## Forum: https://otland.net/forums/otclient.494/
+## Open Tibia Login Server: https://github.com/OTCv8/OpenTibiaLoginServer
 
 # FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
@@ -30,7 +31,8 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Removed a lot of useless and outdated things
 - Advanced bot (https://github.com/OTCv8/otclientv8_bot)
 - Linux version
-- Tibia 11.00 support (preys)
+- Full tibia 11.00 support
+- New login server (with ingame account and character creation)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 - Bot protection (extra paid option)
 - [Soon] Mobile application for quick authorization
@@ -45,7 +47,7 @@ The difference between paid version and this one is that the 1st one comes with 
 
 # Quick Start for players
 
-Download whole repository and run binary.
+Download whole repository and run one of binary file. 
 
 # Quick Start for server owners
 

@@ -868,9 +868,6 @@ function refreshViewMode()
     gameMapPanel:setMarginLeft(0)
     gameMapPanel:setMarginRight(0)
     gameMapPanel:setMarginTop(0)
-    if modules.game_textmessage then
-      modules.game_textmessage.messagesPanel:setMarginTop(0)
-    end
   else
     gameLeftPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanels:getPaddingTop())
     gameRightPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanels:getPaddingTop())
@@ -954,11 +951,7 @@ function updateSize()
       gameMapPanel:setMarginLeft(margin)
       gameMapPanel:setMarginRight(margin)
     end
-    
-    if modules.game_textmessage then
-      modules.game_textmessage.messagesPanel:setMarginTop(-gameMapPanel:getMarginTop())
-    end
-    
+      
     if modules.game_bot then
       for i, child in ipairs(gameMapPanel:getChildren()) do
         if child.botIcon and child.onGeometryChange then
