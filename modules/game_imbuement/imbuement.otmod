@@ -1,9 +1,0 @@
-Module
-  name: game_imbuement
-  description: Imbuement
-  author: otclient.ovh
-  website: http://otclient.ovh
-  sandboxed: true
-  scripts: [ imbuement ]
-  @onLoad: init()
-  @onUnload: terminate()
