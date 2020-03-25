@@ -527,7 +527,6 @@ local function openAmountWindow(callback, actionType, actionText)
     widget:setText((value*offer:getPrice())..'gp')
     itembox:setText(value)
   end
-
   scrollbar:setRange(1, maximum)
   scrollbar:setValue(1)
 
