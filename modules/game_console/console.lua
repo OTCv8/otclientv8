@@ -483,6 +483,10 @@ function removeTab(tab)
     g_game.closeNpcChannel()
   end
 
+  if getCurrentTab() == tab then
+    consoleTabBar:selectTab(defaultTab)
+  end
+
   consoleTabBar:removeTab(tab)
 end
 

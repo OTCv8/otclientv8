@@ -170,7 +170,8 @@ GameDoubleTradeMoney = 87
 
 GameNewWalking = 90
 GameSlowerManualWalking = 91
-GameExtendedNewWalking = 92
+GameItemTooltip = 93
+
 GameBot = 95
 GameBiggerMapCache = 96
 GameForceLight = 97
@@ -179,6 +180,7 @@ GameBotProtection = 99
 
 GameFasterAnimations = 101
 GameCenteredOutfits = 102
+GameSendIdentifiers = 103
 
 GamePacketSizeU32 = 110
 GamePacketCompression = 111
