@@ -1,0 +1,17 @@
+UIWidget
+  id: game_stats
+  anchors.top: parent.top
+  anchors.left: parent.left
+  margin-left: 3
+  size: 100 100
+  visible: false
+  layout:
+    type: verticalBox  
+  
+  Label
+    id: fps
+    font: verdana-11px-rounded
+
+  Label
+    id: ping
+    font: verdana-11px-rounded

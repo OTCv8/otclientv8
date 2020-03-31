@@ -370,12 +370,12 @@ function validateThings(things)
     local thingsNode = {}
     for thingtype, thingdata in pairs(things) do
       thingsNode[thingtype] = thingdata[1]
-      if not g_resources.fileExists("/data/things/" .. thingdata[1]) then
+      if not g_resources.fileExists("/things/" .. thingdata[1]) then
         incorrectThings = incorrectThings .. "Missing file: " .. thingdata[1] .. "\n"
         missingFiles = true
         versionForMissingFiles = thingdata[1]:split("/")[1]
       else
-        local localChecksum = g_resources.fileChecksum("/data/things/" .. thingdata[1]):lower()
+        local localChecksum = g_resources.fileChecksum("/things/" .. thingdata[1]):lower()
         if localChecksum ~= thingdata[2]:lower() and #thingdata[2] > 1 then
           if g_resources.isLoadedFromArchive() then -- ignore checksum if it's test/debug version
             incorrectThings = incorrectThings .. "Invalid checksum of file: " .. thingdata[1] .. " (is " .. localChecksum .. ", should be " .. thingdata[2]:lower() .. ")\n"

@@ -1,16 +1,19 @@
 -- private variables
 local topMenu
 local fpsUpdateEvent = nil
-
-local HIDE_TOPMENU = false
+local statusUpdateEvent = nil
 
 -- private functions
-local function addButton(id, description, icon, callback, panel, toggle, front)
+local function addButton(id, description, icon, callback, panel, toggle, front, index)
   local class
   if toggle then
     class = 'TopToggleButton'
   else
     class = 'TopButton'
+  end
+  
+  if topMenu.reverseButtons then
+    front = not front
   end
 
   local button = panel:getChildById(id)
@@ -31,6 +34,9 @@ local function addButton(id, description, icon, callback, panel, toggle, front)
       return true
     end
   end
+  if not button.index and type(index) == 'number' then
+    button.index = index
+  end
   return button
 end
 
@@ -40,24 +46,15 @@ function init()
                     onGameEnd = offline,
                     onPingBack = updatePing })
 
-  topMenu = g_ui.displayUI('topmenu')  
+  topMenu = g_ui.createWidget('TopMenu', g_ui.getRootWidget())  
   g_keyboard.bindKeyDown('Ctrl+Shift+T', toggle)
   
   if g_game.isOnline() then
-    online()
+    scheduleEvent(online, 10)
   end
   
-  updateFps()
-
-  if not Services or not Services.feedback or Services.feedback:len() < 4 then
-    topMenu.reportBug:setVisible(false)
-    topMenu.reportBug:setWidth(0)
-  end
-  
-  if HIDE_TOPMENU then
-    topMenu:setHeight(0) 
-    topMenu:hide()
-  end
+  updateFps()  
+  updateStatus()
 end
 
 function terminate()
@@ -65,34 +62,59 @@ function terminate()
                        onGameEnd = offline,
                        onPingBack = updatePing })
   removeEvent(fpsUpdateEvent)
+  removeEvent(statusUpdateEvent)
   
+  g_keyboard.unbindKeyDown('Ctrl+Shift+T')
   topMenu:destroy()
 end
 
 function online()
+  if topMenu.hideIngame then
+    hide()
+  else
+    modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
+  end
+  if topMenu.onlineLabel then
+    topMenu.onlineLabel:hide()
+  end
+  
   showGameButtons()
 
-  addEvent(function()
-    if modules.client_options.getOption('showPing') and (g_game.getFeature(GameClientPing) or g_game.getFeature(GameExtendedClientPing)) then
-      topMenu.pingLabel:show()
-    else
-      topMenu.pingLabel:hide()      
-    end
-  end)
+  if topMenu.pingLabel then
+    addEvent(function()
+      if modules.client_options.getOption('showPing') and (g_game.getFeature(GameClientPing) or g_game.getFeature(GameExtendedClientPing)) then
+        topMenu.pingLabel:show()
+      else
+        topMenu.pingLabel:hide()      
+      end
+    end)
+  end
 end
 
 function offline()
+  if topMenu.hideIngame then
+    show()
+  end
+  if topMenu.onlineLabel then
+    topMenu.onlineLabel:show()
+  end
+
   hideGameButtons()
-  topMenu.pingLabel:hide()
+  if topMenu.pingLabel then
+    topMenu.pingLabel:hide()
+  end
+  updateStatus()
 end
 
 function updateFps()
+  if not topMenu.fpsLabel then return end
   fpsUpdateEvent = scheduleEvent(updateFps, 500)
   text = 'FPS: ' .. g_app.getFps()
   topMenu.fpsLabel:setText(text)
 end
 
 function updatePing(ping)
+  if not topMenu.pingLabel then return end
   if g_proxy and g_proxy.getPing() > 0 then
     ping = g_proxy.getPing()
   end
@@ -117,49 +139,70 @@ function updatePing(ping)
 end
 
 function setPingVisible(enable)
+  if not topMenu.pingLabel then return end
   topMenu.pingLabel:setVisible(enable)
-  topMenu.reportBug:setVisible(enable)
 end
 
 function setFpsVisible(enable)
+  if not topMenu.fpsLabel then return end
   topMenu.fpsLabel:setVisible(enable)
 end
 
-function addLeftButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.leftButtonsPanel, false, front)
+function addLeftButton(id, description, icon, callback, front, index)
+  return addButton(id, description, icon, callback, topMenu.leftButtonsPanel, false, front, index)
 end
 
-function addLeftToggleButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.leftButtonsPanel, true, front)
+function addLeftToggleButton(id, description, icon, callback, front, index)
+  return addButton(id, description, icon, callback, topMenu.leftButtonsPanel, true, front, index)
 end
 
-function addRightButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.rightButtonsPanel, false, front)
+function addRightButton(id, description, icon, callback, front, index)
+  return addButton(id, description, icon, callback, topMenu.rightButtonsPanel, false, front, index)
 end
 
-function addRightToggleButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.rightButtonsPanel, true, front)
+function addRightToggleButton(id, description, icon, callback, front, index)
+  return addButton(id, description, icon, callback, topMenu.rightButtonsPanel, true, front, index)
 end
 
-function addLeftGameButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.leftGameButtonsPanel, false, front)
+function addLeftGameButton(id, description, icon, callback, front, index)
+  local button = addButton(id, description, icon, callback, topMenu.leftGameButtonsPanel, false, front, index)
+  if modules.game_buttons then
+    modules.game_buttons.takeButton(button)
+  end
+  return button
 end
 
-function addLeftGameToggleButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.leftGameButtonsPanel, true, front)
+function addLeftGameToggleButton(id, description, icon, callback, front, index)
+  local button = addButton(id, description, icon, callback, topMenu.leftGameButtonsPanel, true, front, index)
+  if modules.game_buttons then
+    modules.game_buttons.takeButton(button)
+  end
+  return button
 end
 
-function addRightGameButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.rightGameButtonsPanel, false, front)
+function addRightGameButton(id, description, icon, callback, front, index)
+  local button = addButton(id, description, icon, callback, topMenu.rightGameButtonsPanel, false, front, index)
+  if modules.game_buttons then
+    modules.game_buttons.takeButton(button)
+  end
+  return button
 end
 
-function addRightGameToggleButton(id, description, icon, callback, front)
-  return addButton(id, description, icon, callback, topMenu.rightGameButtonsPanel, true, front)
+function addRightGameToggleButton(id, description, icon, callback, front, index)
+  local button = addButton(id, description, icon, callback, topMenu.rightGameButtonsPanel, true, front, index)
+  if modules.game_buttons then
+    modules.game_buttons.takeButton(button)
+  end
+  return button
 end
 
 function showGameButtons()
   topMenu.leftGameButtonsPanel:show()
   topMenu.rightGameButtonsPanel:show()
+  if modules.game_buttons then
+    modules.game_buttons.takeButtons(topMenu.leftGameButtonsPanel:getChildren())
+    modules.game_buttons.takeButtons(topMenu.rightGameButtonsPanel:getChildren())
+  end
 end
 
 function hideGameButtons()
@@ -176,23 +219,61 @@ function getTopMenu()
 end
 
 function toggle()
-  local menu = getTopMenu()
-  if not menu then
+  if not topMenu then
     return
   end
-
-  if HIDE_TOPMENU then
-    return
-  end
-
-  if menu:isVisible() then
-    menu:hide()
-    modules.client_background.getBackground():addAnchor(AnchorTop, 'parent', AnchorTop)
-    modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'parent', AnchorTop)
+  
+  if topMenu:isVisible() then
+    hide()
   else
-    menu:show()
-    topMenu:setHeight(36) 
-    modules.client_background.getBackground():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
+    show()
+  end
+end
+
+function hide()
+  topMenu:hide()
+  if not topMenu.hideIngame then
+    modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'parent', AnchorTop)
+  end
+  if modules.game_stats then
+    modules.game_stats.show()
+  end
+end
+
+function show()
+  topMenu:show()
+  if not topMenu.hideIngame then
     modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
   end
+  if modules.game_stats then
+    modules.game_stats.hide()
+  end
+end
+
+function updateStatus()
+  removeEvent(statusUpdateEvent)
+  if not Services or not Services.status or Services.status:len() < 4 then return end
+  if not topMenu.onlineLabel then return end
+  if g_game.isOnline() then return end
+  HTTP.getJSON(Services.status, function(data, err)
+    if err then
+      g_logger.warning("HTTP error for " .. Services.status .. ": " .. err) 
+      statusUpdateEvent = scheduleEvent(updateStatus, 5000)
+      return
+    end
+    if data.online and topMenu.onlineLabel then
+      topMenu.onlineLabel:setText(data.online)
+    end
+    if data.discord_online and topMenu.discordLabel then
+      topMenu.discordLabel:setText(data.discord_online)
+    end
+    if data.discord_link and topMenu.discordLabel and topMenu.discord then
+      local discordOnClick = function()
+        g_platform.openUrl(data.discord_link)
+      end
+      topMenu.discordLabel.onClick = discordOnClick
+      topMenu.discord.onClick = discordOnClick
+    end
+    statusUpdateEvent = scheduleEvent(updateStatus, 60000)
+  end)
 end

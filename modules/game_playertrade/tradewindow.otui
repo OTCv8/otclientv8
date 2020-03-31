@@ -12,16 +12,43 @@ TradeWindow < MiniWindow
     margin-left: 4
 
   MiniWindowContents
-    padding: 4
+    padding: 2
+    
+    Label
+      id: ownTradeLabel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.horizontalCenter
+
+    Label
+      id: counterTradeLabel
+      anchors.top: parent.top
+      anchors.left: parent.horizontalCenter
+      anchors.right: parent.right
+
+    Label
+      id: ownTradeCountLabel
+      anchors.top: ownTradeLabel.bottom
+      anchors.left: ownTradeLabel.left
+      anchors.right: ownTradeLabel.right
+      font: verdana-9px-bold
+      text-align: center
+
+    Label
+      id: counterTradeCountLabel
+      anchors.top: counterTradeLabel.bottom
+      anchors.left: counterTradeLabel.left
+      anchors.right: counterTradeLabel.right
+      font: verdana-9px-bold
+      text-align: center
 
     ScrollableFlatPanel
       id: ownTradeContainer
-      anchors.top: parent.top
+      anchors.top: ownTradeCountLabel.bottom
       anchors.bottom: acceptButton.top
-      anchors.left: parent.left
-      anchors.right: ownTradeScrollBar.left
-      margin-top: 16
-      margin-bottom: 4
+      anchors.left: ownTradeCountLabel.left
+      anchors.right: ownTradeCountLabel.right
+      margin-bottom: 3
       padding: 2
       layout:
         type: grid
@@ -32,12 +59,9 @@ TradeWindow < MiniWindow
 
     VerticalScrollBar
       id: ownTradeScrollBar
-      anchors.top: parent.top
-      anchors.bottom: acceptButton.top
+      anchors.top: ownTradeContainer.top
+      anchors.bottom: ownTradeContainer.bottom
       anchors.right: parent.horizontalCenter
-      margin-top: 16
-      margin-bottom: 4
-      margin-right: 2
       step: 14
       pixels-scroll: true
       $!on:
@@ -45,13 +69,11 @@ TradeWindow < MiniWindow
 
     ScrollableFlatPanel
       id: counterTradeContainer
-      anchors.top: parent.top
+      anchors.top: counterTradeCountLabel.bottom
       anchors.bottom: acceptButton.top
-      anchors.left: parent.horizontalCenter
-      anchors.right: counterTradeScrollBar.left
-      margin-top: 16
-      margin-bottom: 4
-      margin-left: 2
+      anchors.left: counterTradeCountLabel.left
+      anchors.right: counterTradeCountLabel.right
+      margin-bottom: 3
       padding: 2
       layout:
         type: grid
@@ -62,30 +84,13 @@ TradeWindow < MiniWindow
 
     VerticalScrollBar
       id: counterTradeScrollBar
-      anchors.top: parent.top
-      anchors.bottom: acceptButton.top
+      anchors.top: counterTradeContainer.top
+      anchors.bottom: counterTradeContainer.bottom
       anchors.right: parent.right
-      margin-top: 16
-      margin-bottom: 4
-      margin-right: 1
       step: 14
       pixels-scroll: true
       $!on:
         width: 0
-
-    Label
-      id: ownTradeLabel
-      anchors.bottom: ownTradeContainer.top
-      anchors.left: ownTradeContainer.left
-      anchors.right: parent.horizontalCenter
-      margin-bottom: 2
-
-    Label
-      id: counterTradeLabel
-      anchors.bottom: counterTradeContainer.top
-      anchors.left: parent.horizontalCenter
-      anchors.right: counterTradeScrollBar.right
-      margin-bottom: 2
 
     Button
       !text: tr('Accept')

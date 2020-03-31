@@ -19,10 +19,16 @@ LifeProgressBar < UIProgressBar
   font: verdana-11px-rounded
   text-offset: 0 2
   margin: 2
-
+  
 ProgressRect < UIProgressRect
   anchors.fill: parent
   phantom: true
   color: white
   background-color: #00000088
   font: verdana-11px-rounded
+
+HealthBar < ProgressBar
+  background-color: #ff4444
+
+ManaBar < ProgressBar
+  background-color: #4444ff

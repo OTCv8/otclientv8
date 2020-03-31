@@ -125,6 +125,10 @@ void Application::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_platform", "getMemoryUsage", &Platform::getMemoryUsage, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "getOSName", &Platform::getOSName, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "getFileModificationTime", &Platform::getFileModificationTime, &g_platform);
+    g_lua.bindSingletonFunction("g_platform", "getMacAddresses", &Platform::getMacAddresses, &g_platform);
+    g_lua.bindSingletonFunction("g_platform", "getUserName", &Platform::getUserName, &g_platform);
+    g_lua.bindSingletonFunction("g_platform", "getDlls", &Platform::getDlls, &g_platform);
+    g_lua.bindSingletonFunction("g_platform", "getProcesses", &Platform::getProcesses, &g_platform);
 
     // Application
     g_lua.registerSingletonClass("g_app");
@@ -265,7 +269,9 @@ void Application::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_resources", "fileChecksum", &ResourceManager::fileChecksum, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "selfChecksum", &ResourceManager::selfChecksum, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "updateClient", &ResourceManager::updateClient, &g_resources);
-    
+    g_lua.bindSingletonFunction("g_resources", "setLayout", &ResourceManager::setLayout, &g_resources);
+    g_lua.bindSingletonFunction("g_resources", "getLayout", &ResourceManager::getLayout, &g_resources);
+
     // Config
     g_lua.registerClass<Config>();
     g_lua.bindClassMemberFunction<Config>("save", &Config::save);
@@ -399,6 +405,7 @@ void Application::registerLuaFunctions()
     g_lua.registerSingletonClass("g_ui");
     g_lua.bindSingletonFunction("g_ui", "clearStyles", &UIManager::clearStyles, &g_ui);
     g_lua.bindSingletonFunction("g_ui", "importStyle", &UIManager::importStyle, &g_ui);
+    g_lua.bindSingletonFunction("g_ui", "importStyleFromString", &UIManager::importStyleFromString, &g_ui);
     g_lua.bindSingletonFunction("g_ui", "getStyle", &UIManager::getStyle, &g_ui);
     g_lua.bindSingletonFunction("g_ui", "getStyleClass", &UIManager::getStyleClass, &g_ui);
     g_lua.bindSingletonFunction("g_ui", "loadUI", &UIManager::loadUI, &g_ui);
@@ -438,7 +445,7 @@ void Application::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIWidget>("lowerChild", &UIWidget::lowerChild);
     g_lua.bindClassMemberFunction<UIWidget>("raiseChild", &UIWidget::raiseChild);
     g_lua.bindClassMemberFunction<UIWidget>("moveChildToIndex", &UIWidget::moveChildToIndex);
-    g_lua.bindClassMemberFunction<UIWidget>("reorderChildrens", &UIWidget::reorderChildrens);
+    g_lua.bindClassMemberFunction<UIWidget>("reorderChildren", &UIWidget::reorderChildren);
     g_lua.bindClassMemberFunction<UIWidget>("lockChild", &UIWidget::lockChild);
     g_lua.bindClassMemberFunction<UIWidget>("unlockChild", &UIWidget::unlockChild);
     g_lua.bindClassMemberFunction<UIWidget>("mergeStyle", &UIWidget::mergeStyle);
@@ -856,6 +863,7 @@ void Application::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Protocol>("generateXteaKey", &Protocol::generateXteaKey);
     g_lua.bindClassMemberFunction<Protocol>("enableXteaEncryption", &Protocol::enableXteaEncryption);
     g_lua.bindClassMemberFunction<Protocol>("enableChecksum", &Protocol::enableChecksum);
+    g_lua.bindClassMemberFunction<Protocol>("enableBigPackets", &Protocol::enableBigPackets);
 
     // InputMessage
     g_lua.registerClass<InputMessage>();

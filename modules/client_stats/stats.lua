@@ -136,7 +136,10 @@ function sendStats()
       lua_mem_usage = gcinfo(),
       os_name = g_platform.getOSName(),
       platform = g_window.getPlatformType(),
-      uptime = g_clock.seconds()
+      uptime = g_clock.seconds(),
+      layout = g_resources.getLayout(),
+      packets = g_game.getRecivedPacketsCount(),
+      packets_size = g_game.getRecivedPacketsSize()
     }
   } 
   if g_proxy then

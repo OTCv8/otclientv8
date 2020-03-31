@@ -42,6 +42,7 @@ BotSeparator < HorizontalSeparator
 BotSmallScrollBar < SmallScrollBar
 
 BotPanel < Panel
+  margin-top: 1
   ScrollablePanel
     id: content
     anchors.fill: parent

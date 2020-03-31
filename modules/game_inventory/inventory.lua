@@ -34,7 +34,6 @@ inventoryWindow = nil
 inventoryPanel = nil
 inventoryButton = nil
 purseButton = nil
-marketButton = nil
 
 combatControlsWindow = nil
 fightOffensiveBox = nil
@@ -73,13 +72,6 @@ function init()
     local purse = g_game.getLocalPlayer():getInventoryItem(InventorySlotPurse)
     if purse then
       g_game.use(purse)
-    end
-  end
-  
-  marketButton = inventoryWindow:recursiveGetChildById('marketButton')  
-  marketButton.onClick = function()
-    if modules.game_shop then
-      modules.game_shop.toggle()
     end
   end
   
@@ -211,7 +203,6 @@ function refresh()
   end
 
   purseButton:setVisible(g_game.getFeature(GamePurseSlot))
-  marketButton:setVisible(g_game.getFeature(GameIngameStore))
 end
 
 function toggle()
@@ -281,9 +272,9 @@ function update()
   safeFightButton:setChecked(not safeFight)
   if buttonPvp then
     if safeFight then
-      buttonPvp:setColor("#00BB00FF")
+      buttonPvp:setOn(false)
     else
-      buttonPvp:setColor("#FF0000FF")  
+      buttonPvp:setOn(true)  
     end
   end
   
@@ -384,9 +375,9 @@ function onSetSafeFight(self, checked)
   g_game.setSafeFight(not checked)
   if buttonPvp then
     if not checked then
-      buttonPvp:setColor("#00BB00FF")
+      buttonPvp:setOn(false)
     else
-      buttonPvp:setColor("#FF0000FF")  
+      buttonPvp:setOn(true)  
     end
   end
 end

@@ -18,7 +18,7 @@ function init()
                     onSpellCooldown = onSpellCooldown })
 
   cooldownButton = modules.client_topmenu.addRightGameToggleButton('cooldownButton', 
-    tr('Cooldowns'), '/images/topbuttons/cooldowns', toggle)
+    tr('Cooldowns'), '/images/topbuttons/cooldowns', toggle, false, 5)
   cooldownButton:setOn(true)
   cooldownButton:hide()
 

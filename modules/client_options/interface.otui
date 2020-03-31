@@ -1,7 +1,33 @@
 Panel
+  Label
+    width: 130
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    id: layoutLabel
+    !text: tr("Layout (change requries client restart)")
+  
+  ComboBox
+    id: layout
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    margin-right: 2
+    margin-left: 2
+    @onOptionChange: modules.client_options.setOption(self:getId(), self:getCurrentOption().text)
+    @onSetup: |
+      self:addOption("Default")
+      for _, file in ipairs(g_resources.listDirectoryFiles("/layouts", false, true)) do
+        if g_resources.directoryExists("/layouts/" .. file) then
+          self:addOption(file:gsub("^%l", string.upper))
+        end
+      end
+
   OptionCheckBox
     id: classicView
     !text: tr('Classic view')
+    margin-top: 5
 
   OptionCheckBox
     id: cacheMap

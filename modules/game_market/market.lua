@@ -832,18 +832,9 @@ local function initInterface()
 
   slotFilterList:addOption(MarketSlotFilters[255])
   slotFilterList:setEnabled(false)
-
-  for i = MarketCategory.First, MarketCategory.Last do
-    if i >= MarketCategory.Ammunition and i <= MarketCategory.WandsRods then
-      subCategoryList:addOption(getMarketCategoryName(i))
-    else
-      categoryList:addOption(getMarketCategoryName(i))
-    end
-  end
-  categoryList:addOption(getMarketCategoryName(255)) -- meta weapons
-  categoryList:setCurrentOption(getMarketCategoryName(MarketCategory.First))
-  subCategoryList:setEnabled(false)
-
+  
+  Market.updateCategories()
+  
   -- hook item filters
   categoryList.onOptionChange = onChangeCategory
   subCategoryList.onOptionChange = onChangeSubCategory
@@ -897,6 +888,7 @@ function init()
   protocol.initProtocol()
   connect(g_game, { onGameEnd = Market.reset })
   connect(g_game, { onGameEnd = Market.close })
+  connect(g_game, { onGameStart = Market.updateCategories })
   marketWindow = g_ui.createWidget('MarketWindow', rootWidget)
   marketWindow:hide()
 
@@ -911,6 +903,7 @@ function terminate()
   protocol.terminateProtocol()
   disconnect(g_game, { onGameEnd = Market.reset })
   disconnect(g_game, { onGameEnd = Market.close })
+  disconnect(g_game, { onGameStart = Market.updateCategories })
 
   destroyAmountWindow()
   marketWindow:destroy()
@@ -927,6 +920,28 @@ function Market.reset()
   if not table.empty(information) then
     Market.updateCurrentItems()
   end
+end
+
+function Market.updateCategories()
+  categoryList:clearOptions()
+  subCategoryList:clearOptions()
+  
+  local categories = {}
+  for _, c in ipairs(g_things.getMarketCategories()) do
+    table.insert(categories, getMarketCategoryName(c) or "Unknown")
+  end
+  table.sort(categories)
+  for _, c in ipairs(categories) do
+      categoryList:addOption(c)
+  end
+  
+  for i = MarketCategory.Ammunition, MarketCategory.WandsRods do
+    subCategoryList:addOption(getMarketCategoryName(i))
+  end
+  
+  categoryList:addOption(getMarketCategoryName(255)) -- meta weapons
+  categoryList:setCurrentOption(getMarketCategoryName(MarketCategory.First))
+  subCategoryList:setEnabled(false)
 end
 
 function Market.displayMessage(message)
@@ -1100,6 +1115,10 @@ function Market.loadMarketItems(category)
       category = MarketCategory.All
     end
   end
+  
+  if not marketItems[category] then
+    return
+  end
 
   if category == MarketCategory.All then
     -- loop all categories
@@ -1107,7 +1126,6 @@ function Market.loadMarketItems(category)
       for i = 1, #marketItems[category] do
         local item = marketItems[category][i]
         if isItemValid(item, category, searchFilter) then
-
           table.insert(currentItems, item)
         end
       end

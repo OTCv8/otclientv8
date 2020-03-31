@@ -255,8 +255,18 @@ MainWindow
       @onCheckChange: modules.game_npctrade.onShowAllItemsChange()
 
   Button
+    id: sellAllWithDelayButton
+    !text: tr('Sell all with delay')
+    width: 128
+    anchors.right: next.left
+    anchors.bottom: parent.bottom
+    margin-right: 10
+    visible: false
+    @onClick: modules.game_npctrade.sellAll(true)
+
+  Button
     id: sellAllButton
-    !text: tr('Sell All')
+    !text: tr('Sell all')
     width: 64
     anchors.right: next.left
     anchors.bottom: parent.bottom

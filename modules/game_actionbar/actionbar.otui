@@ -20,6 +20,9 @@ ActionButton < Panel
     &editable: false
     virtual: true
     
+    $!on:
+      image-source: /images/game/actionbarslot
+    
   Label
     id: text
     anchors.fill: parent
@@ -43,8 +46,7 @@ Panel
   id: actionBar
   anchors.left: parent.left
   anchors.right: parent.right
-  image-source: /images/ui/panel_bottom
-  image-border: 6
+  image-source: /images/ui/panel_map
   focusable: false
   
   $first:

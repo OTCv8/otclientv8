@@ -15,11 +15,11 @@ function load()
   
   local datPath, sprPath
   if things["data"] ~= nil and things["sprites"] ~= nil then
-    datPath = '/data/things/' .. things["data"]
+    datPath = '/things/' .. things["data"]
     if G.hdSprites and things["sprites_hd"] then
-      sprPath = '/data/things/' .. things["sprites_hd"]    
+      sprPath = '/things/' .. things["sprites_hd"]    
     else
-      sprPath = '/data/things/' .. things["sprites"]
+      sprPath = '/things/' .. things["sprites"]
     end
   else  
     if filename then

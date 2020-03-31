@@ -1,27 +1,74 @@
 function init()
   local files
-  files = g_resources.listDirectoryFiles('/styles')
+  local loaded_files = {}
+  local layout = g_resources:getLayout()
+  
+  local style_files = {}
+  if layout:len() > 0 then
+    loaded_files = {}
+    files = g_resources.listDirectoryFiles('/layouts/' .. layout .. '/styles')
+    for _,file in pairs(files) do
+      if g_resources.isFileType(file, 'otui') then
+        table.insert(style_files, file)
+        loaded_files[file] = true
+      end
+    end  
+  end
+  
+  files = g_resources.listDirectoryFiles('/data/styles')
   for _,file in pairs(files) do
+    if g_resources.isFileType(file, 'otui') and not loaded_files[file] then
+        table.insert(style_files, file)
+    end
+  end
+
+  table.sort(style_files)
+  for _,file in pairs(style_files) do
     if g_resources.isFileType(file, 'otui') then
       g_ui.importStyle('/styles/' .. file)
     end
   end
 
-  files = g_resources.listDirectoryFiles('/fonts')
-  for _,file in pairs(files) do
-    if g_resources.isFileType(file, 'otfont') then
-      g_fonts.importFont('/fonts/' .. file)
+  if layout:len() > 0 then
+    files = g_resources.listDirectoryFiles('/layouts/' .. layout .. '/fonts')
+    loaded_files = {}
+    for _,file in pairs(files) do
+      if g_resources.isFileType(file, 'otfont') then
+        g_ui.importFont('/layouts/' .. layout .. '/fonts/' .. file)
+        loaded_files[file] = true
+      end
     end
   end
 
-  files = g_resources.listDirectoryFiles('/particles')
+  files = g_resources.listDirectoryFiles('/data/fonts')
   for _,file in pairs(files) do
-    if g_resources.isFileType(file, 'otps')then
-      g_particles.importParticle('/particles/' .. file)
+    if g_resources.isFileType(file, 'otfont') and not loaded_files[file] then
+      g_fonts.importFont('/data/fonts/' .. file)
     end
   end
 
-  g_mouse.loadCursors('/cursors/cursors')
+  if layout:len() > 0 then
+    files = g_resources.listDirectoryFiles('/layouts/' .. layout .. '/particles')
+    loaded_files = {}
+    for _,file in pairs(files) do
+      if g_resources.isFileType(file, 'otps') then
+        g_ui.importParticle('/layouts/' .. layout .. '/particles/' .. file)
+        loaded_files[file] = true
+      end
+    end
+  end
+  
+  files = g_resources.listDirectoryFiles('/data/particles')
+  for _,file in pairs(files) do
+    if g_resources.isFileType(file, 'otps') and not loaded_files[file] then
+      g_particles.importParticle('/data/particles/' .. file)
+    end
+  end
+
+  g_mouse.loadCursors('/data/cursors/cursors')
+  if layout:len() > 0 and g_resources.directoryExists('/layouts/' .. layout .. '/cursors/cursors') then
+    g_mouse.loadCursors('/layouts/' .. layout .. '/cursors/cursors')    
+  end
 end
 
 function terminate()

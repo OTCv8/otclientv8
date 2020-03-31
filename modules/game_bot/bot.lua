@@ -33,7 +33,7 @@ function init()
   
   initCallbacks()  
   
-  botButton = modules.client_topmenu.addRightGameToggleButton('botButton', tr('Bot'), '/images/topbuttons/bot', toggle)
+  botButton = modules.client_topmenu.addRightGameToggleButton('botButton', tr('Bot'), '/images/topbuttons/bot', toggle, false, 99999)
   botButton:setOn(false)
   botButton:hide()
 

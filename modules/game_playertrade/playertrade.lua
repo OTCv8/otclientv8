@@ -39,16 +39,20 @@ function fillTrade(name, items, counter)
 
   local tradeContainer
   local label
+  local countLabel
   if counter then
     tradeContainer = tradeWindow:recursiveGetChildById('counterTradeContainer')
     label = tradeWindow:recursiveGetChildById('counterTradeLabel')
-
+    countLabel = tradeWindow:recursiveGetChildById('counterTradeCountLabel')
     tradeWindow:recursiveGetChildById('acceptButton'):enable()
   else
     tradeContainer = tradeWindow:recursiveGetChildById('ownTradeContainer')
     label = tradeWindow:recursiveGetChildById('ownTradeLabel')
+    countLabel = tradeWindow:recursiveGetChildById('ownTradeCountLabel')
   end
   label:setText(name)
+  countLabel:setText(tr("Items") .. ": " .. #items)
+  
 
   for index,item in ipairs(items) do
     local itemWidget = g_ui.createWidget('Item', tradeContainer)

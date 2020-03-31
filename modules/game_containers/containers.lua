@@ -1,6 +1,4 @@
 function init()
-  g_ui.importStyle('container')
-
   connect(Container, { onOpen = onContainerOpen,
                        onClose = onContainerClose,
                        onSizeChange = onContainerChangeSize,
@@ -50,10 +48,18 @@ function refreshContainerItems(container)
   end
 end
 
-function toggleContainerPages(containerWindow, pages)
-  containerWindow:getChildById('miniwindowScrollBar'):setMarginTop(pages and 42 or 22)
-  containerWindow:getChildById('contentsPanel'):setMarginTop(pages and 42 or 22)
-  containerWindow:getChildById('pagePanel'):setVisible(pages)
+function toggleContainerPages(containerWindow, hasPages)
+  if hasPages == containerWindow.pagePanel:isOn() then
+    return
+  end
+  containerWindow.pagePanel:setOn(hasPages)
+  if hasPages then
+    containerWindow.miniwindowScrollBar:setMarginTop(containerWindow.miniwindowScrollBar:getMarginTop() + containerWindow.pagePanel:getHeight())
+    containerWindow.contentsPanel:setMarginTop(containerWindow.contentsPanel:getMarginTop() + containerWindow.pagePanel:getHeight())  
+  else  
+    containerWindow.miniwindowScrollBar:setMarginTop(containerWindow.miniwindowScrollBar:getMarginTop() - containerWindow.pagePanel:getHeight())
+    containerWindow.contentsPanel:setMarginTop(containerWindow.contentsPanel:getMarginTop() - containerWindow.pagePanel:getHeight())
+  end
 end
 
 function refreshContainerPages(container)

@@ -1,4 +1,4 @@
-local windows = {}
+windows = {}
 
 function init()
   g_ui.importStyle('textwindow')

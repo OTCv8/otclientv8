@@ -20,7 +20,7 @@ OptionScrollbar < HorizontalScrollBar
 MainWindow
   id: optionsWindow
   !text: tr('Options')
-  size: 480 420
+  size: 480 460
 
   @onEnter: modules.client_options.hide()
   @onEscape: modules.client_options.hide()
@@ -38,6 +38,7 @@ MainWindow
     anchors.right: parent.right
     anchors.bottom: optionsTabBar.bottom
     margin-left: 10
+    margin-top: 3
 
   Button
     !text: tr('Ok')

@@ -125,6 +125,4 @@ MiniWindowContents < ScrollablePanel
   margin-right: 1
   vertical-scrollbar: miniwindowScrollBar
 
-BorderlessGameWindow < UIWindow
-  focusable: false
-  margin: 2
+HeadlessMiniWindow < MiniWindow

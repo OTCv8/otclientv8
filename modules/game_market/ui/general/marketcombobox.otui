@@ -1,4 +1,4 @@
-MarketComboBoxPopupMenuButton < ComboBoxRoundedPopupMenuButton
+MarketComboBoxPopupMenuButton < ComboBoxPopupMenuButton
   height: 18
   font: verdana-11px-rounded
   text-offset: 2 2
@@ -10,9 +10,9 @@ MarketComboBoxPopupMenuSeparator < UIWidget
   height: 1
   phantom: true
 
-MarketComboBoxPopupMenu < ComboBoxRoundedPopupMenu
+MarketComboBoxPopupMenu < ComboBoxPopupMenu
 
-MarketComboBox < ComboBoxRounded
+MarketComboBox < ComboBox
   font: verdana-11px-rounded
   size: 86 20
   text-offset: 3 2

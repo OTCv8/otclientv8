@@ -17,11 +17,9 @@ UI.Container = function(callback, unique, parent)
   
   local updateItems = function()
     local items = widget:getItems()
-    widget:setItems(items)
-    
+
     -- callback part
-    if not callback then return end
-    local somethingNew = false
+    local somethingNew = (#items ~= #oldItems)
     for i, item in ipairs(items) do
       if type(oldItems[i]) ~= "table" then
         somethingNew = true
@@ -32,10 +30,13 @@ UI.Container = function(callback, unique, parent)
         break      
       end
     end
+    
     if somethingNew then
       oldItems = items
       callback(items)
     end
+
+    widget:setItems(items)
   end
   
   widget.setItems = function(self, items)

@@ -129,7 +129,7 @@ function show()
   preyWindow:show()
   preyWindow:raise()
   preyWindow:focus()
-  g_game.preyRequest() -- update preys
+  --g_game.preyRequest() -- update preys, it's for tibia 12
 end
 
 function toggle()
@@ -201,7 +201,18 @@ function onPreyInactive(slot, timeUntilFreeReroll)
   prey.bonuses:hide()
   prey.button:hide()
   prey.bottomLabel:hide()
-  prey.bottomButton:hide()
+  
+  prey.bottomLabel:setText(tr("Free list reroll")..": \n" .. timeleftTranslation(timeUntilFreeReroll * 60)) 
+  prey.bottomLabel:show()
+  if timeUntilFreeReroll > 0 then
+    prey.bottomButton:setText(tr("Buy list reroll"))
+  else
+    prey.bottomButton:setText(tr("Free list reroll"))
+  end
+  prey.bottomButton:show()
+  prey.bottomButton.onClick = function()
+    g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
+  end  
 end
 
 function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll)
