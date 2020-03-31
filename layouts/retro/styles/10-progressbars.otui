@@ -1,0 +1,38 @@
+ProgressBar < UIProgressBar
+  height: 16
+  background-color: red
+  image-source: /images/ui/progressbar
+  image-border: 2
+  font: verdana-11px-rounded
+  text-offset: 0 2
+
+  $!on:
+    visible: false
+    margin-top: 0
+    margin-bottom: 0
+    height: 0
+
+LifeProgressBar < UIProgressBar
+  height: 16
+  background-color: green
+  border: 1 black
+  font: verdana-11px-rounded
+  text-offset: 0 2
+  margin: 2
+
+ProgressRect < UIProgressRect
+  anchors.fill: parent
+  phantom: true
+  color: white
+  background-color: #00000088
+  font: verdana-11px-rounded
+
+HealthBar < ProgressBar
+  image-source: /images/ui/progressbarhpmana
+  image-border: 3
+  background-color: #ff4444
+
+ManaBar < ProgressBar
+  image-source: /images/ui/progressbarhpmana
+  image-border: 4
+  background-color: #4444ff

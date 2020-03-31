@@ -1,0 +1,113 @@
+MoveableTabBar < UIMoveableTabBar
+  size: 80 21
+MoveableTabBarPanel < Panel
+MoveableTabBarButton < UIButton
+  size: 96 18
+  image-source: /images/ui/tabbutton_square
+  image-clip: 0 0 96 22
+  image-border: 3
+  image-border-bottom: 0
+  color: #7F7F7F
+  anchors.top: parent.top
+  anchors.left: parent.left
+  margin-top: 2
+  padding: 3
+
+  $checked:
+    image-clip: 0 36 96 22
+    color: #dfdfdf
+
+  $on !checked:
+    color: #F75F5F
+
+TabBar < UITabBar
+  size: 80 21
+  Panel
+    id: buttonsPanel
+    anchors.fill: parent
+TabBarPanel < Panel
+TabBarButton < UIButton
+  size: 17 18
+  image-source: /images/ui/tabbutton_square
+  image-color: #dfdfdf
+  image-clip: 0 0 98 18
+  image-border: 3
+  icon-color: #dfdfdf
+  color: #dfdfdf
+  anchors.top: parent.top
+  padding: 5
+
+  $first:
+    anchors.left: parent.left
+
+  $!first:
+    anchors.left: prev.right
+    margin-left: 5
+
+  $hover !checked:
+    image-clip: 0 18 98 18
+    color: #dfdfdf
+
+  $disabled:
+    image-color: #dfdfdf88
+    icon-color: #dfdfdf
+
+  $checked:
+    image-clip: 0 36 98 18
+    color: #dfdfdf
+
+  $on !checked:
+    color: #de6f6f
+
+TabBarRounded < TabBar
+TabBarRoundedPanel < TabBarPanel
+TabBarRoundedButton < TabBarButton
+  image-source: /images/ui/tabbutton_rounded
+
+TabBarVertical < UITabBar
+  width: 96
+  ScrollableFlatPanel
+    id: buttonsPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: scrollBar.left
+    anchors.bottom: parent.bottom
+    vertical-scrollbar: scrollBar
+    margin-right: 1
+    padding-top: 10
+    
+  VerticalScrollBar
+    id: scrollBar
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    step: 16
+    pixels-scroll: true
+    $!on:
+      width: 0
+
+TabBarVerticalPanel < Panel 
+TabBarVerticalButton < UIButton
+  size: 48 48
+  color: #aaaaaa
+  anchors.left: parent.left
+  anchors.right: parent.right
+  text-align: bottom
+  icon-align: top
+  icon-offset-y: 2
+  icon-color: #888888
+  $first:
+    anchors.top: parent.top
+  $!first:
+    anchors.top: prev.bottom
+    margin-top: 10
+  $hover !checked:
+    color: white
+    icon-color: #dfdfdf
+  $disabled:
+    icon-color: #333333
+  $checked:
+    icon-color: #ffffff
+    color: #80c7f8
+  $on !checked:
+    color: #F55E5E

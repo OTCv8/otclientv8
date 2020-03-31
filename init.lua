@@ -1,6 +1,7 @@
 -- CONFIG
 APP_NAME = "otclientv8" -- important, change it, it's name for config dir and files in appdata
 APP_VERSION = 1337      -- client version for updater and login to identify outdated client
+DEFAULT_LAYOUT = "retro"
 
 -- If you don't use updater or other service, set it to updater = ""
 Services = {
@@ -8,18 +9,19 @@ Services = {
   updater = "",
   stats = "",
   crash = "http://otclient.ovh/api/crash.php",
-  feedback = "http://otclient.ovh/api/feedback.php"
+  feedback = "",
+  status = "http://otclient.ovh/api/status.php"
 }
 
 -- Servers accept http login url, websocket login url or ip:port:version
 Servers = {
+--  OTClientV8c = "otclient.ovh:7171:1099:25:30:80:90",
 --  OTClientV8 = "http://otclient.ovh/api/login.php",
---  OTClientV8Websocket = "wss://otclient.ovh:3000/",
 --  OTClientV8proxy = "http://otclient.ovh/api/login.php?proxy=1",
---  OTClientV8ClassicWithFeatures = "otclient.ovh:7171:1099:25:30:80:90",
---  OTClientV8Classic = "otclient.ovh:7171:1099"
+--  OTClientV8Test = "http://otclient.ovh/api/login2.php", 
 }
-USE_NEW_ENERGAME = false -- uses entergamev2 based on websockets instead of entergame
+
+USE_NEW_ENERGAME = false -- not done yet
 ALLOW_CUSTOM_SERVERS = true -- if true it shows option ANOTHER on server list
 -- CONFIG END
 
@@ -57,6 +59,14 @@ end
 
 -- settings
 g_configs.loadSettings("/config.otml")
+
+-- set layout
+local settings = g_configs.getSettings()
+local layout = DEFAULT_LAYOUT
+if settings:exists('layout') then
+  layout = settings:getValue('layout')
+end
+g_resources.setLayout(layout)
 
 -- load mods
 g_modules.discoverModules()

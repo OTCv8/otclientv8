@@ -1,0 +1,9 @@
+Module
+  name: game_stats
+  description: Display ping and fps
+  author: otclient.ovh
+  website: http://otclient.ovh
+  sandboxed: true
+  scripts: [ stats ]
+  @onLoad: init()
+  @onUnload: terminate()

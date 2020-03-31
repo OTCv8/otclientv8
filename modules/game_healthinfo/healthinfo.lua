@@ -45,11 +45,14 @@ function init()
 
   connect(g_game, { onGameEnd = offline })
 
-  healthInfoButton = modules.client_topmenu.addRightGameToggleButton('healthInfoButton', tr('Health Information'), '/images/topbuttons/healthinfo', toggle)
-  healthInfoButton:setOn(true)
-
   healthInfoWindow = g_ui.loadUI('healthinfo', modules.game_interface.getRightPanel())
   healthInfoWindow:disableResize()
+  
+  if not healthInfoWindow.forceOpen then
+    healthInfoButton = modules.client_topmenu.addRightGameToggleButton('healthInfoButton', tr('Health Information'), '/images/topbuttons/healthinfo', toggle)
+    healthInfoButton:setOn(true)
+  end
+
   healthBar = healthInfoWindow:recursiveGetChildById('healthBar')
   manaBar = healthInfoWindow:recursiveGetChildById('manaBar')
   experienceBar = healthInfoWindow:recursiveGetChildById('experienceBar')
@@ -100,11 +103,14 @@ function terminate()
   disconnect(overlay, { onGeometryChange = onOverlayGeometryChange })
   
   healthInfoWindow:destroy()
-  healthInfoButton:destroy()
+  if healthInfoButton then
+    healthInfoButton:destroy()
+  end
   overlay:destroy()
 end
 
 function toggle()
+  if not healthInfoButton then return end
   if healthInfoButton:isOn() then
     healthInfoWindow:close()
     healthInfoButton:setOn(false)
@@ -140,7 +146,9 @@ end
 
 -- hooked events
 function onMiniWindowClose()
-  healthInfoButton:setOn(false)
+  if healthInfoButton then
+    healthInfoButton:setOn(false)
+  end
 end
 
 function onHealthChange(localPlayer, health, maxHealth)

@@ -20,6 +20,7 @@ MainWindow
     padding: 4 4 4 4
     size: 96 96
     fixed-creature-size: true
+    raw: true
 
   Label
     id: outfitName
@@ -54,6 +55,7 @@ MainWindow
     padding: 4 4 4 4
     size: 96 96
     fixed-creature-size: true
+    raw: true
 
   Label
     id: mountName

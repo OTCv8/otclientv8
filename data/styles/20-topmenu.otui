@@ -60,3 +60,56 @@ TopMenuFrameCounterLabel < Label
 
 TopMenuPingLabel < Label
   font: verdana-11px-rounded
+
+TopMenu < TopMenuPanel
+  id: topMenu
+  anchors.top: parent.top
+  anchors.left: parent.left
+  anchors.right: parent.right
+
+  TopMenuButtonsPanel
+    id: leftButtonsPanel
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+
+  TopMenuButtonsPanel
+    id: leftGameButtonsPanel
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: prev.right
+    visible: false
+
+  TopMenuFrameCounterLabel
+    id: fpsLabel
+    text-auto-resize: true
+    anchors.top: parent.top
+    anchors.left: leftGameButtonsPanel.right
+
+  TopMenuPingLabel
+    color: white
+    id: pingLabel
+    text-auto-resize: true
+    anchors.top: fpsLabel.bottom
+    anchors.left: fpsLabel.left
+
+  Label
+    id: onlineLabel
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    text-align: center
+    text-auto-resize: true
+
+  TopMenuButtonsPanel
+    id: rightButtonsPanel
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+  TopMenuButtonsPanel
+    id: rightGameButtonsPanel
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: prev.left
+    visible: false

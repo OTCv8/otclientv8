@@ -34,7 +34,9 @@ function UIMiniWindow:minimize(dontSave)
   self:getChildById('contentsPanel'):hide()
   self:getChildById('miniwindowScrollBar'):hide()
   self:getChildById('bottomResizeBorder'):hide()
-  self:getChildById('minimizeButton'):setOn(true)
+  if self.minimizeButton then
+    self.minimizeButton:setOn(true)
+  end
   self.maximizedHeight = self:getHeight()
   self:setHeight(self.minimizedHeight)
 
@@ -50,7 +52,9 @@ function UIMiniWindow:maximize(dontSave)
   self:getChildById('contentsPanel'):show()
   self:getChildById('miniwindowScrollBar'):show()
   self:getChildById('bottomResizeBorder'):show()
-  self:getChildById('minimizeButton'):setOn(false)
+  if self.minimizeButton then
+    self.minimizeButton:setOn(false)
+  end
   self:setHeight(self:getSettings('height') or self.maximizedHeight)
 
   if not dontSave then
@@ -96,18 +100,21 @@ function UIMiniWindow:setup()
       self:close()
     end
   if self.forceOpen then
-      self:getChildById('closeButton'):hide()
-      self:getChildById('minimizeButton'):addAnchor(AnchorRight, 'parent', AnchorRight)
+      if self.closeButton then
+        self.closeButton:hide()
+      end
   end
 
-  self:getChildById('minimizeButton').onClick =
-    function()
-      if self:isOn() then
-        self:maximize()
-      else
-        self:minimize()
+  if(self.minimizeButton) then
+    self.minimizeButton.onClick =
+      function()
+        if self:isOn() then
+          self:maximize()
+        else
+          self:minimize()
+        end
       end
-    end
+  end
   
   local lockButton = self:getChildById('lockButton')
   if lockButton then

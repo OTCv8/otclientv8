@@ -1,4 +1,5 @@
 local defaultOptions = {
+  layout = DEFAULT_LAYOUT, -- set in init.lua
   vsync = true,
   showFps = true,
   showPing = true,
@@ -33,8 +34,8 @@ local defaultOptions = {
   displayHealth = true,
   displayMana = true,
   displayHealthOnTop = false,
-  showHealthManaCircle = true,
-  hidePlayerBars = true,
+  showHealthManaCircle = false,
+  hidePlayerBars = false,
   highlightThingsUnderCursor = true,
   topHealtManaBar = true,
   displayText = true,
@@ -141,6 +142,8 @@ function setup()
       setOption(k, g_settings.getBoolean(k), true)
     elseif type(v) == 'number' then
       setOption(k, g_settings.getNumber(k), true)
+    elseif type(v) == 'string' then
+      setOption(k, g_settings.getString(k), true)
     end
   end
   
@@ -208,6 +211,7 @@ function setOption(key, value, force)
     end
     return
   end
+  
   if modules.game_interface == nil then
     return
   end
@@ -219,8 +223,14 @@ function setOption(key, value, force)
     g_window.setVerticalSync(value)
   elseif key == 'showFps' then
     modules.client_topmenu.setFpsVisible(value)
+    if modules.game_stats and modules.game_stats.ui.fps then
+      modules.game_stats.ui.fps:setVisible(value)
+    end
   elseif key == 'showPing' then
     modules.client_topmenu.setPingVisible(value)
+    if modules.game_stats and modules.game_stats.ui.ping then
+      modules.game_stats.ui.ping:setVisible(value)
+    end
   elseif key == 'fullscreen' then
     g_window.setFullscreen(value)
   elseif key == 'enableAudio' then
@@ -267,9 +277,9 @@ function setOption(key, value, force)
     if value == 1 then
       gameMapPanel:setCrosshair("")    
     elseif value == 2 then
-      gameMapPanel:setCrosshair("/data/images/crosshair/default.png")        
+      gameMapPanel:setCrosshair("/images/crosshair/default.png")        
     elseif value == 3 then
-      gameMapPanel:setCrosshair("/data/images/crosshair/full.png")    
+      gameMapPanel:setCrosshair("/images/crosshair/full.png")    
     end
   elseif key == 'ambientLight' then
     graphicsPanel:getChildById('ambientLightLabel'):setText(tr('Ambient light: %s%%', value))
@@ -322,7 +332,7 @@ function setOption(key, value, force)
     generalPanel:getChildById('walkTeleportDelayLabel'):setText(tr('Walk delay after teleport: %s ms', value))  
   elseif key == 'walkCtrlTurnDelay' then
     generalPanel:getChildById('walkCtrlTurnDelayLabel'):setText(tr('Walk delay after ctrl turn: %s ms', value))  
-  end  
+  end
 
   -- change value for keybind updates
   for _,panel in pairs(optionsTabBar:getTabsPanel()) do
@@ -333,11 +343,15 @@ function setOption(key, value, force)
       elseif widget:getStyle().__class == 'UIScrollBar' then
         widget:setValue(value)
       elseif widget:getStyle().__class == 'UIComboBox' then
-        if valur ~= nil or value < 1 then 
+        if type(value) == "string" then
+          widget:setCurrentOption(value, true)
+          break
+        end
+        if value == nil or value < 1 then 
           value = 1
         end
         if widget.currentIndex ~= value then
-          widget:setCurrentIndex(value)
+          widget:setCurrentIndex(value, true)
         end
       end      
       break

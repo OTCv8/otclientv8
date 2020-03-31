@@ -46,11 +46,19 @@ MarketCategory = {
   WandsRods = 21,
   PremiumScrolls = 22,
   TibiaCoins = 23,
+  CreatureProducs = 24,
+  Unknown1 = 25,
+  Unknown2 = 26,
+  StashRetrieve = 27,
+  Unknown3 = 28,
+  Unknown4 = 29,
+  Gold = 30,
+  Unassigned = 31,
   MetaWeapons = 255
 }
 
 MarketCategory.First = MarketCategory.Armors
-MarketCategory.Last = MarketCategory.TibiaCoins
+MarketCategory.Last = MarketCategory.Unassigned
 
 MarketCategoryWeapons = {
   [MarketCategory.Ammunition] = { slots = {255} },
@@ -86,6 +94,14 @@ MarketCategoryStrings = {
   [21] = 'Wands and Rods',
   [22] = 'Premium Scrolls',
   [23] = 'Tibia Coins',
+  [24] = 'Creature Products',
+  [25] = 'Unknown 1',
+  [26] = 'Unknown 2',
+  [27] = 'Stash Retrieve',
+  [28] = 'Unknown 3',
+  [29] = 'Unknown 4',
+  [30] = 'Gold',
+  [31] = 'Unassigned',  
   [255] = 'Weapons'
 }
 

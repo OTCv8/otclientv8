@@ -92,6 +92,9 @@ TabBarVertical < UITabBar
     anchors.right: scrollBar.left
     anchors.bottom: parent.bottom
     vertical-scrollbar: scrollBar
+    margin-right: 1
+    padding-top: 10
+
   VerticalScrollBar
     id: scrollBar
     anchors.top: parent.top

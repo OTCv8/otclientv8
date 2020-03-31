@@ -23,7 +23,6 @@ GameMapPanel < UIGameMap
 UIWidget
   id: gameRootPanel
   anchors.fill: parent
-  anchors.top: topMenu.bottom
   
   GameMapPanel
     id: gameMapPanel
@@ -77,4 +76,3 @@ UIWidget
     id: mouseGrabber
     focusable: false
     visible: false
-

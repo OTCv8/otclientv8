@@ -29,9 +29,10 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 - Crosshair, floor fading, extra health/mana bars and panels
 - Much more client options
 - Removed a lot of useless and outdated things
-- Advanced bot (https://github.com/OTCv8/otclientv8_bot)
+- Advanced bot
 - Linux version
 - Full tibia 11.00 support
+- Layouts
 - New login server (with ingame account and character creation)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 - Bot protection (extra paid option)
@@ -57,6 +58,7 @@ Open `init.lua` and edit:
 -- CONFIG
 APP_NAME = "otclientv8" -- important, change it, it's name for config dir and files in appdata
 APP_VERSION = 1337      -- client version for updater and login to indentify outdated client
+DEFAULT_LAYOUT = "retro"
 
 -- If you don't use updater or other service, set it to updater = ""
 Services = {

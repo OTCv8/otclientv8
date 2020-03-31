@@ -1,0 +1,16 @@
+GameButtonsWindow < HeadlessMiniWindow
+  height: 52
+  &forceOpen: true
+  &autoOpen: 4
+
+  MiniWindowContents
+    margin-top: 2
+    
+    Panel
+      id: buttons
+      anchors.fill: parent
+      layout:
+        type: grid
+        cell-spacing: 3
+        cell-size: 20 20
+        flow: true

@@ -1,0 +1,3 @@
+EnterGameWindow < StaticMainWindow
+  !text: tr('Enter Game')
+  size: 260 340

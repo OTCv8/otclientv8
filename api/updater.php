@@ -22,7 +22,7 @@ $data_dir = "/var/www/otclient/files";
 $things_dir = "/data/things"; // files from that dir won't be downloaded automaticly, you can set it to null to download everything automaticly (useful if you have only 1 version of data/sprites)
 $files_url = "http://otclient.ovh/files";
 $update_checksum_interval = 60; // caling updater 100x/s would lag disc, we need to cache it
-$main_files_and_dirs = array("data", "modules", "init.lua"); // used to ignore other files/dirs in data_dir
+$main_files_and_dirs = array("data", "modules", "layouts", "init.lua"); // used to ignore other files/dirs in data_dir
 
 // CONFIG END
 

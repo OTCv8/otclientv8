@@ -38,7 +38,7 @@ function init()
   })  
   
   if g_game.isOnline() then
-    show()
+    online()
   end
 end
 
@@ -51,14 +51,7 @@ function terminate()
   saveConfig()
 
   -- remove hotkeys
-  for index, panel in ipairs({actionPanel1, actionPanel2}) do
-    for i, child in ipairs(panel.tabBar:getChildren()) do
-      local gameRootPanel = modules.game_interface.getRootPanel()
-      if child.hotkey then
-        g_keyboard.unbindKeyPress(child.hotkey, child.callback, gameRootPanel)
-      end
-    end
-  end
+  offline()
 
   actionPanel1:destroy()
   actionPanel2:destroy()
@@ -66,8 +59,6 @@ end
 
 function show()
   if not g_game.isOnline() then return end
-  setupActionPanel(1, actionPanel1)
-  setupActionPanel(2, actionPanel2)
   actionPanel1:setOn(g_settings.getBoolean("actionBar1", false))
   actionPanel2:setOn(g_settings.getBoolean("actionBar2", false))
 end
@@ -88,6 +79,8 @@ function switchMode(newMode)
 end
 
 function online()
+  setupActionPanel(1, actionPanel1)
+  setupActionPanel(2, actionPanel2)
   show()
 end
 
@@ -98,6 +91,15 @@ function offline()
     hotkeyAssignWindow = nil
   end
   saveConfig()
+  
+  for index, panel in ipairs({actionPanel1, actionPanel2}) do
+    for i, child in ipairs(panel.tabBar:getChildren()) do
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      if child.hotkey then
+        g_keyboard.unbindKeyPress(child.hotkey, child.callback, gameRootPanel)
+      end
+    end
+  end
 end
 
 function setupActionPanel(index, panel)
@@ -143,8 +145,14 @@ function setupAction(index, action, config)
   action.callback = function(k, c, ticks) executeAction(action, ticks) end
 
   if config then
+    if type(config.text) == 'number' then
+      config.text = tostring(config.text)
+    end
+    if type(config.hotkey) == 'number' then
+      config.hotkey = tostring(config.hotkey)
+    end
     action.hotkey = config.hotkey
-    if action.hotkey and action.hotkey:len() > 0 then
+    if type(action.hotkey) == 'string' and action.hotkey:len() > 0 then
       local gameRootPanel = modules.game_interface.getRootPanel()
       g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
     end
@@ -156,6 +164,7 @@ function setupAction(index, action, config)
     if config.item > 0 then
       setupActionType(action, config.action)
     end
+    action.item:setOn(config.item > 0)
     action.item:setItemId(config.item)
     action.item:setItemCount(config.count)
   end
@@ -274,6 +283,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
     menu:addSeparator()
     menu:addOption(tr('Set text'), function() 
       modules.game_textedit.singlelineEditor(action.text:getText(), function(newText)
+        action.item:setOn(false)
         action.item:setItemId(0)
         action.text:setText(newText)
         if action.text:getText():len() > 0 then
@@ -303,7 +313,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
         if action.hotkey and action.hotkey:len() > 0 then
           g_keyboard.unbindKeyPress(action.hotkey, action.callback, gameRootPanel)
         end
-        action.hotkey = assignWindow.comboPreview.keyCombo
+        action.hotkey = tostring(assignWindow.comboPreview.keyCombo)
         if action.hotkey and action.hotkey:len() > 0 then
           g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
         end
@@ -338,6 +348,7 @@ function actionOnItemChange(widget)
   local action = widget:getParent()
   if action.item:getItemId() > 0 then
     action.text:setText("")
+    action.item:setOn(true)
     if action.item:getItem():isMultiUse() then
       if not action.actionType or action.actionType <= 1 then
         setupActionType(action, ActionTypes.USE_WITH)
