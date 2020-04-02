@@ -19,96 +19,135 @@ function destroyWindow()
   end
 end
 
-function show(widget)
-  if not widget then
-    return
+-- also works as show(text, callback)
+function show(text, options, callback) -- callback = function(newText)
+  --[[
+    Available options:
+      title = text
+      description = text
+      multiline = true / false
+      width = number
+      validation = text (regex)
+      examples = {{name, text}, {name, text}}
+  ]]--
+  if type(text) == 'userdata' then
+    local widget = text
+    callback = function(newText)
+      widget:setText(newText)
+    end
+    text = widget:getText()
+  elseif type(text) == 'number' then
+    text = tostring(text)
+  elseif type(text) == 'nil' then
+    text = ''
+  elseif type(text) ~= 'string' then
+    return error("Invalid text type for game_textedit: " .. type(text))
   end
+  if type(options) == 'function' then
+    local tmp = callback
+    callback = options
+    options = callback
+  end
+  options = options or {}
+
   if activeWindow then
     destroyWindow()
   end
-  local window = g_ui.createWidget('TextEditWindow', rootWidget)
-  
+
+  local window
+  if options.multiline then
+    window = g_ui.createWidget('MultilineTextEditWindow', rootWidget)
+    window.text = window.textPanel.text
+  else
+    window = g_ui.createWidget('SinglelineTextEditWindow', rootWidget)
+  end
+  -- functions
+  local validate = function(text)
+    if type(options.validation) ~= 'string' or options.validation:len() == 0 then
+      return true
+    end
+    return #regexMatch(text, options.validation) == 1
+  end
   local destroy = function()
     window:destroy()
-    if window == activeWindow then
-      activeWindow = nil
-    end
   end
   local doneFunc = function()
-    widget:setText(window.text:getText())
+    local text = window.text:getText()
+    if not validate(text) then return end
     destroy()
+    if callback then
+      callback(text)
+    end
   end
-
-  window.okButton.onClick = doneFunc
-  window.cancelButton.onClick = destroy
-  window.onEnter = doneFunc
+  
+  window.buttons.ok.onClick = doneFunc
+  window.buttons.cancel.onClick = destroy
+  if not options.multiline then
+    window.onEnter = doneFunc
+  end
   window.onEscape = destroy
-  
-  window.text:setText(widget:getText())
-  
-  activeWindow = window
-  activeWindow:raise()
-  activeWindow:focus()
-end
-
-function singlelineEditor(text, callback)
-  if activeWindow then
-    destroyWindow()
-  end
-  local window = g_ui.createWidget('TextEditWindow', rootWidget)
-  
-  local destroy = function()
-    window:destroy()
+  window.onDestroy = function()
     if window == activeWindow then
       activeWindow = nil
     end
   end
-
-  window.okButton.onClick = function() 
-    local text = window.text:getText()
-    destroy() 
-    callback(text) 
-  end
-  window.cancelButton.onClick = destroy
-  window.onEscape = destroy
-  window.onEnter = window.okButton.onClick
-    
-  window.text:setText(text)
-    
-  activeWindow = window
-  activeWindow:raise()
-  activeWindow:focus()
-end
-
-function multilineEditor(description, text, callback)
-  if activeWindow then
-    destroyWindow()
-  end
-  local window = g_ui.createWidget('TextEditMultilineWindow', rootWidget)
   
-  local destroy = function()
-    window:destroy()
-    if window == activeWindow then
-      activeWindow = nil
+  if options.title then
+    window:setText(options.title)
+  end
+  if options.description then
+    window.description:show()
+    window.description:setText(options.description)
+  end
+  if type(options.examples) == 'table' and #options.examples > 0 then
+    window.examples:show()
+    for i, title_text in ipairs(options.examples) do
+      window.examples:addOption(title_text[1], title_text[2])
+    end
+    window.examples.onOptionChange = function(widget, option, data)
+      window.text:setText(data)
+      window.text:setCursorPos(-1)
+    end
+  end
+  if type(options.validation) == 'string' and options.validation:len() > 0 then
+    window.buttons.ok:disable()
+    window.text.onTextChange = function(widget, text)
+      if validate(text) then
+        window.buttons.ok:enable()
+      else
+        window.buttons.ok:disable()
+      end
     end
   end
 
-  window.okButton.onClick = function() 
-    local text = window.text:getText()
-    destroy() 
-    callback(text) 
-  end
-  window.cancelButton.onClick = destroy
-  window.onEscape = destroy
-  
-  window.description:setText(description)
   window.text:setText(text)
-  
+  window.text:setCursorPos(-1)
+
+  if type(options.width) == 'number' then
+    window:setWidth(options.width)
+  end
+
   activeWindow = window
   activeWindow:raise()
   activeWindow:focus()
+  return activeWindow
 end
 
 function hide()
   destroyWindow()
 end
+
+function edit(...)
+  return show(...)
+end
+
+-- legacy
+function singlelineEditor(text, callback)
+  return show(text, {}, callback)
+end
+
+-- legacy
+function multilineEditor(description, text, callback)
+  return show(text, {description=description, multiline=true}, callback)
+end
+

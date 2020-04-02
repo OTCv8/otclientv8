@@ -2,7 +2,7 @@ Window < UIWindow
   font: verdana-11px-antialised
   size: 236 207
   opacity: 1
-  color: #8F8F8F
+  color: #AFAFAF
   text-offset: 0 2
   text-align: top
   image-source: /images/ui/window

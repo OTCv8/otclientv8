@@ -366,7 +366,8 @@ function initCallbacks()
     onAppear = botCreatureAppear,
     onDisappear = botCreatureDisappear,
     onPositionChange = botCreaturePositionChange,
-    onHealthPercentChange = botCraetureHealthPercentChange
+    onHealthPercentChange = botCraetureHealthPercentChange,
+    onTurn = botCreatureTurn
   })  
   
   connect(LocalPlayer, {
@@ -414,7 +415,8 @@ function terminateCallbacks()
     onAppear = botCreatureAppear,
     onDisappear = botCreatureDisappear,
     onPositionChange = botCreaturePositionChange,
-    onHealthPercentChange = botCraetureHealthPercentChange
+    onHealthPercentChange = botCraetureHealthPercentChange,
+    onTurn = botCreatureTurn
   })  
   
   disconnect(LocalPlayer, {
@@ -558,4 +560,9 @@ end
 function botChannelEvent(channelId, name, event)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onChannelEvent(channelId, name, event) end)
+end
+
+function botCreatureTurn(creature, direction)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onTurn(creature, direction) end)
 end

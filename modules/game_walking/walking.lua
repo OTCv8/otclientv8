@@ -350,7 +350,7 @@ function walk(dir, ticks)
     return
   end
   
-  if dash and lastWalkDir == dir and lastWalk + 30 > g_clock.millis() then
+  if dash and lastWalkDir == dir and lastWalk + 50 > g_clock.millis() then
     return
   end  
   

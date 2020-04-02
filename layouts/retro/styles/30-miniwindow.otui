@@ -2,7 +2,7 @@ MiniWindow < UIMiniWindow
   font: verdana-11px-antialised
   icon-rect: 4 2 13 13
   icon-clip: 0 0 20 20
-  color: #8F8F8F
+  color: #9F9F9F
   width: 190
   height: 200
   text-offset: 24 2
