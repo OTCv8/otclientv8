@@ -23,7 +23,7 @@ ComboBoxPopupMenuButton < UIButton
   height: 23
   font: verdana-11px-antialised
   text-align: left
-  text-offset: 4 0
+  text-offset: 5 2
   color: #dfdfdf
   background-color: alpha
   margin: 1
@@ -44,7 +44,7 @@ ComboBox < UIComboBox
   font: verdana-11px-antialised
   color: #dfdfdf
   size: 91 23
-  text-offset: 3 0
+  text-offset: 5 2
   text-align: left
   image-source: /images/ui/combobox_square
   image-border: 3
@@ -65,7 +65,7 @@ ComboBoxRoundedPopupScrollMenuButton < UIButton
   height: 23
   font: verdana-11px-antialised
   text-align: left
-  text-offset: 4 0
+  text-offset: 5 2
   color: #dfdfdf
   background-color: alpha
 
@@ -85,7 +85,7 @@ ComboBoxRoundedPopupMenuButton < UIButton
   height: 23
   font: verdana-11px-antialised
   text-align: left
-  text-offset: 4 0
+  text-offset: 5 2
   color: #dfdfdf
   background-color: alpha
 

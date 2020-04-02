@@ -59,7 +59,8 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onChannelList = {},
     onOpenChannel = {},
     onCloseChannel = {},
-    onChannelEvent = {}
+    onChannelEvent = {},
+    onTurn = {}
   }
   
   -- basic functions & classes
@@ -309,6 +310,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
       onChannelEvent = function(channelId, name, event)
         for i, callback in ipairs(context._callbacks.onChannelEvent) do
           callback(channelId, name, event)
+        end      
+      end,
+      onTurn = function(creature, direction)
+        for i, callback in ipairs(context._callbacks.onTurn) do
+          callback(creature, direction)
         end      
       end,
     }    

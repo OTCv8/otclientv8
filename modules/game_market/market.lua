@@ -78,6 +78,7 @@ currentItems = {}
 lastCreatedOffer = 0
 fee = 0
 averagePrice = 0
+tibiaCoins = 0
 
 loaded = false
 
@@ -198,8 +199,8 @@ local function addOffer(offer, offerType)
     if offer.var == MarketRequest.MyOffers then
       row = buyMyOfferTable:addRow({
         {text = itemName},
-        {text = price*amount},
-        {text = price},
+        {text = comma_value(price*amount), sortvalue = price*amount},
+        {text = comma_value(price), sortvalue = price},
         {text = amount},
         {text = string.gsub(os.date('%c', timestamp), " ", "  "), sortvalue = timestamp}
       })
@@ -207,8 +208,8 @@ local function addOffer(offer, offerType)
       row = buyOfferTable:addRow({
         {text = player},
         {text = amount},
-        {text = price*amount},
-        {text = price},
+        {text = comma_value(price*amount), sortvalue = price*amount},
+        {text = comma_value(price), sortvalue = price},
         {text = string.gsub(os.date('%c', timestamp), " ", "  ")}
       })
     end
@@ -227,8 +228,8 @@ local function addOffer(offer, offerType)
     if offer.var == MarketRequest.MyOffers then
       row = sellMyOfferTable:addRow({
         {text = itemName},
-        {text = price*amount},
-        {text = price},
+        {text = comma_value(price*amount), sortvalue = price*amount},
+        {text = comma_value(price), sortvalue = price},
         {text = amount},
         {text = string.gsub(os.date('%c', timestamp), " ", "  "), sortvalue = timestamp}
       })
@@ -236,8 +237,8 @@ local function addOffer(offer, offerType)
       row = sellOfferTable:addRow({
         {text = player},
         {text = amount},
-        {text = price*amount},
-        {text = price},
+        {text = comma_value(price*amount), sortvalue = price*amount},
+        {text = comma_value(price), sortvalue = price},
         {text = string.gsub(os.date('%c', timestamp), " ", "  "), sortvalue = timestamp}
       })
     end
@@ -462,7 +463,7 @@ local function updateBalance(balance)
   if balance < 0 then balance = 0 end
   information.balance = balance
 
-  balanceLabel:setText('Balance: '..balance..' gold')
+  balanceLabel:setText('Balance: '.. comma_value(balance) ..' gold')
   balanceLabel:resizeToText()
 end
 
@@ -473,7 +474,7 @@ local function updateFee(price, amount)
   elseif fee > 1000 then
     fee = 1000
   end
-  feeLabel:setText('Fee: '..fee)
+  feeLabel:setText('Fee: '.. comma_value(fee))
   feeLabel:resizeToText()
 end
 
@@ -521,11 +522,11 @@ local function openAmountWindow(callback, actionType, actionText)
   itembox:setItemId(item:getId())
 
   local scrollbar = amountWindow:getChildById('amountScrollBar')
-  scrollbar:setText(offer:getPrice()..'gp')
+  scrollbar:setText(comma_value(offer:getPrice()) ..'gp')
 
   scrollbar.onValueChange = function(widget, value)
-    widget:setText((value*offer:getPrice())..'gp')
-    itembox:setText(value)
+    widget:setText(comma_value(value*offer:getPrice())..'gp')
+    itembox:setText(comma_value(value))
   end
   scrollbar:setRange(1, maximum)
   scrollbar:setValue(1)
@@ -743,7 +744,7 @@ local function initInterface()
   -- setup 'Market Offer' section tabs
   marketOffersPanel = g_ui.loadUI('ui/marketoffers')
   mainTabBar:addTab(tr('Market Offers'), marketOffersPanel)
-
+  
   selectionTabBar = marketOffersPanel:getChildById('leftTabBar')
   selectionTabBar:setContentWidget(marketOffersPanel:getChildById('leftTabContent'))
 
@@ -770,7 +771,7 @@ local function initInterface()
 
   -- setup 'My Offer' section tabs
   myOffersPanel = g_ui.loadUI('ui/myoffers')
-  mainTabBar:addTab(tr('My Offers'), myOffersPanel)
+  local myOffersTab = mainTabBar:addTab(tr('My Offers'), myOffersPanel)
 
   offersTabBar = myOffersPanel:getChildById('offersTabBar')
   offersTabBar:setContentWidget(myOffersPanel:getChildById('offersTabContent'))
@@ -782,6 +783,12 @@ local function initInterface()
   offersTabBar:addTab(tr('Offer History'), offerHistoryPanel)
 
   balanceLabel = marketWindow:getChildById('balanceLabel')
+
+  mainTabBar.onTabChange = function(widget, tab)
+    if tab == myOffersTab then
+      Market.refreshMyOffers()
+    end
+  end
 
   -- setup offers
   buyButton = itemOffersPanel:getChildById('buyButton')
@@ -889,6 +896,8 @@ function init()
   connect(g_game, { onGameEnd = Market.reset })
   connect(g_game, { onGameEnd = Market.close })
   connect(g_game, { onGameStart = Market.updateCategories })
+  connect(g_game, { onCoinBalance = Market.onCoinBalance })
+  
   marketWindow = g_ui.createWidget('MarketWindow', rootWidget)
   marketWindow:hide()
 
@@ -904,6 +913,7 @@ function terminate()
   disconnect(g_game, { onGameEnd = Market.reset })
   disconnect(g_game, { onGameEnd = Market.close })
   disconnect(g_game, { onGameStart = Market.updateCategories })
+  disconnect(g_game, { onCoinBalance = Market.onCoinBalance })
 
   destroyAmountWindow()
   marketWindow:destroy()
@@ -1076,7 +1086,7 @@ function Market.refreshItemsWidget(selectItem)
 
     local amount = Market.getDepotCount(item.marketData.tradeAs)
     if amount > 0 then
-      itemWidget:setText(amount)
+      itemWidget:setText(comma_value(amount))
       itemBox:setTooltip('You have '.. amount ..' in your depot.')
     end
 
@@ -1116,7 +1126,7 @@ function Market.loadMarketItems(category)
     end
   end
   
-  if not marketItems[category] then
+  if not marketItems[category] and category ~= MarketCategory.All then
     return
   end
 
@@ -1253,6 +1263,11 @@ function Market.onMarketEnter(depotItems, offers, balance, vocation)
   -- set list of depot items
   information.depotItems = depotItems
 
+  for i = 1, #marketItems[MarketCategory.TibiaCoins] do
+    local item = marketItems[MarketCategory.TibiaCoins][i].displayItem
+    depotItems[item:getId()] = tibiaCoins
+  end
+  
   -- update the items widget to match depot items
   if Market.isItemSelected() then
     local spriteId = selectedItem.item.marketData.tradeAs
@@ -1283,4 +1298,13 @@ end
 
 function Market.onMarketBrowse(offers)
   updateOffers(offers)
+end
+
+function Market.onCoinBalance(coins, transferableCoins)
+  tibiaCoins = coins
+  if not marketItems[MarketCategory.TibiaCoins] then return end
+  for i = 1, #marketItems[MarketCategory.TibiaCoins] do
+    local item = marketItems[MarketCategory.TibiaCoins][i].displayItem
+    depotItems[item:getId()] = tibiaCoins
+  end  
 end

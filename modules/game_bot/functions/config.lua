@@ -166,7 +166,7 @@ Config.setup = function(dir, widget, configExtension, callback)
   end
   
   widget.add.onClick = function()
-    context.UI.SinglelineEditorWindow("config_name", function(name)
+    context.UI.SinglelineEditorWindow("config_name", {title="Enter config name"}, function(name)
       name = name:gsub("%s+", "_")
       if name:len() == 0 or name:len() >= 30 or name:find("/") or name:find("\\") then
         return context.error("Invalid config name")
@@ -185,8 +185,7 @@ Config.setup = function(dir, widget, configExtension, callback)
   widget.edit.onClick = function()
     local name = context.storage._configs[dir].selected
     if not name then return end
-    context.UI.MultilineEditorWindow("Config editor - " .. name .. " in " .. dir, 
-      Config.loadRaw(dir, name), function(newValue)
+    context.UI.MultilineEditorWindow(Config.loadRaw(dir, name), {title="Config editor - " .. name .. " in " .. dir}, function(newValue)
         local data = Config.parse(newValue)
         Config.save(dir, name, data, configExtension)
         refresh()

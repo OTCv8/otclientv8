@@ -1,2 +1,3 @@
 BattleButton < CreatureButton
   &isBattleButton: true
+  optimized: true

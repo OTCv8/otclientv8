@@ -1,73 +1,72 @@
+TextEditButtons < Panel
+  id: buttons
+  height: 30
+
+  Button
+    id: ok
+    !text: tr('Ok')
+    anchors.bottom: parent.bottom
+    anchors.right: next.left
+    margin-right: 10
+    width: 60
+
+  Button
+    id: cancel
+    !text: tr('Cancel')
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    width: 60
+
 TextEditWindow < MainWindow
   id: textedit
-  size: 260 105
   !text: tr("Edit text")
-  
-  TextEdit
-    id: text
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-
-  Button
-    id: okButton
-    !text: tr('Ok')
-    anchors.bottom: parent.bottom
-    anchors.right: next.left
-    margin-right: 10
-    width: 60
-
-  Button
-    id: cancelButton
-    !text: tr('Cancel')
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
-    width: 60
-
-TextEditMultilineWindow < MainWindow
-  id: texteditmultiline
-  size: 650 497
-  !text: tr("Edit text")
-  
+  layout:
+    type: verticalBox
+    fit-children: true
+    
   Label
     id: description
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-    text-auto-resize: true
     text-align: center
+    text: description
+    margin-bottom: 5
+    visible: false
     text-wrap: true
+    text-auto-resize: true
+  
+  ComboBox
+    id: examples
+    margin-bottom: 5
+    visible: false
 
-  MultilineTextEdit
+SinglelineTextEditWindow < TextEditWindow
+  width: 250
+
+  TextEdit
     id: text
-    anchors.top: textScroll.top
-    anchors.left: parent.left
-    anchors.right: textScroll.left
-    anchors.bottom: textScroll.bottom
-    vertical-scrollbar: textScroll
-    text-wrap: true
     
-  VerticalScrollBar
-    id: textScroll
-    anchors.top: description.bottom
-    anchors.bottom: okButton.top
-    anchors.right: parent.right
-    margin-bottom: 10
-    step: 16
-    pixels-scroll: true
+  TextEditButtons
 
-  Button
-    id: okButton
-    !text: tr('Ok')
-    anchors.bottom: parent.bottom
-    anchors.right: next.left
-    margin-right: 10
-    width: 60
+MultilineTextEditWindow < TextEditWindow
+  width: 600
 
-  Button
-    id: cancelButton
-    !text: tr('Cancel')
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
-    width: 60
+  Panel
+    id: textPanel
+    height: 400
+
+    MultilineTextEdit
+      id: text
+      anchors.fill: parent
+      margin-right: 12
+      text-wrap: true
+      vertical-scrollbar: textScroll
+
+    VerticalScrollBar
+      id: textScroll
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      pixels-scroll: true
+      step: 10
+    
+  TextEditButtons
 

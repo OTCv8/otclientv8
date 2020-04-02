@@ -29,7 +29,7 @@ BotConfig < Panel
     anchors.top: prev.bottom
     anchors.left: parent.left
     text: Add
-    width: 59
+    width: 56
     height: 20
 
   Button
@@ -37,7 +37,7 @@ BotConfig < Panel
     anchors.top: prev.top
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
-    width: 59
+    width: 56
     height: 20
 
   Button
@@ -45,5 +45,5 @@ BotConfig < Panel
     anchors.top: prev.top
     anchors.right: parent.right
     text: Remove
-    width: 59
+    width: 56
     height: 20

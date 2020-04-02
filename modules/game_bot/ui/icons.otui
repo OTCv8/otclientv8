@@ -22,6 +22,7 @@ BotIcon < UIWidget
     margin-top: 0
     size: 48 48
     phantom: true
+    optimized: true
   
   UIWidget
     id: status

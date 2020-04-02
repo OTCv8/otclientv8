@@ -146,6 +146,10 @@ context.onChannelEvent = function(callback)
   return context.callback("onChannelEvent", callback)
 end
 
+-- onTurn -- callback = function(creature, direction)
+context.onTurn = function(callback)
+  return context.callback("onTurn", callback)
+end
 
 
 -- CUSTOM CALLBACKS

@@ -4,12 +4,31 @@ if type(context.UI) ~= "table" then
 end
 local UI = context.UI
 
-UI.SinglelineEditorWindow = function(text, callback)
-  return modules.game_textedit.singlelineEditor(text, callback)
+UI.EditorWindow = function(text, options, callback)
+  --[[
+    Available options:
+      title = text
+      description = text
+      multiline = true / false
+      width = number
+      validation = text (regex)
+      examples = {{name, text}, {name, text}}
+  ]]--
+  local window = modules.game_textedit.edit(text, options, callback)
+  window.botWidget = true
+  return window
 end
 
-UI.MultilineEditorWindow = function(description, test, callback)
-  return modules.game_textedit.multilineEditor(description, test, callback)
+UI.SinglelineEditorWindow = function(text, options, callback)
+  options = options or {}
+  options.multiline = false
+  return UI.EditorWindow(text, options, callback)
+end
+
+UI.MultilineEditorWindow = function(text, options, callback)
+  options = options or {}
+  options.multiline = true
+  return UI.EditorWindow(text, options, callback)
 end
 
 UI.ConfirmationWindow = function(title, question, callback)
