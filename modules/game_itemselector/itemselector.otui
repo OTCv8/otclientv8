@@ -50,6 +50,13 @@ ItemSelectorWindow < MainWindow
     !text: tr("Count / SubType")
 
   Button
+    id: clearButton
+    !text: tr('Clear')
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    width: 60
+  
+  Button
     id: okButton
     !text: tr('Ok')
     anchors.bottom: parent.bottom

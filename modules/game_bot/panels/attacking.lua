@@ -581,7 +581,7 @@ Panel
       newConfig = "name:" .. configName .. "\n"
     end
     for monster, config in pairs(monsters) do
-      newConfig = newConfig .. "\n" .. monster .. ":" .. json.encode(config) .. "\n"
+      newConfig = newConfig .. "\n" .. monster .. ":" .. json.encode(config, 2) .. "\n"
     end    
 
     context.storage.attacking.configs[context.storage.attacking.activeConfig] = newConfig

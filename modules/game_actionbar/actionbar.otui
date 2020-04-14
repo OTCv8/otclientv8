@@ -26,9 +26,10 @@ ActionButton < Panel
   Label
     id: text
     anchors.fill: parent
-    margin: 3 3 3 3
+    margin: 1 1 1 1
     text-auto-resize: true
     text-wrap: true
+    phantom: true
     text-align: center
     font: verdana-9px
 
@@ -39,8 +40,18 @@ ActionButton < Panel
     margin: 2 3 3 3
     text-auto-resize: true
     text-wrap: false
+    phantom: true
     font: small-9px
-    color: #D3D3D3
+    color: yellow
+
+  UIProgressRect
+    id: cooldown
+    background: #585858AA
+    percent: 100
+    focusable: false
+    phantom: true
+    anchors.fill: parent
+    margin: 1 1 1 1
     
 Panel
   id: actionBar

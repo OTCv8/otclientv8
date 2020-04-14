@@ -29,6 +29,20 @@ context.callback = function(callbackType, callback)
       context._currentExecution = prevExecution
     end
   end)
+  local cb = context._callbacks[callbackType]
+  return {
+    remove = function()
+      local index = nil
+      for i, cb2 in ipairs(context._callbacks[callbackType]) do
+        if cb == cb2 then
+          index = i
+        end
+      end
+      if index then
+        table.remove(context._callbacks[callbackType], index)
+      end
+    end
+  }
 end
 
 -- onKeyDown(callback) -- callback = function(keys)
@@ -158,7 +172,7 @@ end
 context.listen = function(name, callback)
   if not name then return context.error("listen: invalid name") end
   name = name:lower()
-  context.onTalk(function(name2, level, mode, text, channelId, pos)
+  return context.onTalk(function(name2, level, mode, text, channelId, pos)
     if name == name2:lower() then
       callback(text, channelId, pos)
     end
@@ -167,7 +181,7 @@ end
 
 -- onPlayerPositionChange(callback) -- callback = function(newPos, oldPos)
 context.onPlayerPositionChange = function(callback)
-  context.onCreaturePositionChange(function(creature, newPos, oldPos)
+  return context.onCreaturePositionChange(function(creature, newPos, oldPos)
     if creature == context.player then
       callback(newPos, oldPos)
     end
@@ -176,7 +190,7 @@ end
 
 -- onPlayerHealthChange(callback) -- callback = function(healthPercent)
 context.onPlayerHealthChange = function(callback)
-  context.onCreatureHealthPercentChange(function(creature, healthPercent)
+  return context.onCreatureHealthPercentChange(function(creature, healthPercent)
     if creature == context.player then
       callback(healthPercent)
     end

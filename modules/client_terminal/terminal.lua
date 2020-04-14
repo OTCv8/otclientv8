@@ -337,7 +337,7 @@ function executeCommand(command)
   -- detect and convert commands with simple syntax
   local realCommand
   if string.sub(command, 1, 1) == '=' then
-    realCommand = 'print(' .. string.sub(command,2) .. ')'
+    realCommand = 'print(tostring(' .. string.sub(command,2) .. '))'
   else
     realCommand = command
   end
@@ -363,6 +363,8 @@ function executeCommand(command)
     addLine('ERROR: incorrect lua syntax: ' .. err:sub(5), 'red')
     return
   end
+  
+  commandEnv['player'] = g_game.getLocalPlayer()
 
   -- setup func env to commandEnv
   setfenv(func, commandEnv)

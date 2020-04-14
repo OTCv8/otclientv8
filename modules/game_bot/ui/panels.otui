@@ -1,6 +1,6 @@
 DualScrollPanel < Panel
-  height: 55
-  margin-top: 2
+  height: 51
+  margin-top: 3
       
   SmallBotSwitch
     id: title
@@ -36,6 +36,8 @@ DualScrollPanel < Panel
     anchors.right: parent.right
     anchors.top: scroll1.bottom
     margin-top: 3
+    margin-left: 2
+    margin-right: 1
 
 SingleScrollItemPanel < Panel
   height: 45
@@ -66,8 +68,8 @@ SingleScrollItemPanel < Panel
     step: 1
 
 DualScrollItemPanel < Panel
-  height: 37
-  margin-top: 2
+  height: 33
+  margin-top: 3
     
   BotItem
     id: item
@@ -197,23 +199,26 @@ ItemAndSlotPanel < Panel
     height: 20
 
 TwoItemsAndSlotPanel < Panel
-  height: 37
+  height: 35
+  margin-top: 4
       
   BotItem
     id: item1
     anchors.left: parent.left
     anchors.top: parent.top
+    margin-top: 1
 
   BotItem
     id: item2
     anchors.left: prev.right
     anchors.top: prev.top
+    margin-left: 1
     
   SmallBotSwitch
     id: title
     anchors.left: prev.right
     anchors.right: parent.right
-    anchors.top: prev.top
+    anchors.top: parent.top
     text-align: center
     margin-left: 2
     margin-top: 0

@@ -33,9 +33,10 @@ Config.list = function(dir)
   return correctList
 end
 
--- load config from string insteaf of dile
+-- load config from string insteaf of file
 Config.parse = function(data)
   local status, result = pcall(function()
+    if data:len() < 2 then return {} end
     return json.decode(data)
   end)
   if status and type(result) == 'table' then 
@@ -51,13 +52,29 @@ Config.parse = function(data)
 end
 
 Config.load = function(dir, name)
-  local file = context.configDir .. "/" .. dir .. "/" .. name .. ".json"
+  local file = context.configDir .. "/" .. dir .. "/" .. name .. ".json"  
   if g_resources.fileExists(file) then -- load json
-    return json.decode(g_resources.readFileContents(file))
+      local status, result = pcall(function()
+        local data = g_resources.readFileContents(file)
+        if data:len() < 2 then return {} end
+        return json.decode(data)
+      end)
+      if not status then
+        context.error("Invalid json config (" .. name .. "): " .. result)
+        return {}
+      end
+      return result
   end 
   file = context.configDir .. "/" .. dir .. "/" .. name .. ".cfg"
   if g_resources.fileExists(file) then -- load cfg
-    return table.decodeStringPairList(g_resources.readFileContents(file))
+    local status, result = pcall(function()
+      return table.decodeStringPairList(g_resources.readFileContents(file))
+    end)
+    if not status then
+      context.error("Invalid cfg config (" .. name .. "): " .. result)
+      return {}
+    end
+    return result
   end   
   return context.error("Config " .. file .. " doesn't exist")
 end
@@ -87,7 +104,7 @@ Config.save = function(dir, name, value, forcedExtension)
   if (table.isStringPairList(value) and forcedExtension ~= "json") or forcedExtension == "cfg" then -- cfg
     g_resources.writeFileContents(file .. ".cfg", table.encodeStringPairList(value))
   else
-    g_resources.writeFileContents(file .. ".json", json.encode(value))    
+    g_resources.writeFileContents(file .. ".json", json.encode(value, 2))    
   end
   return true
 end
@@ -175,7 +192,11 @@ Config.setup = function(dir, widget, configExtension, callback)
       if g_resources.fileExists(file) then
         return context.error("Config " .. name .. " already exist")
       end
-      g_resources.writeFileContents(file, "")
+      if configExtension == "json" then
+        g_resources.writeFileContents(file, json.encode({}))
+      else
+        g_resources.writeFileContents(file, "")      
+      end
       context.storage._configs[dir].selected = name
       widget.switch:setOn(false)
       refresh()

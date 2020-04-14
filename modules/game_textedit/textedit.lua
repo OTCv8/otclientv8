@@ -28,6 +28,7 @@ function show(text, options, callback) -- callback = function(newText)
       multiline = true / false
       width = number
       validation = text (regex)
+      range = {number, number}
       examples = {{name, text}, {name, text}}
   ]]--
   if type(text) == 'userdata' then
@@ -63,10 +64,13 @@ function show(text, options, callback) -- callback = function(newText)
   end
   -- functions
   local validate = function(text)
-    if type(options.validation) ~= 'string' or options.validation:len() == 0 then
-      return true
+    if type(options.range) == 'table' then
+      local value = tonumber(text)
+      return value >= options.range[1] and value <= options.range[2]
+    elseif type(options.validation) == 'string' and options.validation:len() > 0 then
+      return #regexMatch(text, options.validation) == 1
     end
-    return #regexMatch(text, options.validation) == 1
+    return true
   end
   local destroy = function()
     window:destroy()
@@ -109,7 +113,7 @@ function show(text, options, callback) -- callback = function(newText)
       window.text:setCursorPos(-1)
     end
   end
-  if type(options.validation) == 'string' and options.validation:len() > 0 then
+  if type(options.range) == 'table' or (type(options.validation) == 'string' and options.validation:len() > 0) then
     window.buttons.ok:disable()
     window.text.onTextChange = function(widget, text)
       if validate(text) then

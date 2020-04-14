@@ -1,7 +1,8 @@
 <?php
-// set chmod 777 to dir with this file to create checksum files
-$data = file_get_contents("php://input");
-$data = json_decode($data);
+// set write permission or chmod 777 to dir with this file to let it create checksum files
+$data = json_decode(file_get_contents("php://input"));
+$platform = "";
+$version = 0;
 if(!empty($data)) {
     $platform = $data->platform;
     $version = $data->version; // currently not used
@@ -19,7 +20,6 @@ if($platform == "WIN32-WGL") { // opengl
 }
 
 $data_dir = "/var/www/otclient/files";
-$things_dir = "/data/things"; // files from that dir won't be downloaded automaticly, you can set it to null to download everything automaticly (useful if you have only 1 version of data/sprites)
 $files_url = "http://otclient.ovh/files";
 $update_checksum_interval = 60; // caling updater 100x/s would lag disc, we need to cache it
 $main_files_and_dirs = array("data", "modules", "layouts", "init.lua"); // used to ignore other files/dirs in data_dir
@@ -48,23 +48,18 @@ function updateChecksums() {
     global $binary_path;
     global $checksums_file;
     global $data;
-    global $things_dir;
     
 	$ret = array();
 	$data_dir_realpath = realpath($data_dir);
 	$files = getDirFiles($data_dir);
 	foreach($files as $file) {
 		$relative_path = str_replace($data_dir_realpath, "", $file);
-        $ps = explode("/", $relative_path);
+        $ps = explode(DIRECTORY_SEPARATOR, $relative_path);
         if($relative_path == $binary_path || (count($ps) >= 2 && in_array($ps[1], $main_files_and_dirs)))
             $ret[$relative_path] = md5_file($file);
 	}	
     foreach($ret as $file => $checksum) {
-        if($things_dir != null && !empty($things_dir) && strpos($file, $things_dir) === 0) {
-            $data["things"][$file] = $checksum;
-        } else {
-            $data["files"][$file] = $checksum;    
-        }
+        $data["files"][$file] = $checksum;    
     }	    
     $ret = json_encode($data);
     if(file_put_contents($checksums_file, $ret) === FALSE) {
@@ -84,7 +79,8 @@ if (function_exists('sem_get')) {
         
     sem_acquire($semaphore);
 }
-$ft = filemtime($checksums_file);
+
+$ft = file_exists($checksums_file) ? filemtime($checksums_file) : false;
 if($ft === false || $ft + $update_checksum_interval < time()) {
     echo updateChecksums();
 } else {

@@ -38,7 +38,13 @@ function show(itemWidget)
     itemWidget:setItem(Item.create(window.item:getItemId(), window.item:getItemCount()))
     destroy()
   end
-
+  local clearFunc = function()
+    window.item:setItemId(0)
+    window.item:setItemCount(0)
+    doneFunc()
+  end
+  
+  window.clearButton.onClick = clearFunc
   window.okButton.onClick = doneFunc
   window.cancelButton.onClick = destroy
   window.onEnter = doneFunc

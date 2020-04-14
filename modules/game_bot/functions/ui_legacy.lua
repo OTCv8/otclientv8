@@ -1,5 +1,8 @@
 local context = G.botContext
 
+-- DO NOT USE THIS CODE.
+-- IT'S ONLY HERE FOR BACKWARD COMPATIBILITY, MAY BE REMOVED IN THE FUTURE
+
 context.createWidget = function(name, parent)
   if parent == nil then      
     parent = context.panel
@@ -32,11 +35,11 @@ context.addTab = function(name)
     return tab.tabPanel.content
   end
   
-  context.tabs:setOn(true)
+  local smallTabs = #(context.tabs.tabs) >= 5
   local newTab = context.tabs:addTab(name, g_ui.createWidget('BotPanel')).tabPanel.content
-  if #(context.tabs.tabs) > 5 then
+  context.tabs:setOn(true)
+  if smallTabs then
     for k,tab in pairs(context.tabs.tabs) do
-      tab:setPadding(3)
       tab:setFont('small-9px')
     end
   end

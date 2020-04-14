@@ -154,7 +154,7 @@ function sendStats()
     g_stats.clearSlow(i - 1)
   end
   data.widgets = g_stats.getWidgetsInfo(10, false)
-  data = json.encode(data)
+  data = json.encode(data, 1)
   if Services.stats ~= nil and Services.stats:len() > 3 then
     g_http.post(Services.stats, data)
   end
