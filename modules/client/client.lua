@@ -54,6 +54,8 @@ end
 function init()
   connect(g_app, { onRun = startup,
                    onExit = exit })
+  connect(g_game, { onGameStart = onGameStart,
+                    onGameEnd = onGameEnd })
 
   g_window.setMinimumSize({ width = 800, height = 600 })
   if g_sounds ~= nil then
@@ -102,6 +104,8 @@ end
 function terminate()
   disconnect(g_app, { onRun = startup,
                       onExit = exit })
+  disconnect(g_game, { onGameStart = onGameStart,
+                       onGameEnd = onGameEnd })
   -- save window configs
   g_settings.set('window-size', g_window.getUnmaximizedSize())
   g_settings.set('window-pos', g_window.getUnmaximizedPos())
@@ -110,4 +114,14 @@ end
 
 function exit()
   g_logger.info("Exiting application..")
+end
+
+function onGameStart()
+  local player = g_game.getLocalPlayer()
+  if not player then return end
+  g_window.setTitle(g_app.getName() .. " - " .. player:getName())  
+end
+
+function onGameEnd()
+  g_window.setTitle(g_app.getName())
 end

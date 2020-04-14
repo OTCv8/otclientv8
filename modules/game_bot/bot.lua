@@ -67,9 +67,6 @@ function terminate()
   })
   
   terminateCallbacks()
-
-  removeEvent(checkEvent)
-
   editWindow:destroy()
 
   botWindow:destroy()
@@ -117,6 +114,7 @@ end
 
 
 function refresh()
+  if not g_game.isOnline() then return end
   save()
   clear()
   
@@ -219,7 +217,7 @@ function save()
   end
   
   local status, result = pcall(function() 
-    return json.encode(botStorage) 
+    return json.encode(botStorage, 2) 
   end)
   if not status then
     return onError("Error while saving bot storage. Storage won't be saved. Details: " .. result)
@@ -284,11 +282,27 @@ function createDefaultConfigs()
     for i, file in ipairs(defaultConfigFiles) do
       local baseName = file:split("/")
       baseName = baseName[#baseName]
-      local contents = g_resources.readFileContents(file)
-      if contents:len() > 0 then
-        g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+      if g_resources.directoryExists(file) then
+        g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
+        if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
+          return onError("Can't create /bot/" .. config_name  .. "/" .. baseName .. " directory in " .. g_resources.getWriteDir())
+        end
+        local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
+        for i, file in ipairs(defaultConfigFiles2) do
+          local baseName2 = file:split("/")
+          baseName2 = baseName2[#baseName2]
+          local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
+          if contents:len() > 0 then
+            g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2, contents)
+          end  
+        end
+      else
+        local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
+        if contents:len() > 0 then
+          g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+        end
       end
-    end  
+    end
   end
 end
 

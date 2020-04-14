@@ -10,6 +10,7 @@ cooldownPanel = nil
 lastPlayer = nil
 
 cooldown = {}
+cooldowns = {}
 groupCooldown = {}
 
 function init()
@@ -43,6 +44,11 @@ function terminate()
   disconnect(g_game, { onGameStart = online,
                        onSpellGroupCooldown = onSpellGroupCooldown,
                        onSpellCooldown = onSpellCooldown })
+                       
+  for key, val in pairs(cooldowns) do
+    removeCooldown(key)
+  end
+  cooldowns = {}
 
   cooldownWindow:destroy()
   cooldownButton:destroy()
@@ -110,6 +116,7 @@ function removeCooldown(progressRect)
     progressRect.icon:destroy()
     progressRect.icon = nil
   end
+  cooldowns[progressRect] = nil
   progressRect = nil
 end
 
@@ -125,6 +132,7 @@ function turnOffCooldown(progressRect)
   particle:fill('parent')
   scheduleEvent(function() particle:destroy() end, 1000) -- hack until onEffectEnd]]
 
+  cooldowns[progressRect] = nil
   progressRect = nil
 end
 
@@ -145,6 +153,7 @@ function updateCooldown(progressRect, duration)
     removeEvent(progressRect.event)
 
     progressRect.event = scheduleEvent(function() 
+      if not progressRect.callback then return end
       progressRect.callback[ProgressCallback.update]() 
     end, 100)
   else
@@ -187,6 +196,7 @@ function onSpellCooldown(iconId, duration)
   end
   initCooldown(progressRect, updateFunc, finishFunc)
   cooldown[iconId] = true
+  cooldowns[progressRect] = true
 end
 
 function onSpellGroupCooldown(groupId, duration)

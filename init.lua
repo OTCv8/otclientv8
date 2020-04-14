@@ -23,6 +23,8 @@ Servers = {
 
 USE_NEW_ENERGAME = false -- not done yet
 ALLOW_CUSTOM_SERVERS = true -- if true it shows option ANOTHER on server list
+
+g_app.setName("OTCv8")
 -- CONFIG END
 
 -- print first terminal message

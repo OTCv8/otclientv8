@@ -1034,6 +1034,9 @@ function Market.decrementAmount()
 end
 
 function Market.updateCurrentItems()
+  if not categoryList or not categoryList:getCurrentOption() then 
+    return 
+  end
   local id = getMarketCategoryId(categoryList:getCurrentOption().text)
   if id == MarketCategory.MetaWeapons then
     id = getMarketCategoryId(subCategoryList:getCurrentOption().text)

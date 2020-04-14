@@ -112,7 +112,7 @@ EnterGameWindow
 
     MenuLabel
       id: serverLabel
-      !text: tr('IP:PORT or url')
+      !text: tr('IP:PORT')
       anchors.left: prev.left
       anchors.top: prev.bottom
       margin-top: 8

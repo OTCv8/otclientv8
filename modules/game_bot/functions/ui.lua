@@ -8,5 +8,17 @@ UI.createWidget = function(name, parent)
   if parent == nil then      
     parent = context.panel
   end
-  return g_ui.createWidget(name, parent)
+  local widget = g_ui.createWidget(name, parent)
+  widget.botWidget = true
+  return widget
 end
+
+UI.createWindow = function(name)
+  local widget = g_ui.createWidget(name, g_ui.getRootWidget())
+  widget.botWidget = true  
+  widget:show()
+  widget:raise()
+  widget:focus()
+  return widget
+end
+

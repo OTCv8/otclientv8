@@ -34,8 +34,10 @@ function init()
     
   connect(g_game, {
     onGameStart = online,
-    onGameEnd = offline
-  })  
+    onGameEnd = offline,
+    onSpellGroupCooldown = onSpellGroupCooldown,
+    onSpellCooldown = onSpellCooldown
+  })
   
   if g_game.isOnline() then
     online()
@@ -45,14 +47,16 @@ end
 function terminate()
   disconnect(g_game, {
     onGameStart = online,
-    onGameEnd = offline
+    onGameEnd = offline,
+    onSpellGroupCooldown = onSpellGroupCooldown,
+    onSpellCooldown = onSpellCooldown
   })  
 
-  saveConfig()
-
-  -- remove hotkeys
-  offline()
-
+  -- remove hotkeys, also saves config
+  if actionPanel1.tabBar:getChildCount() > 0 and actionPanel2.tabBar:getChildCount() > 0 then
+    offline()
+  end
+  
   actionPanel1:destroy()
   actionPanel2:destroy()
 end
@@ -90,16 +94,27 @@ function offline()
     hotkeyAssignWindow:destroy()
     hotkeyAssignWindow = nil
   end
-  saveConfig()
-  
+
+  local gameRootPanel = modules.game_interface.getRootPanel()
   for index, panel in ipairs({actionPanel1, actionPanel2}) do
+    local config = {}
     for i, child in ipairs(panel.tabBar:getChildren()) do
-      local gameRootPanel = modules.game_interface.getRootPanel()
-      if child.hotkey then
-        g_keyboard.unbindKeyPress(child.hotkey, child.callback, gameRootPanel)
+      if child.config then
+        table.insert(config, child.config)
+        if type(child.config.hotkey) == 'string' and child.config.hotkey:len() > 0 then
+          g_keyboard.unbindKeyPress(child.config.hotkey, child.callback, gameRootPanel)
+        end
+      else
+        table.insert(config, {})
+      end
+      if child.cooldownEvent then
+        removeEvent(child.cooldownEvent)
       end
     end
+    actionConfig:setNode('actions_' .. index, config)
+    panel.tabBar:destroyChildren()
   end
+  actionConfig:save()
 end
 
 function setupActionPanel(index, panel)
@@ -108,10 +123,11 @@ function setupActionPanel(index, panel)
   for i, buttonConfig in pairs(rawConfig) do -- sorting, because key in rawConfig is string
     config[tonumber(i)] = buttonConfig
   end
-  panel.tabBar:destroyChildren()
+  
   for i=1,actionButtonsInPanel do
     local action = g_ui.createWidget('ActionButton', panel.tabBar)
-    setupAction(index, action, config[i])
+    action.config = config[i] or {}
+    setupAction(action)
   end  
   
   panel.nextButton.onClick = function()
@@ -122,28 +138,13 @@ function setupActionPanel(index, panel)
   end
 end
 
-function saveConfig()
-  for index, panel in ipairs({actionPanel1, actionPanel2}) do
-    local config = {}
-    for i, child in ipairs(panel.tabBar:getChildren()) do
-      table.insert(config, {
-        text = child.text:getText(),
-        item = child.item:getItemId(),
-        count = child.item:getItemCount(),
-        action = child.actionType,
-        hotkey = child.hotkey
-      })
-    end
-    actionConfig:setNode('actions_' .. index, config)
-  end
-  actionConfig:save()
-end
-
-function setupAction(index, action, config)
+function setupAction(action)
+  local config = action.config
   action.item:setShowCount(false)
   action.onMouseRelease = actionOnMouseRelease
   action.callback = function(k, c, ticks) executeAction(action, ticks) end
-
+  action.item.onItemChange = nil -- disable callbacks for setup
+  
   if config then
     if type(config.text) == 'number' then
       config.text = tostring(config.text)
@@ -151,43 +152,204 @@ function setupAction(index, action, config)
     if type(config.hotkey) == 'number' then
       config.hotkey = tostring(config.hotkey)
     end
-    action.hotkey = config.hotkey
-    if type(action.hotkey) == 'string' and action.hotkey:len() > 0 then
+    if type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
       local gameRootPanel = modules.game_interface.getRootPanel()
-      g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
+      g_keyboard.bindKeyPress(config.hotkey, action.callback, gameRootPanel)
+      action.hotkeyLabel:setText(config.hotkey)
+    else
+      action.hotkeyLabel:setText("")
     end
-    action.hotkeyLabel:setText(action.hotkey or "")
-    action.text:setText(config.text)
-    if action.text:getText():len() > 0 then
+
+    action.text:setImageSource("")
+    action.cooldownTill = 0
+    action.cooldownStart = 0
+    if type(config.text) == 'string' and config.text:len() > 0 then
+      action.text:setText(config.text)
       action:setBorderColor(ActionColors.text)
+      action.item:setOn(true) -- removes background
+      if Spells then
+        local spell, profile = Spells.getSpellByWords(config.text:lower())
+        action.spell = spell
+        if action.spell and action.spell.icon and profile then
+          action.text:setImageSource(SpelllistSettings[profile].iconFile)
+          action.text:setImageClip(Spells.getImageClip(SpellIcons[action.spell.icon][1], profile))
+          action.text:setText("")
+        end
+      end
+    else      
+      action.text:setText("")
+      action.spell = nil
+      if type(config.item) == 'number' and config.item > 100 then
+        action.item:setOn(true)
+        action.item:setItemId(config.item)
+        action.item:setItemCount(config.count or 1)
+        setupActionType(action, config.actionType)
+      else
+        action.item:setItemId(0)
+        action.item:setOn(false)
+        action:setBorderColor(ActionColors.empty)
+      end    
     end
-    if config.item > 0 then
-      setupActionType(action, config.action)
-    end
-    action.item:setOn(config.item > 0)
-    action.item:setItemId(config.item)
-    action.item:setItemCount(config.count)
   end
 
   action.item.onItemChange = actionOnItemChange
 end
 
 function setupActionType(action, actionType)
-  action.actionType = actionType
-  if action.actionType == ActionTypes.USE then
+  local item = action.item:getItem()
+  if action.item:getItem():isMultiUse() then
+    if not actionType or actionType <= ActionTypes.USE then
+     actionType = ActionTypes.USE_WITH
+    end
+  elseif g_game.getClientVersion() >= 910 then
+    if actionType ~= ActionTypes.USE and actionType ~= ActionTypes.EQUIP then
+      actionType = ActionTypes.USE
+    end
+  else
+    actionType = ActionTypes.USE
+  end
+
+  action.config.actionType = actionType
+  if action.config.actionType == ActionTypes.USE then
     action:setBorderColor(ActionColors.itemUse)
-  elseif action.actionType == ActionTypes.USE_SELF then
+  elseif action.config.actionType == ActionTypes.USE_SELF then
     action:setBorderColor(ActionColors.itemUseSelf)
-  elseif action.actionType == ActionTypes.USE_TARGET then
+  elseif action.config.actionType == ActionTypes.USE_TARGET then
     action:setBorderColor(ActionColors.itemUseTarget)
-  elseif action.actionType == ActionTypes.USE_WITH then
+  elseif action.config.actionType == ActionTypes.USE_WITH then
     action:setBorderColor(ActionColors.itemUseWith)
-  elseif action.actionType == ActionTypes.EQUIP then
+  elseif action.config.actionType == ActionTypes.EQUIP then
     action:setBorderColor(ActionColors.itemEquip)
   end
 end
 
+function updateAction(action, newConfig)
+  local config = action.config
+  if newConfig.hotkey and type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
+    local gameRootPanel = modules.game_interface.getRootPanel()
+    g_keyboard.unbindKeyPress(config.hotkey, action.callback, gameRootPanel)
+  end
+  for key, val in pairs(newConfig) do
+    action.config[key] = val
+  end
+  setupAction(action)
+end
+
+function actionOnMouseRelease(action, mousePosition, mouseButton)
+  if mouseButton == MouseRightButton then
+    local menu = g_ui.createWidget('PopupMenu')
+    menu:setGameMenu(true)
+    if action.item:getItemId() > 0 then
+      if action.item:getItem():isMultiUse() then
+        menu:addOption(tr('Use on yourself'), function() return setupActionType(action, ActionTypes.USE_SELF) end)
+        menu:addOption(tr('Use on target'), function() return setupActionType(action, ActionTypes.USE_TARGET) end)
+        menu:addOption(tr('With crosshair'), function() return setupActionType(action, ActionTypes.USE_WITH) end)
+      end
+      if g_game.getClientVersion() >= 910 then
+        if not action.item:getItem():isMultiUse() then
+          menu:addOption(tr('Use'), function() return setupActionType(action, ActionTypes.USE) end)
+        end
+        menu:addOption(tr('Equip'), function() return setupActionType(action, ActionTypes.EQUIP) end)
+      end
+    else
+      menu:addOption(tr('Select item'), function() return modules.game_itemselector.show(action.item) end)      
+    end
+    menu:addSeparator()
+    menu:addOption(tr('Set text'), function() 
+      modules.game_textedit.singlelineEditor(action.config.text or "", function(newText)
+        updateAction(action, {text=newText, item=0})
+      end)
+    end)
+    menu:addOption(tr('Set hotkey'), function()
+      if hotkeyAssignWindow then
+        hotkeyAssignWindow:destroy()
+      end
+      local assignWindow = g_ui.createWidget('ActionAssignWindow', rootWidget)
+      assignWindow:grabKeyboard()
+      assignWindow.comboPreview.keyCombo = ''
+      assignWindow.onKeyDown = function(assignWindow, keyCode, keyboardModifiers)
+        local keyCombo = determineKeyComboDesc(keyCode, keyboardModifiers)
+        assignWindow.comboPreview:setText(tr('Current action hotkey: %s', keyCombo))
+        assignWindow.comboPreview.keyCombo = keyCombo
+        assignWindow.comboPreview:resizeToText()
+        return true
+      end
+      assignWindow.onDestroy = function(widget)
+        if widget == hotkeyAssignWindow then
+          hotkeyAssignWindow = nil
+        end
+      end
+      assignWindow.addButton.onClick = function()
+        updateAction(action, {hotkey=tostring(assignWindow.comboPreview.keyCombo)})
+        assignWindow:destroy()
+      end
+      hotkeyAssignWindow = assignWindow
+    end)
+    menu:addSeparator()
+    menu:addOption(tr('Clear'), function()
+      updateAction(action, {hotkey="", text="", item=0, count=1})
+    end)
+    menu:display(mousePosition)
+    return true
+  elseif mouseButton == MouseLeftButton then
+    action.callback()
+    return true
+  end
+  return false
+end
+
+function actionOnItemChange(widget)
+  updateAction(widget:getParent(), {text="", item=widget:getItemId(), count=widget:getItemCount()})
+end
+
+function onSpellCooldown(iconId, duration)
+  for index, panel in ipairs({actionPanel1, actionPanel2}) do
+    for i, child in ipairs(panel.tabBar:getChildren()) do
+      if child.spell and child.spell.id == iconId then
+        startCooldown(child, duration)
+      end
+    end
+  end
+end
+
+function onSpellGroupCooldown(groupId, duration)
+  for index, panel in ipairs({actionPanel1, actionPanel2}) do
+    for i, child in ipairs(panel.tabBar:getChildren()) do
+      if child.spell and child.spell.group then
+        for group, duration in pairs(child.spell.group) do
+          if groupId == group then
+            startCooldown(child, duration)
+          end
+        end
+      end
+    end
+  end
+end
+
+function startCooldown(action, duration)
+  if type(action.cooldownTill) == 'number' and action.cooldownTill > g_clock.millis() + duration then
+    return -- already has cooldown with greater duration
+  end
+  action.cooldownStart = g_clock.millis()
+  action.cooldownTill = g_clock.millis() + duration
+  updateCooldown(action)
+end
+
+function updateCooldown(action)
+  if not action or not action.cooldownTill then return end
+  local timeleft = action.cooldownTill - g_clock.millis()
+  if timeleft <= 30 then
+    action.cooldown:setPercent(100)
+    action.cooldownEvent = nil    
+    return
+  end
+  local duration = action.cooldownTill - action.cooldownStart
+  action.cooldown:setPercent(100 - math.floor(100 * timeleft / duration))
+  action.cooldownEvent = scheduleEvent(function() updateCooldown(action) end, 30)
+end
+
 function executeAction(action, ticks)
+  if not action.config then return end
   if type(ticks) ~= 'number' then ticks = 0 end
 
   local actionDelay = 100  
@@ -196,12 +358,14 @@ function executeAction(action, ticks)
   elseif action.actionDelayTo ~= nil and g_clock.millis() < action.actionDelayTo then
     return
   end
+  
+  local actionType = action.config.actionType
 
-  if action.text:getText():len() > 0 then
-    modules.game_console.sendMessage(action.text:getText())
+  if type(action.config.text) == 'string' and action.config.text:len() > 0 then
+    modules.game_console.sendMessage(action.config.text)
     action.actionDelayTo = g_clock.millis() + actionDelay
   elseif action.item:getItemId() > 0 then    
-    if action.actionType == ActionTypes.USE then
+    if actionType == ActionTypes.USE then
       if g_game.getClientVersion() < 740 then
         local item = g_game.findPlayerItem(action.item:getItemId(), hotKey.subType or -1)
         if item then
@@ -211,7 +375,7 @@ function executeAction(action, ticks)
         g_game.useInventoryItem(action.item:getItemId())
       end
       action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif action.actionType == ActionTypes.USE_SELF then
+    elseif actionType == ActionTypes.USE_SELF then
       if g_game.getClientVersion() < 740 then
         local item = g_game.findPlayerItem(action.item:getItemId(), hotKey.subType or -1)
         if item then
@@ -221,7 +385,7 @@ function executeAction(action, ticks)
         g_game.useInventoryItemWith(action.item:getItemId(), g_game.getLocalPlayer(), action.item:getItemSubType() or -1)
       end
       action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif action.actionType == ActionTypes.USE_TARGET then
+    elseif actionType == ActionTypes.USE_TARGET then
       local attackingCreature = g_game.getAttackingCreature()
       if not attackingCreature then
         local item = Item.create(action.item:getItemId())
@@ -245,7 +409,7 @@ function executeAction(action, ticks)
         g_game.useInventoryItemWith(action.item:getItemId(), attackingCreature, action.item:getItemSubType() or -1)
       end
       action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif action.actionType == ActionTypes.USE_WITH then
+    elseif actionType == ActionTypes.USE_WITH then
       local item = Item.create(action.item:getItemId())
       if g_game.getClientVersion() < 740 then
         local tmpItem = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
@@ -253,113 +417,11 @@ function executeAction(action, ticks)
         item = tmpItem
       end
       modules.game_interface.startUseWith(item, action.item:getItemSubType() or - 1)
-    elseif action.actionType == ActionTypes.EQUIP then
+    elseif actionType == ActionTypes.EQUIP then
       if g_game.getClientVersion() >= 910 then
         local item = Item.create(action.item:getItemId())
         g_game.equipItem(item)
         action.actionDelayTo = g_clock.millis() + actionDelay
-      end
-    end
-  end
-end
-
-function actionOnMouseRelease(action, mousePosition, mouseButton)
-  if mouseButton == MouseRightButton then
-    local menu = g_ui.createWidget('PopupMenu')
-    menu:setGameMenu(true)
-    if action.item:getItemId() > 0 then
-      if action.item:getItem():isMultiUse() then
-        menu:addOption(tr('Use on yourself'), function() return setupActionType(action, ActionTypes.USE_SELF) end)
-        menu:addOption(tr('Use on target'), function() return setupActionType(action, ActionTypes.USE_TARGET) end)
-        menu:addOption(tr('With crosshair'), function() return setupActionType(action, ActionTypes.USE_WITH) end)
-      end
-      if g_game.getClientVersion() >= 910 then
-        if not action.item:getItem():isMultiUse() then
-          menu:addOption(tr('Use'), function() return setupActionType(action, ActionTypes.USE) end)
-        end
-        menu:addOption(tr('Equip'), function() return setupActionType(action, ActionTypes.EQUIP) end)
-      end
-    end
-    menu:addSeparator()
-    menu:addOption(tr('Set text'), function() 
-      modules.game_textedit.singlelineEditor(action.text:getText(), function(newText)
-        action.item:setOn(false)
-        action.item:setItemId(0)
-        action.text:setText(newText)
-        if action.text:getText():len() > 0 then
-          action:setBorderColor(ActionColors.text)
-        end
-      end)
-    end)
-    menu:addOption(tr('Set hotkey'), function()
-      if hotkeyAssignWindow then
-        hotkeyAssignWindow:destroy()
-      end
-      local assignWindow = g_ui.createWidget('ActionAssignWindow', rootWidget)
-      assignWindow:grabKeyboard()
-      assignWindow.comboPreview.keyCombo = ''
-      assignWindow.onKeyDown = function(assignWindow, keyCode, keyboardModifiers)
-        local keyCombo = determineKeyComboDesc(keyCode, keyboardModifiers)
-        assignWindow.comboPreview:setText(tr('Current action hotkey: %s', keyCombo))
-        assignWindow.comboPreview.keyCombo = keyCombo
-        assignWindow.comboPreview:resizeToText()
-        return true
-      end
-      assignWindow.onDestroy = function()
-        hotkeyAssignWindow = nil
-      end
-      assignWindow.addButton.onClick = function()
-        local gameRootPanel = modules.game_interface.getRootPanel()
-        if action.hotkey and action.hotkey:len() > 0 then
-          g_keyboard.unbindKeyPress(action.hotkey, action.callback, gameRootPanel)
-        end
-        action.hotkey = tostring(assignWindow.comboPreview.keyCombo)
-        if action.hotkey and action.hotkey:len() > 0 then
-          g_keyboard.bindKeyPress(action.hotkey, action.callback, gameRootPanel)
-        end
-        action.hotkeyLabel:setText(action.hotkey or "")
-        assignWindow:destroy()
-      end
-      hotkeyAssignWindow = assignWindow
-    end)
-    menu:addSeparator()
-    menu:addOption(tr('Clear'), function()
-      action.item:setItem(nil)
-      action.text:setText("")
-      action.hotkeyLabel:setText("")
-      local gameRootPanel = modules.game_interface.getRootPanel()
-      if action.hotkey and action.hotkey:len() > 0 then
-        g_keyboard.unbindKeyPress(action.hotkey, action.callback, gameRootPanel)
-      end
-      action.hotkey = nil
-      action.actionType = nil
-      action:setBorderColor(ActionColors.empty)
-    end)
-    menu:display(mousePosition)
-    return true
-  elseif mouseButton == MouseLeftButton then
-    action.callback()
-    return true
-  end
-  return false
-end
-
-function actionOnItemChange(widget)
-  local action = widget:getParent()
-  if action.item:getItemId() > 0 then
-    action.text:setText("")
-    action.item:setOn(true)
-    if action.item:getItem():isMultiUse() then
-      if not action.actionType or action.actionType <= 1 then
-        setupActionType(action, ActionTypes.USE_WITH)
-      end
-    else
-      if g_game.getClientVersion() >= 910 then
-        if not action.actionType or action.actionType <= ActionTypes.EQUIP then
-          setupActionType(action, ActionTypes.USE)
-        end
-      else
-        setupActionType(action, ActionTypes.USE)      
       end
     end
   end

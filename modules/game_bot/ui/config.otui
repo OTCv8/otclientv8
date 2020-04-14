@@ -1,6 +1,8 @@
 BotConfig < Panel
   id: botConfig
   height: 45
+  margin-left: 2
+  margin-right: 2
 
   ComboBox
     id: list
@@ -24,26 +26,29 @@ BotConfig < Panel
       color: #FF0000
 
   Button
-    margin-top: 1
+    margin-top: 2
     id: add
     anchors.top: prev.bottom
     anchors.left: parent.left
     text: Add
     width: 56
-    height: 20
-
+    height: 18
+    text-offet: 0 2
+    
   Button
     id: edit
     anchors.top: prev.top
     anchors.horizontalCenter: parent.horizontalCenter
     text: Edit
     width: 56
-    height: 20
-
+    height: 18
+    text-offet: 0 2
+    
   Button
     id: remove
     anchors.top: prev.top
     anchors.right: parent.right
     text: Remove
     width: 56
-    height: 20
+    height: 18
+    text-offet: 0 2
