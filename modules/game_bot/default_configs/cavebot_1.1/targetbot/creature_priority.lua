@@ -1,6 +1,6 @@
 TargetBot.Creature.calculatePriority = function(creature, config, path)
   -- config is based on creature_editor
-  local priority = config.priority
+  local priority = 0
 
   -- extra priority if it's current target
   if g_game.getAttackingCreature() == creature then
@@ -11,6 +11,9 @@ TargetBot.Creature.calculatePriority = function(creature, config, path)
   if #path > config.maxDistance then
     return priority
   end
+
+  -- add config priority
+  priority = priority + config.priority
   
   -- extra priority for close distance
   local path_length = #path

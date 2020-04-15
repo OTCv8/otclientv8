@@ -26,10 +26,7 @@ local function setup()
   
   onUse(function(pos, itemId, stackPos, subType)
     if CaveBot.isOn() or not isEnabled then return end
-    if pos.x == 0xFFFF then 
-      lastPos = pos
-      CaveBot.addAction("use", itemId, true)
-    else
+    if pos.x ~= 0xFFFF then 
       lastPos = pos
       CaveBot.addAction("use", pos.x .. "," .. pos.y .. "," .. pos.z, true)
     end

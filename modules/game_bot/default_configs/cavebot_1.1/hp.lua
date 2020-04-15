@@ -58,9 +58,14 @@ for i, healingInfo in ipairs({storage.hpitem1, storage.hpitem2, storage.manaitem
     local hp = i <= 2 and player:getHealthPercent() or math.min(100, math.floor(100 * (player:getMana() / player:getMaxMana())))
     if healingInfo.max >= hp and hp >= healingInfo.min then
       if TargetBot then 
-        TargetBot.useItem(healingInfo.item, player) -- sync spell with targetbot if available
+        TargetBot.useItem(healingInfo.item, healingInfo.subType, player) -- sync spell with targetbot if available
       else
-        useWith(healingInfo.item, player)
+        local thing = g_things.getThingType(healingInfo.item)
+        local subType = g_game.getClientVersion() >= 860 and 0 or 1
+        if thing and thing:isFluidContainer() then
+          subType = healingInfo.subType
+        end
+        g_game.useInventoryItemWith(healingInfo.item, player, subType)
       end
     end
   end)
@@ -68,8 +73,12 @@ for i, healingInfo in ipairs({storage.hpitem1, storage.hpitem2, storage.manaitem
 
   UI.DualScrollItemPanel(healingInfo, function(widget, newParams) 
     healingInfo = newParams
-    healingmacro.setOn(healingInfo.on)
+    healingmacro.setOn(healingInfo.on and healingInfo.item > 100)
   end)
+end
+
+if g_game.getClientVersion() < 780 then
+  UI.Label("In old tibia potions & runes work only when you have backpack with them opened")
 end
 
 UI.Separator()
@@ -143,6 +152,7 @@ macro(10000, "eat food", function()
     end
   end
   -- can't find any food, try to eat random item using hotkey
+  if g_game.getClientVersion() < 780 then return end -- hotkey's dont work on old tibia
   local toEat = storage.foodItems[math.random(1, #storage.foodItems)]
   if toEat then g_game.useInventoryItem(toEat.id) end
 end)

@@ -7,6 +7,9 @@ CaveBot.addAction = function(action, value, focus)
   if not raction then
     return error("Invalid cavebot action: " .. action)
   end
+  if type(value) == 'number' then
+    value = tostring(value)
+  end
   local widget = UI.createWidget("CaveBotAction", CaveBot.actionList)
   widget:setText(action .. ":" .. value:split("\n")[1])
   widget.action = action

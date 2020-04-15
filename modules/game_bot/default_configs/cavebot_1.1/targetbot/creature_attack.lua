@@ -39,7 +39,7 @@ TargetBot.Creature.attack = function(params, targets, isLooting) -- params {conf
     end
   end
   if config.useRuneAttack and config.attackRune > 100 then
-    if TargetBot.useAttackItem(config.attackRune, creature, config.attackRuneDelay) then
+    if TargetBot.useAttackItem(config.attackRune, 0, creature, config.attackRuneDelay) then
       return
     end
   end

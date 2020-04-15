@@ -135,7 +135,7 @@ function UIComboBox:onMousePress(mousePos, mouseButton)
 end
 
 function UIComboBox:onMouseWheel(mousePos, direction)
-  if not self.mouseScroll then
+  if not self.mouseScroll or self.disableScroll then
     return false
   end
   if direction == MouseWheelUp and self.currentIndex > 1 then

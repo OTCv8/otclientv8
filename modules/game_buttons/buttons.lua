@@ -36,5 +36,14 @@ function updateOrder()
    table.sort(children, function(a, b)
     return (a.index or 1000) < (b.index or 1000)
    end)
-   contentsPanel.buttons:reorderChildren(children)    
+   contentsPanel.buttons:reorderChildren(children)
+   local visibleCount = 0
+   for _, child in ipairs(children) do
+    if child:isVisible() then
+      visibleCount = visibleCount + 1
+    end
+   end
+   if visibleCount > 6 and buttonsWindow:getHeight() < 30 then
+    buttonsWindow:setHeight(buttonsWindow:getHeight() + 22)
+   end
 end

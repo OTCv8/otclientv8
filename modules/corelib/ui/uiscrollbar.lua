@@ -254,7 +254,7 @@ function UIScrollBar:onGeometryChange()
 end
 
 function UIScrollBar:onMouseWheel(mousePos, mouseWheel)
-  if not self.mouseScroll or not self:isOn() then
+  if not self.mouseScroll or not self:isOn() or self.disableScroll then
     return false
   end
   if mouseWheel == MouseWheelUp then

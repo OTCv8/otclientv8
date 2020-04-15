@@ -1,5 +1,5 @@
 GameButtonsWindow < HeadlessMiniWindow
-  height: 52
+  height: 26
   &forceOpen: true
   &autoOpen: 4
 

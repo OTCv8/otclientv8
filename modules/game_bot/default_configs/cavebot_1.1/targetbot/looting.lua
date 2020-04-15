@@ -237,7 +237,7 @@ TargetBot.Looting.lootContainer = function(lootContainers, container)
     if nextContainer.lootTries < 2 then -- max 0.6s to open it
       g_game.open(nextContainer, container)
       waitTill = now + 300 -- give it 0.3s to open
-      waitingForContainer = loot.container  
+      waitingForContainer = nextContainer:getId()
       return
     end
   end
