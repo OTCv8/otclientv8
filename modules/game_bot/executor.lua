@@ -95,6 +95,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.g_sounds = g_sounds
   context.g_window = g_window
   context.g_mouse = g_mouse
+  context.g_things = g_things
 
   context.Item = Item
   context.Creature = Creature

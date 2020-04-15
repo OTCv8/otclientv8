@@ -1,5 +1,5 @@
 -- main tab
-VERSION = "1.0"
+VERSION = "1.1"
 
 UI.Label("Config version: " .. VERSION)
 

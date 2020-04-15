@@ -26,7 +26,7 @@ function UIItem:onDrop(widget, mousePos, forced)
   if not item or not item:isItem() then return false end
   
   if self.selectable then
-    self:setItem(Item.create(item:getId(), item:getCount()))
+    self:setItem(Item.create(item:getId(), item:getCountOrSubType()))
     return
   end
 

@@ -376,7 +376,7 @@ function walk(dir, ticks)
       g_game.stop()
       return
     else
-      return
+      player:lockWalk(200)
     end
   end
 

@@ -299,7 +299,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
 end
 
 function actionOnItemChange(widget)
-  updateAction(widget:getParent(), {text="", item=widget:getItemId(), count=widget:getItemCount()})
+  updateAction(widget:getParent(), {text="", item=widget:getItemId(), count=widget:getItemCountOrSubType()})
 end
 
 function onSpellCooldown(iconId, duration)
@@ -366,8 +366,8 @@ function executeAction(action, ticks)
     action.actionDelayTo = g_clock.millis() + actionDelay
   elseif action.item:getItemId() > 0 then    
     if actionType == ActionTypes.USE then
-      if g_game.getClientVersion() < 740 then
-        local item = g_game.findPlayerItem(action.item:getItemId(), hotKey.subType or -1)
+      if g_game.getClientVersion() < 780 then
+        local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
         if item then
           g_game.use(item)
         end
@@ -376,8 +376,8 @@ function executeAction(action, ticks)
       end
       action.actionDelayTo = g_clock.millis() + actionDelay
     elseif actionType == ActionTypes.USE_SELF then
-      if g_game.getClientVersion() < 740 then
-        local item = g_game.findPlayerItem(action.item:getItemId(), hotKey.subType or -1)
+      if g_game.getClientVersion() < 780 then
+        local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
         if item then
           g_game.useWith(item, g_game.getLocalPlayer())
         end
@@ -389,7 +389,7 @@ function executeAction(action, ticks)
       local attackingCreature = g_game.getAttackingCreature()
       if not attackingCreature then
         local item = Item.create(action.item:getItemId())
-        if g_game.getClientVersion() < 740 then
+        if g_game.getClientVersion() < 780 then
           local tmpItem = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
           if not tmpItem then return end
           item = tmpItem
@@ -400,7 +400,7 @@ function executeAction(action, ticks)
       end
 
       if not attackingCreature:getTile() then return end
-      if g_game.getClientVersion() < 740 then
+      if g_game.getClientVersion() < 780 then
         local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
         if item then
           g_game.useWith(item, attackingCreature, action.item:getItemSubType() or -1)
@@ -411,7 +411,7 @@ function executeAction(action, ticks)
       action.actionDelayTo = g_clock.millis() + actionDelay
     elseif actionType == ActionTypes.USE_WITH then
       local item = Item.create(action.item:getItemId())
-      if g_game.getClientVersion() < 740 then
+      if g_game.getClientVersion() < 780 then
         local tmpItem = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
         if not tmpItem then return true end
         item = tmpItem

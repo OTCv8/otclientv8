@@ -150,12 +150,14 @@ UI.DualScrollItemPanel = function(params, callback, parent) -- callback = functi
   --[[ params:
     on - bool,
     item - number,
+    subType - number,
     title - string,
     min - number,
     max - number,
   ]]
   params.title = params.title or "title"
   params.item = params.item or 0
+  params.subType = params.subType or 0
   params.min = params.min or 20
   params.max = params.max or 80
   
@@ -170,9 +172,10 @@ UI.DualScrollItemPanel = function(params, callback, parent) -- callback = functi
     end
   end
 
-  widget.item:setItemId(params.item)
+  widget.item:setItem(Item.create(params.item, params.subType))
   widget.item.onItemChange = function()
     params.item = widget.item:getItemId()
+    params.subType = widget.item:getItemSubType()
     if callback then
       callback(widget, params)
     end
