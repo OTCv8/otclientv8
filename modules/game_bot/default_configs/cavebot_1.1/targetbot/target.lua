@@ -249,7 +249,7 @@ TargetBot.useAttackItem = function(item, subType, target, delay)
       if not tmpItem then return end
       g_game.useWith(tmpItem, target, subType) -- using item from bp  
     else
-      g_game.useInventoryItemWith(healingInfo.item, target, subType) -- hotkey
+      g_game.useInventoryItemWith(item, target, subType) -- hotkey
     end
     lastRuneAttack = now
   end
