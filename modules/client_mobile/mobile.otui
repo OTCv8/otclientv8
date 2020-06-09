@@ -1,0 +1,15 @@
+UIWidget
+  anchors.fill: parent
+  focusable: false
+  phantom: true
+
+  UIProgressRect
+    id: cursor
+    size: 64 64
+    background: #FF5858
+    percent: 100
+    visible: false
+    x: 0
+    y: 0
+    focusable: false
+    phantom: true

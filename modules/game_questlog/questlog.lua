@@ -4,9 +4,11 @@ questLineWindow = nil
 function init()
   g_ui.importStyle('questlogwindow')
   g_ui.importStyle('questlinewindow')
-
-  questLogButton = modules.client_topmenu.addLeftGameButton('questLogButton', tr('Quest Log'), '/images/topbuttons/questlog', function() g_game.requestQuestLog() end, false, 8)
-
+  
+  if not g_app.isMobile() then
+    questLogButton = modules.client_topmenu.addLeftGameButton('questLogButton', tr('Quest Log'), '/images/topbuttons/questlog', function() g_game.requestQuestLog() end, false, 8)
+  end
+  
   connect(g_game, { onQuestLog = onGameQuestLog,
                     onQuestLine = onGameQuestLine,
                     onGameEnd = destroyWindows})
@@ -18,7 +20,9 @@ function terminate()
                        onGameEnd = destroyWindows})
 
   destroyWindows()
-  questLogButton:destroy()
+  if questLogButton then
+    questLogButton:destroy()
+  end
 end
 
 function destroyWindows()

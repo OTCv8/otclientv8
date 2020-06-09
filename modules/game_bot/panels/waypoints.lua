@@ -312,7 +312,7 @@ Panel
     end
   end
   ui.add.onClick = function()
-    modules.game_textedit.multilineEditor("Waypoints editor", "name:Config name\nlabel:start\n", function(newText)
+    modules.client_textedit.multilineEditor("Waypoints editor", "name:Config name\nlabel:start\n", function(newText)
       table.insert(context.storage.cavebot.configs, newText)
       context.storage.cavebot.activeConfig = #context.storage.cavebot.configs
       refreshConfig()
@@ -322,7 +322,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.multilineEditor("Waypoints editor", context.storage.cavebot.configs[context.storage.cavebot.activeConfig], function(newText)
+    modules.client_textedit.multilineEditor("Waypoints editor", context.storage.cavebot.configs[context.storage.cavebot.activeConfig], function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = newText
       refreshConfig()
     end)
@@ -428,7 +428,7 @@ Panel
       return
     end
     local pos = context.player:getPosition()
-    modules.game_textedit.singlelineEditor("" .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
+    modules.client_textedit.singlelineEditor("" .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\ngoto:" .. newText
       refreshConfig(true)
     end)
@@ -439,7 +439,7 @@ Panel
       return
     end
     local pos = context.player:getPosition()
-    modules.game_textedit.singlelineEditor("" .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
+    modules.client_textedit.singlelineEditor("" .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nuse:" .. newText
       refreshConfig(true)
     end)
@@ -450,7 +450,7 @@ Panel
       return
     end
     local pos = context.player:getPosition()
-    modules.game_textedit.singlelineEditor("ITEMID," .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
+    modules.client_textedit.singlelineEditor("ITEMID," .. pos.x .. "," .. pos.y .. "," .. pos.z, function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nusewith:" .. newText
       refreshConfig(true)
     end)
@@ -460,7 +460,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.singlelineEditor("1000", function(newText)
+    modules.client_textedit.singlelineEditor("1000", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nwait:" .. newText
       refreshConfig(true)
     end)
@@ -470,7 +470,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.singlelineEditor("text", function(newText)
+    modules.client_textedit.singlelineEditor("text", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nsay:" .. newText
       refreshConfig(true)
     end)
@@ -480,7 +480,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.singlelineEditor("text", function(newText)
+    modules.client_textedit.singlelineEditor("text", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nnpc:" .. newText
       refreshConfig(true)
     end)
@@ -490,7 +490,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.singlelineEditor("label name", function(newText)
+    modules.client_textedit.singlelineEditor("label name", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nlabel:" .. newText
       refreshConfig(true)
     end)
@@ -500,7 +500,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.singlelineEditor("creature name", function(newText)
+    modules.client_textedit.singlelineEditor("creature name", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nfollow:" .. newText
       refreshConfig(true)
     end)
@@ -510,7 +510,7 @@ Panel
     if not context.storage.cavebot.activeConfig or not context.storage.cavebot.configs[context.storage.cavebot.activeConfig] then
       return
     end
-    modules.game_textedit.multilineEditor("Add function", "function(waypoints)\n  -- your lua code, function is executed if previous goto was successful or is just after label\n\n  -- must return true to execute next command, otherwise will run in loop till correct return\n  return true\nend", function(newText)
+    modules.client_textedit.multilineEditor("Add function", "function(waypoints)\n  -- your lua code, function is executed if previous goto was successful or is just after label\n\n  -- must return true to execute next command, otherwise will run in loop till correct return\n  return true\nend", function(newText)
       context.storage.cavebot.configs[context.storage.cavebot.activeConfig] = context.storage.cavebot.configs[context.storage.cavebot.activeConfig] .. "\nfunction:" .. newText
       refreshConfig(true)
     end)

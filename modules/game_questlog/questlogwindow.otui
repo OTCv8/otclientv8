@@ -23,6 +23,8 @@ QuestLogWindow < MainWindow
   !text: tr('Quest Log')
   size: 500 400
   @onEscape: self:destroy()
+  $mobile:
+    size: 500 350
 
   TextList
     id: questList

@@ -8,9 +8,8 @@ function init()
   background:lower()
 
   clientVersionLabel = background:getChildById('clientVersionLabel')
-  clientVersionLabel:setText(g_app.getName() .. ' ' .. g_app.getVersion() .. '\nMade by:\n' .. g_app.getAuthor() .. "\notclient@otclient.ovh")
+  clientVersionLabel:setText('OTClientV8 ' .. g_app.getVersion() .. '\nMade by:\n' .. g_app.getAuthor() .. "\notclient@otclient.ovh")
   
-
   if not g_game.isOnline() then
     addEvent(function() g_effects.fadeIn(clientVersionLabel, 1500) end)
   end

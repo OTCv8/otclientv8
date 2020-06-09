@@ -249,7 +249,7 @@ function table.encodeStringPairList(t)
 
 function table.decodeStringPairList(l)
   local ret = {}
-  local r = regexMatch(l, "^([^:^\n]{1,20}):?(.*)$")
+  local r = regexMatch(l, "(?:^|\\n)([^:^\n]{1,20}):?(.*)(?:$|\\n)")
   local multiline = ""
   local multilineKey = ""
   local multilineActive = false

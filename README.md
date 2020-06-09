@@ -1,11 +1,22 @@
 # OTClientV8
 
-Tibia client designed for versions 7.40 - 11.00. 
-It's based on https://github.com/edubart/otclient and it's not backward compatible.
+OTClientV8 is highly optimized tile based 2d game engine built with c++, lua, physfs, OpenGL ES 2.0 and OpenAL.
+It works well even on 12 years old computers. In 2020 it has been used by more than 90k unique players.
+Supported platforms:
+- Windows (min. Windows 7)
+- Linux
+- Android (min. 5.0)
+Planned support:
+- Mac OS
+- iOS
+- WebAssembly
+
+On this GitHub you can find free version of OTClientV8. It comes without c++ sources, there are prebuilt executables instead.
+In many cases, you won't need access to sources, you can add a lot of custom features in lua.
+If you're interested in buying access to sources, contact otclient@otclient.ovh or kondrah#7945 on discord.
 
 ## DISCORD: https://discord.gg/feySup6
-## Forum: https://otland.net/forums/otclient.494/
-## Open Tibia Login Server: https://github.com/OTCv8/OpenTibiaLoginServer
+## Forum: http://otclient.net
 
 # FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
@@ -42,9 +53,6 @@ It's based on https://github.com/edubart/otclient and it's not backward compatib
 ### Check out directory `tutorials` to see how activate and use new features
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
-
-# Paid version
-The difference between paid version and this one is that the 1st one comes with c++ sources and has better support.  You may need c++ source if you want to add some more advanced modifications, better encryption, bot protection or some other things. The free version doesn't offer technical support, you need to follow tutorials and in case of any bug or problem you should submit an issue on github. Visit http://otclient.ovh if you want to know more about paid version and other extra services.
 
 # Quick Start for players
 

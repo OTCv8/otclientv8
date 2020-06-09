@@ -38,7 +38,7 @@ function exit()
 end
 
 function quit()
-  g_app.quit()
+  g_app.exit()
 end
 
 function connect(object, arg1, arg2, arg3)

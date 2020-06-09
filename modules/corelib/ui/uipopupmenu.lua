@@ -46,11 +46,11 @@ function UIPopupMenu:onGeometryChange(oldRect, newRect)
   local ymax = parent:getY() + parent:getHeight()
   local xmax = parent:getX() + parent:getWidth()
   if newRect.y + newRect.height > ymax then
-    local newy = newRect.y - newRect.height
+    local newy = ymax - newRect.height
     if newy > 0 and newy + newRect.height < ymax then self:setY(newy) end
   end
   if newRect.x + newRect.width > xmax then
-    local newx = newRect.x - newRect.width
+    local newx = xmax - newRect.width
     if newx > 0 and newx + newRect.width < xmax then self:setX(newx) end
   end
   self:bindRectToParent()

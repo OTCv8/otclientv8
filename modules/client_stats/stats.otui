@@ -24,6 +24,12 @@ MainWindow
   margin: 0 0 0 0
   padding: 25 3 3 3
   opacity: 0.9
+
+  @onEnter: modules.client_stats.toggle()
+  @onEscape: modules.client_stats.toggle()
+  
+  $mobile:
+    size: 550 300
   
   ScrollablePanel 
     id: debugPanel
@@ -42,17 +48,6 @@ MainWindow
       id: luaRamUsage
       text: -
 
-    DebugLabel
-      !text: tr('Render')
-
-    DebugText
-      id: adaptiveRender
-      text: -
-
-    DebugText
-      id: render
-      text: -
-
     DebugText
       id: atlas
       text: -
@@ -69,6 +64,17 @@ MainWindow
 
     DebugText
       id: mainStats
+      text: -
+
+    DebugLabel
+      !text: tr('Render')
+
+    DebugText
+      id: adaptiveRender
+      text: -
+
+    DebugText
+      id: render
       text: -
 
     DebugLabel

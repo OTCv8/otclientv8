@@ -55,17 +55,11 @@ ActionButton < Panel
     
 Panel
   id: actionBar
-  anchors.left: parent.left
-  anchors.right: parent.right
-  image-source: /images/ui/panel_map
   focusable: false
+  image-source: /images/ui/panel_side
+  image-border: 4
+  margin-top: -1
   
-  $first:
-    anchors.top: parent.top
-  
-  $!first:
-    anchors.top: prev.bottom
-
   $on:
     height: 40
     visible: true
@@ -78,9 +72,12 @@ Panel
     id: prevButton
     icon: /images/game/console/leftarrow
     anchors.left: parent.left
-    anchors.verticalCenter: parent.verticalCenter
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
     margin-left: 1
-
+    margin-top: 1
+    margin-bottom: 2
+    
   Panel
     id: tabBar
     anchors.top: parent.top
@@ -89,15 +86,17 @@ Panel
     anchors.right: next.left
     margin-right: 3
     margin-top: 2
-    clipping: true  
-
+    clipping: true
     
   TabButton
     id: nextButton
     icon: /images/game/console/rightarrow
     anchors.right: parent.right
-    anchors.verticalCenter: parent.verticalCenter
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
     margin-right: 1
+    margin-top: 1
+    margin-bottom: 2
 
 
 ActionAssignWindow < MainWindow

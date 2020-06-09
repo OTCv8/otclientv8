@@ -18,7 +18,7 @@ NPCItemBox < UICheckBox
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
     image-color: #ffffffff
-    margin-top: 5
+    margin-top: 3
 
   $checked on:
     border-color: #ffffff
@@ -33,7 +33,7 @@ NPCItemBox < UICheckBox
 MainWindow
   id: npcWindow
   !text: tr('NPC Trade')
-  size: 550 515
+  size: 550 340
   @onEscape: modules.game_npctrade.closeNpcTrade()
 
   TabButton
@@ -45,8 +45,7 @@ MainWindow
     anchors.left: parent.left
     anchors.right: parent.horizontalCenter
     anchors.top: parent.top
-    margin-right: 5
-    margin-top: 5
+    margin-top: 0
 
   TabButton
     id: sellTab
@@ -55,15 +54,13 @@ MainWindow
     anchors.left: parent.horizontalCenter
     anchors.right: parent.right
     anchors.top: parent.top
-    margin-left: 5
-    margin-top: 5
 
   FlatPanel
-    height: 250
+    height: 150
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 10
+    margin-top: 5
 
     VerticalScrollBar
       id: itemsPanelListScrollBar
@@ -75,7 +72,7 @@ MainWindow
 
     ScrollablePanel
       id: itemsPanel
-      height: 250
+      height: 200
       anchors.left: parent.left
       anchors.right: prev.left
       anchors.top: parent.top
@@ -91,30 +88,19 @@ MainWindow
 
   FlatPanel
     id: setupPanel
-    height: 140
+    height: 105
     enabled: false
     anchors.left: parent.left
     anchors.right: parent.horizontalCenter
     anchors.top: prev.bottom
-    margin-top: 10
+    margin-top: 5
     margin-right: 5
     image-color: #ffffff88
 
     Label
-      !text: tr('Id') .. ':'
-      anchors.left: parent.left
-      anchors.top: parent.top
-      margin-top: 5
-      margin-left: 5
-      width: 85
-
-    NPCOfferLabel
-      id: id
-
-    Label
       !text: tr('Name') .. ':'
       anchors.left: parent.left
-      anchors.top: prev.bottom
+      anchors.top: parent.top
       margin-top: 5
       margin-left: 5
       width: 85
@@ -123,10 +109,22 @@ MainWindow
       id: name
 
     Label
+      !text: tr('Id') .. ':'
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-top: 5
+      margin-left: 5
+      margin-left: 195
+      width: 15
+
+    NPCOfferLabel
+      id: id
+
+    Label
       !text: tr('Price') .. ':'
       anchors.left: parent.left
       anchors.top: prev.bottom
-      margin-top: 5
+      margin-top: 3
       margin-left: 5
       width: 85
 
@@ -137,7 +135,7 @@ MainWindow
       !text: tr('Your Money') .. ':'
       anchors.left: parent.left
       anchors.top: prev.bottom
-      margin-top: 5
+      margin-top: 3
       margin-left: 5
       width: 85
 
@@ -149,7 +147,7 @@ MainWindow
       !text: tr('Weight') .. ':'
       anchors.left: parent.left
       anchors.top: prev.bottom
-      margin-top: 5
+      margin-top: 3
       margin-left: 5
       width: 85
 
@@ -161,7 +159,7 @@ MainWindow
       !text: tr('Your Capacity') .. ':'
       anchors.left: parent.left
       anchors.top: prev.bottom
-      margin-top: 5
+      margin-top: 3
       margin-left: 5
       width: 85
 
@@ -173,7 +171,7 @@ MainWindow
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: prev.bottom
-      margin-top: 5
+      margin-top: 3
       margin-left: 5
       margin-right: 5
       show-value: true
@@ -184,7 +182,7 @@ MainWindow
 
   FlatPanel
     id: buyOptions
-    height: 140
+    height: 80
     anchors.top: prev.top
     anchors.left: parent.horizontalCenter
     anchors.right: parent.right
@@ -217,7 +215,7 @@ MainWindow
       anchors.left: parent.left
       anchors.right: parent.right
       margin-left: 5
-      margin-top: 5
+      margin-top: 3
       @onCheckChange: modules.game_npctrade.onBuyWithBackpackChange()
 
     CheckBox
@@ -227,7 +225,7 @@ MainWindow
       anchors.left: parent.left
       anchors.right: parent.right
       margin-left: 5
-      margin-top: 5
+      margin-top: 3
       @onCheckChange: modules.game_npctrade.onIgnoreCapacityChange()
 
     CheckBox
@@ -237,7 +235,7 @@ MainWindow
       anchors.left: parent.left
       anchors.right: parent.right
       margin-left: 5
-      margin-top: 5
+      margin-top: 3
       visible: false
       checked: true
       @onCheckChange: modules.game_npctrade.onIgnoreEquippedChange()
@@ -249,7 +247,7 @@ MainWindow
       anchors.left: parent.left
       anchors.right: parent.right
       margin-left: 5
-      margin-top: 5
+      margin-top: 3
       visible: false
       checked: true
       @onCheckChange: modules.game_npctrade.onShowAllItemsChange()

@@ -1,9 +1,0 @@
-Module
-  name: client_updater
-  description: Updates client
-  author: otclient@otclient.ovh
-  website: otclient.ovh
-  reloadable: false
-  scripts: [ updater ]
-  @onLoad: Updater.init()
-  @onUnload: Updater.terminate()

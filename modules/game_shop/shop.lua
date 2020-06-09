@@ -530,8 +530,8 @@ function buyConfirmed()
   sendAction("buy", selectedOffer)
   if g_game.getFeature(GameIngameStore) and selectedOffer.id and not otcv8shop then
     local offerName = selectedOffer.title:lower()
-    if string.find(offerName, "name") and string.find(offerName, "change") and modules.game_textedit then
-      modules.game_textedit.singlelineEditor("", function(newName)
+    if string.find(offerName, "name") and string.find(offerName, "change") and modules.client_textedit then
+      modules.client_textedit.singlelineEditor("", function(newName)
         if newName:len() == 0 then
           return
         end

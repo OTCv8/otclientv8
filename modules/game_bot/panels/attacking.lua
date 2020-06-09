@@ -679,7 +679,7 @@ Panel
     refreshConfig()
   end
   ui.add.onClick = function()
-    modules.game_textedit.multilineEditor("Target list editor", "name:Config name", function(newText)
+    modules.client_textedit.multilineEditor("Target list editor", "name:Config name", function(newText)
       table.insert(context.storage.attacking.configs, newText)
       context.storage.attacking.activeConfig = #context.storage.attacking.configs
       refreshConfig()
@@ -689,7 +689,7 @@ Panel
     if not context.storage.attacking.activeConfig or not context.storage.attacking.configs[context.storage.attacking.activeConfig] then
       return
     end
-    modules.game_textedit.multilineEditor("Target list editor", context.storage.attacking.configs[context.storage.attacking.activeConfig], function(newText)
+    modules.client_textedit.multilineEditor("Target list editor", context.storage.attacking.configs[context.storage.attacking.activeConfig], function(newText)
       context.storage.attacking.configs[context.storage.attacking.activeConfig] = newText
       refreshConfig()
     end)

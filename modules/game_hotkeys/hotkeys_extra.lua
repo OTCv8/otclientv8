@@ -51,9 +51,9 @@ function setupExtraHotkeys(combobox)
     end
     local battlePanel = modules.game_battle.battlePanel
     local attackedCreature = g_game.getAttackingCreature()
-    local prevChild = battlePanel:getLastChild()
+    local prevChild = nil
     for i, child in ipairs(battlePanel:getChildren()) do
-      if not child.creature or child:isDisabled() then
+      if not child.creature or child:isDisabled() or child:isHidden() then
         break
       end
       if child.creature == attackedCreature then

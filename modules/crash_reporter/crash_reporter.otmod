@@ -1,0 +1,8 @@
+Module
+  name: crash_reporter
+  description: Sends crash log to remote server
+  author: otclient@otclient.ovh
+  website: otclient.ovh
+  reloadable: false
+  scripts: [ crash_reporter ]
+  @onLoad: init()

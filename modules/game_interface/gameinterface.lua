@@ -3,6 +3,8 @@ gameMapPanel = nil
 gameRightPanels = nil
 gameLeftPanels = nil
 gameBottomPanel = nil
+gameActionPanel = nil
+gameLeftActions = nil
 logoutButton = nil
 mouseGrabberWidget = nil
 countWindow = nil
@@ -44,6 +46,8 @@ function init()
   gameRightPanels = gameRootPanel:getChildById('gameRightPanels')
   gameLeftPanels = gameRootPanel:getChildById('gameLeftPanels')
   gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
+  gameActionPanel = gameRootPanel:getChildById('gameActionPanel')
+  gameLeftActions = gameRootPanel:getChildById('gameLeftActions')
   connect(gameLeftPanel, { onVisibilityChange = onLeftPanelVisibilityChange })
 
   logoutButton = modules.client_topmenu.addLeftButton('logoutButton', tr('Exit'),
@@ -52,6 +56,7 @@ function init()
 
   gameRightPanels:addChild(g_ui.createWidget('GameSidePanel'))
  
+  setupLeftActions()
   refreshViewMode()
 
   bindKeys()
@@ -389,12 +394,12 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
   local classic = modules.client_options.getOption('classicControl')
   local shortcut = nil
 
-  if not classic then shortcut = '(Shift)' else shortcut = nil end
+  if not classic and not g_app.isMobile() then shortcut = '(Shift)' else shortcut = nil end
   if lookThing then
     menu:addOption(tr('Look'), function() g_game.look(lookThing) end, shortcut)
   end
 
-  if not classic then shortcut = '(Ctrl)' else shortcut = nil end
+  if not classic and not g_app.isMobile() then shortcut = '(Ctrl)' else shortcut = nil end
   if useThing then
     if useThing:isContainer() then
       if useThing:getParentContainer() then
@@ -470,7 +475,7 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
 
     else
       local localPosition = localPlayer:getPosition()
-      if not classic then shortcut = '(Alt)' else shortcut = nil end
+      if not classic and not g_app.isMobile() then shortcut = '(Alt)' else shortcut = nil end
       if creatureThing:getPosition().z == localPosition.z then
         if g_game.getAttackingCreature() ~= creatureThing then
           menu:addOption(tr('Attack'), function() g_game.attack(creatureThing) end, shortcut)
@@ -565,7 +570,68 @@ end
 function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, useThing, creatureThing, attackCreature, marking)
   local keyboardModifiers = g_keyboard.getModifiers()
 
-  if not modules.client_options.getOption('classicControl') then
+  if g_app.isMobile() then
+    if mouseButton == MouseRightButton then
+      createThingMenu(menuPosition, lookThing, useThing, creatureThing)
+      return true      
+    end
+    if mouseButton ~= MouseLeftButton then
+      return false
+    end
+    local action = getLeftAction()
+    if action == "look" then
+      if lookThing then
+        resetLeftActions()
+        g_game.look(lookThing)
+        return true    
+      end
+      return true    
+    elseif action == "use" then
+      if useThing then
+        resetLeftActions()
+        if useThing:isContainer() then
+          if useThing:getParentContainer() then
+            g_game.open(useThing, useThing:getParentContainer())
+          else
+            g_game.open(useThing)
+          end
+          return true
+        elseif useThing:isMultiUse() then
+          startUseWith(useThing)
+          return true
+        else
+          g_game.use(useThing)
+          return true
+        end
+      end
+      return true
+    elseif action == "attack" then
+      if attackCreature and attackCreature ~= player then
+        resetLeftActions()
+        g_game.attack(attackCreature)
+        return true
+      elseif creatureThing and creatureThing ~= player and creatureThing:getPosition().z == autoWalkPos.z then
+        resetLeftActions()
+        g_game.attack(creatureThing)
+        return true
+      end
+      return true
+    elseif action == "follow" then
+      if attackCreature and attackCreature ~= player then
+        resetLeftActions()
+        g_game.follow(attackCreature)
+        return true
+      elseif creatureThing and creatureThing ~= player and creatureThing:getPosition().z == autoWalkPos.z then
+        resetLeftActions()
+        g_game.follow(creatureThing)
+        return true
+      end
+      return true
+    elseif not autoWalkPos and useThing then
+      createThingMenu(menuPosition, lookThing, useThing, creatureThing)      
+      return true
+    end
+  elseif not modules.client_options.getOption('classicControl') then
     if keyboardModifiers == KeyboardNoModifier and mouseButton == MouseRightButton then
       createThingMenu(menuPosition, lookThing, useThing, creatureThing)
       return true
@@ -595,9 +661,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
       g_game.attack(creatureThing)
       return true
     end
-
-  -- classic control
-  else
+  else -- classic control
     if useThing and keyboardModifiers == KeyboardNoModifier and mouseButton == MouseRightButton and not g_mouse.isPressed(MouseLeftButton) then
       local player = g_game.getLocalPlayer()
       if attackCreature and attackCreature ~= player then
@@ -810,8 +874,12 @@ function getBottomPanel()
   return gameBottomPanel
 end
 
+function getActionPanel()
+  return gameActionPanel
+end
+
 function refreshViewMode()  
-  local classic = g_settings.getBoolean("classicView")
+  local classic = g_settings.getBoolean("classicView") and not g_app.isMobile()
   local rightPanels = g_settings.getNumber("rightPanels") - gameRightPanels:getChildCount()
   local leftPanels = g_settings.getNumber("leftPanels") - 1 - gameLeftPanels:getChildCount()
 
@@ -838,9 +906,9 @@ function refreshViewMode()
     return
   end
 
-  local minimumWidth = (g_settings.getNumber("rightPanels") + g_settings.getNumber("leftPanels") - 1) * 200 + 300
-  minimumWidth = math.max(minimumWidth, 800)
-  g_window.setMinimumSize({ width = minimumWidth, height = 600 })
+  local minimumWidth = (g_settings.getNumber("rightPanels") + g_settings.getNumber("leftPanels") - 1) * 200 + 200
+  minimumWidth = math.max(minimumWidth, g_resources.getLayout() == "mobile" and 640 or 800)
+  g_window.setMinimumSize({ width = minimumWidth, height = (g_resources.getLayout() == "mobile" and 360 or 600)})
   if g_window.getWidth() < minimumWidth then
     local oldPos = g_window.getPosition()
     local size = { width = minimumWidth, height = g_window.getHeight() }
@@ -868,30 +936,21 @@ function refreshViewMode()
     gameMapPanel:setMarginLeft(0)
     gameMapPanel:setMarginRight(0)
     gameMapPanel:setMarginTop(0)
-  else
-    gameLeftPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanels:getPaddingTop())
-    gameRightPanels:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanels:getPaddingTop())
   end
 
   gameMapPanel:setVisibleDimension({ width = 15, height = 11 })
   
   if classic then  
     g_game.changeMapAwareRange(19, 15)
-    if not modules.client_topmenu.getTopMenu().hideIngame then
-      gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
-    end
     gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanels', AnchorRight)
     gameMapPanel:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
-    gameMapPanel:addAnchor(AnchorBottom, 'gameBottomPanel', AnchorTop)    
+    gameMapPanel:addAnchor(AnchorBottom, 'gameActionPanel', AnchorTop)
     gameMapPanel:setKeepAspectRatio(true)
     gameMapPanel:setLimitVisibleRange(false)
     gameMapPanel:setZoom(11)
+    gameMapPanel:setOn(false) -- frame
 
-    gameBottomPanel:addAnchor(AnchorLeft, 'gameLeftPanels', AnchorRight)
-    gameBottomPanel:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
-    
     modules.client_topmenu.getTopMenu():setImageColor('white')
-    gameBottomPanel:setImageColor('white')
   
     if modules.game_console then
       modules.game_console.switchMode(false)
@@ -899,13 +958,19 @@ function refreshViewMode()
   else
     g_game.changeMapAwareRange(31, 21)
     gameMapPanel:fill('parent')
-    gameRootPanel:fill('parent')
     gameMapPanel:setKeepAspectRatio(false)
     gameMapPanel:setLimitVisibleRange(false)
-    gameMapPanel:setZoom(15)
+    gameMapPanel:setOn(true)
+    if g_app.isMobile() then
+      gameMapPanel:setZoom(11)
+    else
+      gameMapPanel:setZoom(15)
+    end
                
     modules.client_topmenu.getTopMenu():setImageColor('#ffffff66')  
-    
+    if g_app.isMobile() then
+      gameMapPanel:setMarginTop(-32)   
+    end
     if modules.game_console then
       modules.game_console.switchMode(true)
     end
@@ -925,7 +990,9 @@ function limitZoom()
   limitedZoom = true
 end
 
-function updateSize() 
+function updateSize()
+  if g_app.isMobile() then return end
+
   local classic = g_settings.getBoolean("classicView")
   local height = gameMapPanel:getHeight()
   local width = gameMapPanel:getWidth()
@@ -983,4 +1050,46 @@ function updateSize()
   end
   gameMapPanel:setMarginLeft(extraMargin)
   gameMapPanel:setMarginRight(extraMargin) ]]
+end
+
+function setupLeftActions()
+  if not g_app.isMobile() then return end
+  for _, widget in ipairs(gameLeftActions:getChildren()) do
+    widget.image:setChecked(false)
+    widget.onClick = function()
+      if widget.image:isChecked() then
+        widget.image:setChecked(false)
+        return
+      end
+      resetLeftActions()
+      widget.image:setChecked(true)
+    end
+  end
+  if not gameLeftActions.chat then return end
+  gameLeftActions.chat.onClick = function()
+    if gameBottomPanel:getHeight() <= 5 then
+      gameBottomPanel:setHeight(90)
+    else
+      gameBottomPanel:setHeight(0)    
+    end
+  end
+end
+
+function resetLeftActions()
+  for _, widget in ipairs(gameLeftActions:getChildren()) do
+    widget.image:setChecked(false)
+  end
+end
+
+function getLeftAction()
+  for _, widget in ipairs(gameLeftActions:getChildren()) do
+    if widget.image:isChecked() then
+      return widget:getId()
+    end
+  end
+  return ""
+end
+
+function isChatVisible()
+  return gameBottomPanel:getHeight() >= 5
 end

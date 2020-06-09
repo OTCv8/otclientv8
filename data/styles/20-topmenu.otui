@@ -98,6 +98,7 @@ TopMenu < TopMenuPanel
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
+    font: verdana-11px-antialised
     text-align: center
     text-auto-resize: true
 

@@ -45,12 +45,14 @@ StaticMainWindow
   id: charactersWindow
   !text: tr('Character List')
   visible: false
+  size: 350 400
+  $mobile:
+    size: 350 280
   @onEnter: CharacterList.doLogin()
   @onEscape: CharacterList.hide(true)
   @onSetup: |
     g_keyboard.bindKeyPress('Up', function() self:getChildById('characters'):focusPreviousChild(KeyboardFocusReason) end, self)
-    g_keyboard.bindKeyPress('Down', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)
-    self:setSize({width = 350, height = 400})
+    g_keyboard.bindKeyPress('Down', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)  
 
   TextList
     id: characters

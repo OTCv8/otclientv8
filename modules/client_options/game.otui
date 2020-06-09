@@ -1,7 +1,10 @@
-Panel
+OptionPanel
   OptionCheckBox
     id: classicControl
     !text: tr('Classic control')
+
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: autoChaseOverride
@@ -15,6 +18,8 @@ Panel
     id: wsadWalking
     !text: tr('Enable WSAD walking')
     !tooltip: tr('Disable chat and allow walk using WSAD keys')
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: dash
@@ -27,9 +32,6 @@ Panel
     !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
 
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: hotkeyDelayLabel
     margin-top: 10
     !tooltip: tr('Give you some time to make a turn while walking if you press many keys simultaneously')
@@ -39,114 +41,107 @@ Panel
 
   OptionScrollbar
     id: hotkeyDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 5
     maximum: 50
 
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: walkFirstStepDelayLabel
     margin-top: 10
     @onSetup: |
       local value = modules.client_options.getOption('walkFirstStepDelay')
       self:setText(tr('Walk delay after first step: %s ms', value))
 
+    $mobile:
+      visible: false
+
   OptionScrollbar
     id: walkFirstStepDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 50
     maximum: 300
 
+    $mobile:
+      visible: false
+
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: walkTurnDelayLabel
     margin-top: 10
     @onSetup: |
       local value = modules.client_options.getOption('walkTurnDelay')
       self:setText(tr('Walk delay after turn: %s ms', value))
 
+    $mobile:
+      visible: false
+
   OptionScrollbar
     id: walkTurnDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 0
     maximum: 300
 
+    $mobile:
+      visible: false
+
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: walkCtrlTurnDelayLabel
     margin-top: 10
+    $mobile:
+      visible: false
     @onSetup: |
       local value = modules.client_options.getOption('walkTurnDelay')
       self:setText(tr('Walk delay after ctrl turn: %s ms', value))
 
   OptionScrollbar
     id: walkCtrlTurnDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 0
     maximum: 300    
+    $mobile:
+      visible: false
 
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: walkStairsDelayLabel
     margin-top: 10
     @onSetup: |
       local value = modules.client_options.getOption('walkStairsDelay')
       self:setText(tr('Walk delay after floor change: %s ms', value))
+    $mobile:
+      visible: false
 
   OptionScrollbar
     id: walkStairsDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 0
     maximum: 300
+    $mobile:
+      visible: false
 
   Label
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     id: walkTeleportDelayLabel
     margin-top: 10
     @onSetup: |
       local value = modules.client_options.getOption('walkTeleportDelay')
       self:setText(tr('Walk delay after teleport: %s ms', value))
+    $mobile:
+      visible: false
 
   OptionScrollbar
     id: walkTeleportDelay
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     margin-top: 3
     minimum: 0
     maximum: 300
+    $mobile:
+      visible: false
       
-  Button
-    id: changeLocale
-    !text: tr('Change language')
-    @onClick: modules.client_locales.createWindow()
-    anchors.top: prev.bottom
-    anchors.left: prev.left
-    margin-top: 12
-    width: 120
+  Panel
+    height: 30
+    margin-top: 10
 
+    Button
+      id: changeLocale
+      !text: tr('Change language')
+      @onClick: modules.client_locales.createWindow()
+      anchors.left: parent.left
+      anchors.top: parent.top
+      width: 150

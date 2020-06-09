@@ -39,7 +39,6 @@ ShopCategoryCreature < ShopCategory
     margin-bottom: 2
     margin-left: 2
     size: 32 32
-    raw: true
     
 ShopCategoryImage < ShopCategory
   Label
@@ -118,7 +117,6 @@ ShopOfferCreature < ShopOffer
     margin-bottom: 4
     margin-left: 2
     size: 48 48
-    raw: true
     
 ShopOfferImage < ShopOffer
   Label

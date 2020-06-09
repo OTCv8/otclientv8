@@ -57,7 +57,7 @@ function terminate()
   removeEvent(monitorEvent)
 end
 
-function onMiniWindowClose()
+function onClose()
   statsButton:setOn(false)
 end
 
@@ -67,6 +67,8 @@ function toggle()
     statsButton:setOn(false)
   else
     statsWindow:show()
+    statsWindow:raise()
+    statsWindow:focus()
     statsButton:setOn(true)
   end
 end
@@ -173,7 +175,7 @@ function update()
     return
   end
   
-  statsWindow.debugPanel.sleepTime:setText("Sleep: " .. math.round(g_stats.getSleepTime() / math.max(1, g_clock.micros() - lastSleepTimeReset), 2) .. "%, Packets: " .. g_game.getRecivedPacketsCount() .. " , " .. (g_game.getRecivedPacketsSize() / 1024) .. " KB")
+  statsWindow.debugPanel.sleepTime:setText("GFPS: " .. g_app.getGraphicsFps() .. " PFPS: " .. g_app.getProcessingFps() .. " Packets: " .. g_game.getRecivedPacketsCount() .. " , " .. (g_game.getRecivedPacketsSize() / 1024) .. " KB")
   statsWindow.debugPanel.luaRamUsage:setText("Ram usage by lua: " .. gcinfo() .. " kb")
   local adaptive = "Adaptive: " .. g_adaptiveRenderer.getLevel() .. " | " .. g_adaptiveRenderer.getDebugInfo()
   adaptiveRender:setText(adaptive)

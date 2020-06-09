@@ -34,7 +34,7 @@ function init()
     loaded_files = {}
     for _,file in pairs(files) do
       if g_resources.isFileType(file, 'otfont') then
-        g_ui.importFont('/layouts/' .. layout .. '/fonts/' .. file)
+        g_fonts.importFont('/layouts/' .. layout .. '/fonts/' .. file)
         loaded_files[file] = true
       end
     end
@@ -44,24 +44,6 @@ function init()
   for _,file in pairs(files) do
     if g_resources.isFileType(file, 'otfont') and not loaded_files[file] then
       g_fonts.importFont('/data/fonts/' .. file)
-    end
-  end
-
-  if layout:len() > 0 then
-    files = g_resources.listDirectoryFiles('/layouts/' .. layout .. '/particles')
-    loaded_files = {}
-    for _,file in pairs(files) do
-      if g_resources.isFileType(file, 'otps') then
-        g_ui.importParticle('/layouts/' .. layout .. '/particles/' .. file)
-        loaded_files[file] = true
-      end
-    end
-  end
-  
-  files = g_resources.listDirectoryFiles('/data/particles')
-  for _,file in pairs(files) do
-    if g_resources.isFileType(file, 'otps') and not loaded_files[file] then
-      g_particles.importParticle('/data/particles/' .. file)
     end
   end
 

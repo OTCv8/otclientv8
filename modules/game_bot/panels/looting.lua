@@ -266,7 +266,7 @@ Panel
     refreshConfig()
   end
   ui.add.onClick = function()
-    modules.game_textedit.multilineEditor("Looting editor", "name:Config name", function(newText)
+    modules.client_textedit.multilineEditor("Looting editor", "name:Config name", function(newText)
       table.insert(context.storage.looting.configs, newText)
       context.storage.looting.activeConfig = #context.storage.looting.configs
       refreshConfig()
@@ -276,7 +276,7 @@ Panel
     if not context.storage.looting.activeConfig or not context.storage.looting.configs[context.storage.looting.activeConfig] then
       return
     end
-    modules.game_textedit.multilineEditor("Looting editor", context.storage.looting.configs[context.storage.looting.activeConfig], function(newText)
+    modules.client_textedit.multilineEditor("Looting editor", context.storage.looting.configs[context.storage.looting.activeConfig], function(newText)
       context.storage.looting.configs[context.storage.looting.activeConfig] = newText
       refreshConfig()
     end)

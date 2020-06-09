@@ -1,5 +1,7 @@
 local context = G.botContext
 
+context.getMapView = function() return modules.game_interface.getMapPanel() end
+context.getMapPanel = context.getMapView
 context.zoomIn = function() modules.game_interface.getMapPanel():zoomIn() end
 context.zoomOut = function() modules.game_interface.getMapPanel():zoomOut() end
 

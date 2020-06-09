@@ -108,6 +108,7 @@ function HTTP.cancel(operationId)
   if not g_http or not g_http.cancel then
     return
   end
+  HTTP.operations[operationId] = nil
   return g_http.cancel(operationId)
 end
 

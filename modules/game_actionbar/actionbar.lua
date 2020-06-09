@@ -24,7 +24,7 @@ ActionColors = {
 }
 
 function init()
-  local bottomPanel = modules.game_interface.getBottomPanel()
+  local bottomPanel = modules.game_interface.getActionPanel()
   actionPanel1 = g_ui.loadUI('actionbar', bottomPanel)
   bottomPanel:moveChildToIndex(actionPanel1, 1)
   actionPanel2 = g_ui.loadUI('actionbar', bottomPanel)
@@ -167,6 +167,7 @@ function setupAction(action)
       action.text:setText(config.text)
       action:setBorderColor(ActionColors.text)
       action.item:setOn(true) -- removes background
+      action.item:setItemId(0)
       if Spells then
         local spell, profile = Spells.getSpellByWords(config.text:lower())
         action.spell = spell
@@ -225,7 +226,7 @@ end
 
 function updateAction(action, newConfig)
   local config = action.config
-  if newConfig.hotkey and type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
+  if type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
     local gameRootPanel = modules.game_interface.getRootPanel()
     g_keyboard.unbindKeyPress(config.hotkey, action.callback, gameRootPanel)
   end
@@ -236,7 +237,7 @@ function updateAction(action, newConfig)
 end
 
 function actionOnMouseRelease(action, mousePosition, mouseButton)
-  if mouseButton == MouseRightButton then
+  if mouseButton == MouseRightButton or not action.item:isOn() then
     local menu = g_ui.createWidget('PopupMenu')
     menu:setGameMenu(true)
     if action.item:getItemId() > 0 then
@@ -256,7 +257,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
     end
     menu:addSeparator()
     menu:addOption(tr('Set text'), function() 
-      modules.game_textedit.singlelineEditor(action.config.text or "", function(newText)
+      modules.client_textedit.singlelineEditor(action.config.text or "", function(newText)
         updateAction(action, {text=newText, item=0})
       end)
     end)
@@ -362,7 +363,31 @@ function executeAction(action, ticks)
   local actionType = action.config.actionType
 
   if type(action.config.text) == 'string' and action.config.text:len() > 0 then
-    modules.game_console.sendMessage(action.config.text)
+    if g_app.isMobile() then -- turn to direction of targer
+      local target = g_game.getAttackingCreature()
+      if target then
+        local pos = g_game.getLocalPlayer():getPosition()
+        local tpos = target:getPosition()
+        if pos and tpos then
+          local offx = tpos.x - pos.x
+          local offy = tpos.y - pos.y
+          if offy < 0 and offx <= 0 and math.abs(offx) < math.abs(offy) then
+            g_game.turn(Directions.North)
+          elseif offy > 0 and offx >= 0 and math.abs(offx) < math.abs(offy) then
+            g_game.turn(Directions.South)
+          elseif offx < 0 and offy <= 0 and math.abs(offx) > math.abs(offy) then
+            g_game.turn(Directions.West)
+          elseif offx > 0 and offy >= 0 and math.abs(offx) > math.abs(offy) then
+            g_game.turn(Directions.East)
+          end
+        end
+      end
+    end
+    if modules.game_interface.isChatVisible() then
+      modules.game_console.sendMessage(action.config.text)    
+    else
+      g_game.talk(action.config.text)
+    end
     action.actionDelayTo = g_clock.millis() + actionDelay
   elseif action.item:getItemId() > 0 then    
     if actionType == ActionTypes.USE then

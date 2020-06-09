@@ -7,3 +7,6 @@ Module
   @onLoad: EnterGame.init() CharacterList.init()
   @onUnload: EnterGame.terminate() CharacterList.terminate()
   
+  load-later:
+    - game_things
+    - game_features

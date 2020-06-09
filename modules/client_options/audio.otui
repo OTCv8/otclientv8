@@ -1,4 +1,4 @@
-Panel
+OptionPanel
   OptionCheckBox
     id: enableAudio
     !text: tr('Enable audio')
@@ -10,9 +10,6 @@ Panel
   Label
     id: musicSoundVolumeLabel
     !text: tr('Music volume: %d', 100)
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 6
     @onSetup: |
       local value = modules.client_options.getOption('musicSoundVolume')
@@ -20,9 +17,6 @@ Panel
 
   OptionScrollbar
     id: musicSoundVolume
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     minimum: 0
     maximum: 100
@@ -30,9 +24,6 @@ Panel
   Label
     id: botSoundVolumeLabel
     !text: tr('Bot sound volume: %d', 100)
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 6
     @onSetup: |
       local value = modules.client_options.getOption('botSoundVolume')
@@ -40,9 +31,6 @@ Panel
 
   OptionScrollbar
     id: botSoundVolume
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     minimum: 0
     maximum: 100
