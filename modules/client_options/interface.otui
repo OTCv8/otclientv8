@@ -1,20 +1,18 @@
-Panel
+OptionPanel
   Label
     width: 130
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: parent.top
     id: layoutLabel
     !text: tr("Layout (change requries client restart)")
+    $mobile:
+      visible: false
   
   ComboBox
     id: layout
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     margin-right: 2
     margin-left: 2
+    $mobile:
+      visible: false
     @onOptionChange: modules.client_options.setOption(self:getId(), self:getCurrentOption().text)
     @onSetup: |
       self:addOption("Default")
@@ -28,10 +26,16 @@ Panel
     id: classicView
     !text: tr('Classic view')
     margin-top: 5
+    
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: cacheMap
     !text: tr('Cache map (for non-classic view)')
+
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: actionBar1
@@ -57,6 +61,8 @@ Panel
   OptionCheckBox
     id: displayHealthOnTop
     !text: tr('Display creature health bars above texts')
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: hidePlayerBars
@@ -65,6 +71,8 @@ Panel
   OptionCheckBox
     id: displayMana
     !text: tr('Show player mana bar')
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: topHealtManaBar
@@ -73,93 +81,92 @@ Panel
   OptionCheckBox
     id: showHealthManaCircle
     !text: tr('Show health and mana circle')
+    $mobile:
+      visible: false
 
   OptionCheckBox
     id: highlightThingsUnderCursor
     !text: tr('Highlight things under cursor')
 
-  Label
-    margin-top: 5
-    width: 90
-    anchors.left: parent.left
-    anchors.top: prev.bottom
-    id: leftPanelsLabel
-    !text: tr("Left panels")
-
-  Label
-    width: 90
-    anchors.left: prev.right
-    anchors.top: prev.top
-    id: rightPanelsLabel
-    !text: tr("Right panels")
-
-  Label
-    width: 130
-    anchors.left: prev.right
-    anchors.top: prev.top
-    id: backpackPanelLabel
-    !text: tr("Container's panel")
-    !tooltip: tr("Open new containers in selected panel")
-
-  ComboBox
-    id: leftPanels
-    anchors.left: leftPanelsLabel.left
-    anchors.right: leftPanelsLabel.right
-    anchors.top: leftPanelsLabel.bottom
+  Panel
+    height: 40
     margin-top: 3
-    margin-right: 20
-    @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
-    @onSetup: |
-      self:addOption("0")
-      self:addOption("1")
-      self:addOption("2")
-      self:addOption("3")
-      self:addOption("4")
+    
+    Label
+      width: 90
+      anchors.left: parent.left
+      anchors.top: parent.top
+      id: leftPanelsLabel
+      !text: tr("Left panels")
 
-  ComboBox
-    id: rightPanels
-    anchors.left: rightPanelsLabel.left
-    anchors.right: rightPanelsLabel.right
-    anchors.top: rightPanelsLabel.bottom
-    margin-top: 3
-    margin-right: 20
-    @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
-    @onSetup: |
-      self:addOption("1")
-      self:addOption("2")
-      self:addOption("3")
-      self:addOption("4")
+    Label
+      width: 90
+      anchors.left: prev.right
+      anchors.top: prev.top
+      id: rightPanelsLabel
+      !text: tr("Right panels")
 
-  ComboBox
-    id: containerPanel
-    anchors.left: backpackPanelLabel.left
-    anchors.right: backpackPanelLabel.right
-    anchors.top: backpackPanelLabel.bottom
-    margin-top: 3
-    @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
-    @onSetup: |
-      self:addOption("1st left panel")
-      self:addOption("2nd left panel")
-      self:addOption("3rd left panel")
-      self:addOption("4th left panel")
-      self:addOption("1st right panel")
-      self:addOption("2nd right panel")
-      self:addOption("3rd right panel")
-      self:addOption("4th right panel")
+    Label
+      width: 130
+      anchors.left: prev.right
+      anchors.top: prev.top
+      id: backpackPanelLabel
+      !text: tr("Container's panel")
+      !tooltip: tr("Open new containers in selected panel")
+
+    ComboBox
+      id: leftPanels
+      anchors.left: leftPanelsLabel.left
+      anchors.right: leftPanelsLabel.right
+      anchors.top: leftPanelsLabel.bottom
+      margin-top: 3
+      margin-right: 20
+      @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
+      @onSetup: |
+        self:addOption("0")
+        self:addOption("1")
+        self:addOption("2")
+        self:addOption("3")
+        self:addOption("4")
+
+    ComboBox
+      id: rightPanels
+      anchors.left: rightPanelsLabel.left
+      anchors.right: rightPanelsLabel.right
+      anchors.top: rightPanelsLabel.bottom
+      margin-top: 3
+      margin-right: 20
+      @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
+      @onSetup: |
+        self:addOption("1")
+        self:addOption("2")
+        self:addOption("3")
+        self:addOption("4")
+
+    ComboBox
+      id: containerPanel
+      anchors.left: backpackPanelLabel.left
+      anchors.right: backpackPanelLabel.right
+      anchors.top: backpackPanelLabel.bottom
+      margin-top: 3
+      @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
+      @onSetup: |
+        self:addOption("1st left panel")
+        self:addOption("2nd left panel")
+        self:addOption("3rd left panel")
+        self:addOption("4th left panel")
+        self:addOption("1st right panel")
+        self:addOption("2nd right panel")
+        self:addOption("3rd right panel")
+        self:addOption("4th right panel")
 
   Label
     margin-top: 3
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     id: crosshairLabel
     !text: tr("Crosshair")
     
   ComboBox
     id: crosshair
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     margin-right: 2
     margin-left: 2
@@ -171,9 +178,6 @@ Panel
 
   Label
     id: floorFadingLabel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 6
     @onSetup: |
       local value = modules.client_options.getOption('floorFading')
@@ -181,17 +185,11 @@ Panel
 
   OptionScrollbar
     id: floorFading
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     minimum: 0
     maximum: 2000
 
   Label
     id: floorFadingLabel2
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 6
     !text: (tr('Floor fading doesn\'t work with enabled light'))

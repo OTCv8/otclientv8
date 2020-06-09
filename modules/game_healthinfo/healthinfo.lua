@@ -50,7 +50,11 @@ function init()
   
   if not healthInfoWindow.forceOpen then
     healthInfoButton = modules.client_topmenu.addRightGameToggleButton('healthInfoButton', tr('Health Information'), '/images/topbuttons/healthinfo', toggle)
-    healthInfoButton:setOn(true)
+    if g_app.isMobile() then
+      healthInfoButton:hide()
+    else
+      healthInfoButton:setOn(true)
+    end
   end
 
   healthBar = healthInfoWindow:recursiveGetChildById('healthBar')
@@ -89,6 +93,11 @@ function init()
   hideExperience()
 
   healthInfoWindow:setup()
+  
+  if g_app.isMobile() then
+    healthInfoWindow:close()
+    healthInfoButton:setOn(false)  
+  end
 end
 
 function terminate()
@@ -166,8 +175,9 @@ function onHealthChange(localPlayer, health, maxHealth)
 
   local healthPercent = math.floor(g_game.getLocalPlayer():getHealthPercent())
   local Yhppc = math.floor(208 * (1 - (healthPercent / 100)))
-  local rect = { x = 0, y = Yhppc, width = 63, height = 208 }
+  local rect = { x = 0, y = Yhppc, width = 63, height = 208 - Yhppc + 1 }
   healthCircleFront:setImageClip(rect)
+  healthCircleFront:setImageRect(rect)
 
   if healthPercent > 92 then
     healthCircleFront:setImageColor("#00BC00FF")
@@ -182,14 +192,13 @@ function onHealthChange(localPlayer, health, maxHealth)
   else
     healthCircleFront:setImageColor("#850C0CFF")
   end
-
-  healthCircleFront:setMarginTop(Yhppc)
 end
 
 function onManaChange(localPlayer, mana, maxMana)
   if mana > maxMana then
     maxMana = mana
   end
+  
   manaBar:setText(comma_value(mana) .. ' / ' .. comma_value(maxMana))
   manaBar:setTooltip(tr(manaTooltip, mana, maxMana))
   manaBar:setValue(mana, 0, maxMana)
@@ -198,10 +207,10 @@ function onManaChange(localPlayer, mana, maxMana)
   topManaBar:setTooltip(tr(manaTooltip, mana, maxMana))
   topManaBar:setValue(mana, 0, maxMana)
 
-  local Ymppc = math.floor(208 * (1 - (math.floor((g_game.getLocalPlayer():getMaxMana() - (g_game.getLocalPlayer():getMaxMana() - g_game.getLocalPlayer():getMana())) * 100 / g_game.getLocalPlayer():getMaxMana()) / 100)))
-  local rect = { x = 0, y = Ymppc, width = 63, height = 208 }
+  local Ymppc = math.floor(208 * (1 - (math.floor((maxMana - (maxMana - mana)) * 100 / maxMana) / 100)))
+  local rect = { x = 0, y = Ymppc, width = 63, height = 208 - Ymppc + 1 }
   manaCircleFront:setImageClip(rect)
-  manaCircleFront:setMarginTop(Ymppc)
+  manaCircleFront:setImageRect(rect)
 end
 
 function onLevelChange(localPlayer, value, percent)
@@ -276,8 +285,18 @@ function setExperienceTooltip(tooltip)
 end
 
 function onOverlayGeometryChange() 
+  if g_app.isMobile() then
+    topHealthBar:setMarginTop(35)
+    topManaBar:setMarginTop(35)
+    local width = overlay:getWidth() 
+    local margin = width / 3 + 10
+    topHealthBar:setMarginLeft(margin)
+    topManaBar:setMarginRight(margin)    
+    return
+  end
+
   local classic = g_settings.getBoolean("classicView")
-  local minMargin = 100
+  local minMargin = 40
   if classic then
     topHealthBar:setMarginTop(15)
     topManaBar:setMarginTop(15)

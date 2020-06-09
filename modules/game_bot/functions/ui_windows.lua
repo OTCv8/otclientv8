@@ -14,7 +14,7 @@ UI.EditorWindow = function(text, options, callback)
       validation = text (regex)
       examples = {{name, text}, {name, text}}
   ]]--
-  local window = modules.game_textedit.edit(text, options, callback)
+  local window = modules.client_textedit.edit(text, options, callback)
   window.botWidget = true
   return window
 end

@@ -29,7 +29,7 @@ BotItem < Item
   &editable: true
 
 BotTextEdit < TextEdit  
-  @onClick: modules.game_textedit.show(self)
+  @onClick: modules.client_textedit.show(self)
   text-align: center
   multiline: false
   focusable: false
@@ -52,6 +52,8 @@ BotPanel < Panel
     vertical-scrollbar: botPanelScroll
     layout:
       type: verticalBox
+    $mobile:
+      margin-right: 16
 
   BotSmallScrollBar
     id: botPanelScroll

@@ -5,7 +5,7 @@ PrevMountButton < PreviousButton
 
 MainWindow
   !text: tr('Select Outfit')
-  size: 338 375
+  size: 338 355
 
   @onEnter: modules.game_outfit.accept()
   @onEscape: modules.game_outfit.destroy()
@@ -158,24 +158,21 @@ MainWindow
       num-columns: 19
       num-lines: 7
 
-  // Action Button Section
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 5
+    margin-top: 5
 
   Button
     id: randomizeButton
     !text: tr('Randomize')
     !tooltip: tr('Randomize characters outfit')
     width: 75
-    anchors.left: prev.left
-    anchors.top: prev.bottom
-    margin-right: 16
-    @onClick: modules.game_outfit.randomize()
-
-  HorizontalSeparator
     anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 10
-    margin-top: 5
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_outfit.randomize()
 
   Button
     id: outfitOkButton

@@ -1,0 +1,108 @@
+ScrollBarSlider < UIButton
+  id: sliderButton
+  anchors.centerIn: parent
+  size: 16 20
+  image-source: /images/ui/scrollbar
+  image-clip: 0 26 13 13
+  image-border: 2
+  image-color: #ffffffff
+  $hover:
+    image-clip: 13 26 13 13
+  $pressed:
+    image-clip: 26 26 13 13
+  $disabled:
+    image-color: #ffffff66
+
+ScrollBarValueLabel < Label
+  id: valueLabel
+  anchors.fill: parent
+  color: white
+  text-align: center
+
+VerticalScrollBar < UIScrollBar
+  orientation: vertical
+  width: 16
+  height: 39
+  image-source: /images/ui/scrollbar
+  image-clip: 39 0 13 65
+  image-border: 1
+  pixels-scroll: true
+
+  UIButton
+    id: decrementButton
+    anchors.top: parent.top
+    anchors.left: parent.left
+    image-source: /images/ui/scrollbar
+    image-clip: 0 0 13 13
+    image-color: #ffffffff
+    size: 16 16
+    $hover:
+      image-clip: 13 0 13 13
+    $pressed:
+      image-clip: 26 0 13 13
+    $disabled:
+      image-color: #ffffff66
+
+  UIButton
+    id: incrementButton
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    size: 16 16
+    image-source: /images/ui/scrollbar
+    image-clip: 0 13 13 13
+    image-color: #ffffffff
+    $hover:
+      image-clip: 13 13 13 13
+    $pressed:
+      image-clip: 26 13 13 13
+    $disabled:
+      image-color: #ffffff66
+
+  ScrollBarSlider
+
+  ScrollBarValueLabel
+
+HorizontalScrollBar < UIScrollBar
+  orientation: horizontal
+  height: 16
+  width: 39
+  image-source: /images/ui/scrollbar
+  image-clip: 0 65 52 13
+  image-border: 1
+
+  $disabled:
+    color: #bbbbbb88
+
+  UIButton
+    id: decrementButton
+    anchors.top: parent.top
+    anchors.left: parent.left
+    image-source: /images/ui/scrollbar
+    image-clip: 0 39 13 13
+    image-color: #ffffffff
+    size: 16 16
+    $hover:
+      image-clip: 13 39 13 13
+    $pressed:
+      image-clip: 26 39 13 13
+    $disabled:
+      image-color: #ffffff66
+
+  UIButton
+    id: incrementButton
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    size: 16 16
+    image-source: /images/ui/scrollbar
+    image-clip: 0 52 13 13
+    image-color: #ffffffff
+    $hover:
+      image-clip: 13 52 13 13
+    $pressed:
+      image-clip: 26 52 13 13
+    $disabled:
+      image-color: #ffffff66
+
+  ScrollBarSlider
+
+  ScrollBarValueLabel

@@ -81,6 +81,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.gcinfo = gcinfo
   context.tr = tr
   context.json = json
+  context.base64 = base64
   context.regexMatch = regexMatch
   context.getDistanceBetween = function(p1, p2)
     return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))

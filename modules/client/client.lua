@@ -57,14 +57,17 @@ function init()
   connect(g_game, { onGameStart = onGameStart,
                     onGameEnd = onGameEnd })
 
-  g_window.setMinimumSize({ width = 800, height = 600 })
   if g_sounds ~= nil then
     --g_sounds.preload(musicFilename)
   end
-  -- initialize in fullscreen mode on mobile devices
-  if g_window.getPlatformType() == "X11-EGL" then
-    g_window.setFullscreen(true)
-  else
+
+  if not Updater then
+    if g_resources.getLayout() == "mobile" then
+      g_window.setMinimumSize({ width = 640, height = 360 })
+    else
+      g_window.setMinimumSize({ width = 800, height = 640 })  
+    end
+
     -- window size
     local size = { width = 1024, height = 600 }
     size = g_settings.getSize('window-size', size)
@@ -87,12 +90,7 @@ function init()
   g_window.setTitle(g_app.getName())
   g_window.setIcon('/images/clienticon')
 
-  -- poll resize events
-  g_window.poll()
-
   g_keyboard.bindKeyDown('Ctrl+Shift+R', reloadScripts)
-  g_keyboard.bindKeyDown('Ctrl+Shift+[', function() g_extras.setTestMode((g_extras.getTestMode() - 1) % 10) end)
-  g_keyboard.bindKeyDown('Ctrl+Shift+]', function() g_extras.setTestMode((g_extras.getTestMode() + 1) % 10) end)
 
   -- generate machine uuid, this is a security measure for storing passwords
   if not g_crypt.setMachineUUID(g_settings.get('uuid')) then

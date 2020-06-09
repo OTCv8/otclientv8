@@ -4,9 +4,9 @@ local defaultOptions = {
   showFps = true,
   showPing = true,
   fullscreen = false,
-  classicView = true,
+  classicView = not g_app.isMobile(),
   cacheMap = false,
-  classicControl = true,
+  classicControl = not g_app.isMobile(),
   smartWalk = false,
   dash = false,
   autoChaseOverride = true,
@@ -18,9 +18,9 @@ local defaultOptions = {
   showPrivateMessagesInConsole = true,
   showPrivateMessagesOnScreen = true,
   rightPanels = 1,
-  leftPanels = 2,
+  leftPanels = g_app.isMobile() and 1 or 2,
   containerPanel = 8,
-  backgroundFrameRate = 100,
+  backgroundFrameRate = 60,
   enableAudio = true,
   enableMusicSound = false,
   musicSoundVolume = 100,
@@ -42,10 +42,7 @@ local defaultOptions = {
   dontStretchShrink = false,
   turnDelay = 30,
   hotkeyDelay = 30,
-  
-  ignoreServerDirection = true,
-  realDirection = false,
-  
+    
   wsadWalking = false,
   walkFirstStepDelay = 200,
   walkTurnDelay = 100,
@@ -104,20 +101,23 @@ function init()
   audioPanel = g_ui.loadUI('audio')
   optionsTabBar:addTab(tr('Audio'), audioPanel, '/images/optionstab/audio')
 
-  extrasPanel = g_ui.createWidget('Panel')
+  extrasPanel = g_ui.createWidget('OptionPanel')
   for _, v in ipairs(g_extras.getAll()) do
     local extrasButton = g_ui.createWidget('OptionCheckBox')
     extrasButton:setId(v)
     extrasButton:setText(g_extras.getDescription(v))
     extrasPanel:addChild(extrasButton)
   end
-  if not g_game.getFeature(GameNoDebug) then
+  if not g_game.getFeature(GameNoDebug) and not g_app.isMobile() then
     optionsTabBar:addTab(tr('Extras'), extrasPanel, '/images/optionstab/extras')
   end
 
   optionsButton = modules.client_topmenu.addLeftButton('optionsButton', tr('Options'), '/images/topbuttons/options', toggle)
   audioButton = modules.client_topmenu.addLeftButton('audioButton', tr('Audio'), '/images/topbuttons/audio', function() toggleOption('enableAudio') end)
-
+  if g_app.isMobile() then
+    audioButton:hide()
+  end
+  
   addEvent(function() setup() end)
   
   connect(g_game, { onGameStart = online,
@@ -316,10 +316,6 @@ function setOption(key, value, force)
     if modules.game_console and modules.game_console.consoleToggleChat:isChecked() ~= value then
       modules.game_console.consoleToggleChat:setChecked(value)
     end
-  --elseif key == 'ignoreServerDirection' then
-  --  g_game.ignoreServerDirection(value)
-  --elseif key == 'realDirection' then
-  --  g_game.showRealDirection(value)
   elseif key == 'hotkeyDelay' then
     generalPanel:getChildById('hotkeyDelayLabel'):setText(tr('Hotkey delay: %s ms', value))  
   elseif key == 'walkFirstStepDelay' then

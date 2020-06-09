@@ -1,0 +1,1 @@
+Min. height for mobile is 360, don't make windows bigger than that

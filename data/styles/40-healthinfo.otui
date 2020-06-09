@@ -90,6 +90,7 @@ HealthOverlay < UIWidget
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
     image-source: /images/game/circle/right_empty    
+    image-auto-resize: true
     margin-left: 130
     margin-bottom: 16
     opacity: 0.5

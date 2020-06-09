@@ -1,36 +1,22 @@
-Panel
+OptionPanel
   Label
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: parent.top
     text-wrap: false
     @onSetup: |
       self:setText(tr("GPU: ") .. g_graphics.getRenderer())      
 
   Label
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     text-wrap: false
     @onSetup: |
       self:setText(tr("Version: ") .. g_graphics.getVersion())      
 
   HorizontalSeparator
     id: separator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin: 5 5 5 5
 
   OptionCheckBox
     id: vsync
     !text: tr('Enable vertical synchronization')
     !tooltip: tr('Limits FPS (usually to 60)')
-    @onSetup: |
-      if g_window.getPlatformType() == 'WIN32-EGL' then
-        self:setEnabled(false)
-        self:setText(tr('Enable vertical synchronization') .. " " .. tr('(OpenGL only)'))
-      end
 
   OptionCheckBox
     id: showFps
@@ -47,17 +33,11 @@ Panel
 
   Label
     margin-top: 12
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     id: optimizationLevelLabel
     !text: tr("Optimization level")
     
   ComboBox
     id: optimizationLevel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     margin-right: 2
     margin-left: 2
@@ -71,11 +51,12 @@ Panel
       self:addOption("Maximum")
       
   Label
+    !text: tr('High/Maximum optimization level may cause visual defects.')
+    margin-top: 5
+
+  Label
     id: backgroundFrameRateLabel
     !text: tr('Game framerate limit: %s', 'max')
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 12
     @onSetup: |
       local value = modules.client_options.getOption('backgroundFrameRate')
@@ -87,18 +68,12 @@ Panel
 
   OptionScrollbar
     id: backgroundFrameRate
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     minimum: 10
     maximum: 201
 
   Label
     id: ambientLightLabel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 6
     @onSetup: |
       local value = modules.client_options.getOption('ambientLight')
@@ -106,9 +81,6 @@ Panel
 
   OptionScrollbar
     id: ambientLight
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     margin-top: 3
     minimum: 0
     maximum: 100
@@ -116,10 +88,9 @@ Panel
   Label
     id: tips
     margin-top: 20
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
     text-auto-resize: true
     text-align: left
     text-wrap: true
-    !text: tr("If you have FPS issues:\n- Use OpenGL version (_gl)\n- Disable vertical synchronization\n- Set higher optimization level\n- Lower screen resolution\nOr report it via email to otclient@otclient.ovh")
+    !text: tr("If you have FPS issues:\n- Use OpenGL version (_gl)\n- Disable vertical synchronization\n- Set higher optimization level\n- Lower screen resolution\nOr report it on forum: http://otclient.net")
+    $mobile:
+      visible: false

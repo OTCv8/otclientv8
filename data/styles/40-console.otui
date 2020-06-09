@@ -183,3 +183,4 @@ ConsolePanel < Panel
     margin-bottom: 6
     shift-navigation: true
     max-length: 255
+    text-auto-submit: true

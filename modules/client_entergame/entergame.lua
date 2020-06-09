@@ -17,6 +17,8 @@ local serverHostTextEdit
 local rememberPasswordBox
 local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1077", "1090", "1096", "1098", "1099", "1100"}
 
+local checkedByUpdater = {}
+
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
   if errorCode then
@@ -129,11 +131,7 @@ local function onHTTPResult(data, err)
   local incorrectThings = validateThings(things)
   if #incorrectThings > 0 then
     g_logger.info(incorrectThings)
-    if Updater then
-      return Updater.updateThings(things, incorrectThings)
-    else
-      return EnterGame.onError(incorrectThings)
-    end
+    return EnterGame.onError(incorrectThings)
   end
   
   -- custom protocol
@@ -264,9 +262,6 @@ end
 
 function EnterGame.show()
   if not enterGame then return end
-  if Updater and Updater.isVisible() or g_game.isOnline() then
-    return EnterGame.hide()
-  end
   enterGame:show()
   enterGame:raise()
   enterGame:focus()
@@ -313,9 +308,6 @@ function EnterGame.onServerChange()
 end
 
 function EnterGame.doLogin()
-  if Updater and Updater.isVisible() then
-    return
-  end
   if g_game.isOnline() then
     local errorBox = displayErrorBox(tr('Login Error'), tr('Cannot login while already in game.'))
     connect(errorBox, { onOk = EnterGame.show })
@@ -339,23 +331,20 @@ function EnterGame.doLogin()
   g_settings.set('client-version', G.clientVersion)
   g_settings.save()
 
-  if G.host:find("ws://") ~= nil or G.host:find("wss://") ~= nil then
-    return EnterGame.doLoginWs()      
-  end
   if G.host:find("http") ~= nil then
     return EnterGame.doLoginHttp()      
   end
   
   local server_params = G.host:split(":")
-  if #server_params < 2 then
-    return EnterGame.onError("Invalid server, it should be in format IP:PORT or it should be http url to login script")
-  end
   local server_ip = server_params[1]
-  local server_port = tonumber(server_params[2])
+  local server_port = 7171
+  if #server_params >= 2 then
+    server_port = tonumber(server_params[2])
+  end
   if #server_params >= 3 then
     G.clientVersion = tonumber(server_params[3])
   end
-  if not server_port or not G.clientVersion then
+  if type(server_ip) ~= 'string' or server_ip:len() <= 3 or not server_port or not G.clientVersion then
     return EnterGame.onError("Invalid server, it should be in format IP:PORT or it should be http url to login script")  
   end
   
@@ -367,8 +356,12 @@ function EnterGame.doLogin()
   local incorrectThings = validateThings(things)
   if #incorrectThings > 0 then
     g_logger.error(incorrectThings)
-    if Updater then
-      return Updater.updateThings(things, incorrectThings)
+    if Updater and not checkedByUpdater[G.clientVersion] then
+      checkedByUpdater[G.clientVersion] = true
+      return Updater.check({
+        version = G.clientVersion,
+        host = G.host
+      })
     else
       return EnterGame.onError(incorrectThings)
     end

@@ -86,6 +86,13 @@ function ProtocolLogin:sendLoginPacket()
   if self.getLoginExtendedData then
     local data = self:getLoginExtendedData()
     msg:addString(data)
+  else
+    msg:addString("OTCv8")
+    local version = g_app.getVersion():split(" ")[1]:gsub("%.", "")
+    if version:len() == 2 then
+      version = version .. "0" 
+    end
+    msg:addU16(tonumber(version))
   end
 
   local paddingBytes = g_crypt.rsaGetSize() - (msg:getMessageSize() - offset)

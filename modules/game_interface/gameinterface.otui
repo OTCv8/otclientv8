@@ -1,16 +1,17 @@
 GameSidePanel < UIMiniWindowContainer
   image-source: /images/ui/panel_side
   image-border: 4
-  padding: 4
+  padding: 3
   padding-top: 0
   width: 198
   focusable: false
   on: true
   layout:
     type: verticalBox
-    //spacing: 1
-
-GameBottomPanel < Panel
+  $mobile:
+    padding: 0
+    width: 200
+  
 
 GameMapPanel < UIGameMap
   padding: 4
@@ -19,6 +20,24 @@ GameMapPanel < UIGameMap
 
   $on:
     padding: 0
+    
+GameAction < UIButton
+  size: 64 64
+  phantom: false
+    
+  UIButton
+    id: image
+    size: 48 48
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    phantom: true
+    $checked:
+      opacity: 1.0
+      background: #00FF0033
+    $!checked:
+      opacity: 0.6
+      background: alpha
+
 
 UIWidget
   id: gameRootPanel
@@ -33,11 +52,46 @@ UIWidget
     focusable: false    
     
   Panel
-    id: gameLeftPanels
+    id: gameLeftActions
+    focusable: false
+    anchors.bottom: parent.bottom
     anchors.left: parent.left
+    width: 64
+    
+    $!mobile:
+      visible: false
+      width: 0
+    
+    layout:
+      type: verticalBox
+      fit-children: true
+      
+    GameAction
+      id: use
+      @onSetup: self.image:setImageSource("/images/game/mobile/use")
+    GameAction
+      id: attack
+      @onSetup: self.image:setImageSource("/images/game/mobile/attack")
+    GameAction
+      id: follow
+      @onSetup: self.image:setImageSource("/images/game/mobile/follow")
+    GameAction
+      id: look
+      @onSetup: self.image:setImageSource("/images/game/mobile/look")
+    GameAction
+      id: chat
+      @onSetup: self.image:setImageSource("/images/game/mobile/chat")
+    
+  Panel
+    id: gameLeftPanels
+    focusable: false
     anchors.top: parent.top
     anchors.bottom: parent.bottom    
-    focusable: false
+    $!mobile:
+      anchors.left: parent.left
+    $mobile:
+      anchors.left: gameLeftActions.right
+
     layout:
       type: horizontalBox
       fit-children: true
@@ -59,19 +113,48 @@ UIWidget
     anchors.left: gameLeftPanels.right
     anchors.right: gameRightPanels.left
     anchors.bottom: parent.bottom
+    height: 5
     relative-margin: bottom
-    margin-bottom: 180
-    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 300), 80) end
-    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 300, 80), self:getMarginBottom())) end
-
-  GameBottomPanel
-    id: gameBottomPanel
-    anchors.left: bottomSplitter.left
-    anchors.right: bottomSplitter.right
-    anchors.top: bottomSplitter.top
-    anchors.bottom: parent.bottom
-    margin-top: 3
+    margin-bottom: 150
+    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 150), 80) end
+    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 150, 80), self:getMarginBottom())) end
     
+    $mobile:
+      visible: false
+      
+  Panel
+    id: gameActionPanel
+    phantom: true
+    focusable: false
+
+    $!mobile:
+      anchors.left: bottomSplitter.left
+      anchors.right: bottomSplitter.right
+      anchors.top: bottomSplitter.top
+      margin-top: 3
+
+    $mobile:
+      anchors.left: gameLeftPanels.right
+      anchors.right: gameRightPanels.left
+      anchors.bottom: gameBottomPanel.top    
+      
+    layout:
+      type: verticalBox
+      fit-children: true
+    
+  Panel
+    id: gameBottomPanel    
+    $!mobile:
+      anchors.left: gameActionPanel.left
+      anchors.right: gameActionPanel.right
+      anchors.top: gameActionPanel.bottom
+      anchors.bottom: parent.bottom
+
+    $mobile:
+      anchors.left: gameLeftPanels.right
+      anchors.right: gameRightPanels.left
+      anchors.bottom: parent.bottom
+      
   UIWidget
     id: mouseGrabber
     focusable: false

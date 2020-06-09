@@ -26,8 +26,11 @@ function UIItem:onDrop(widget, mousePos, forced)
   if not item or not item:isItem() then return false end
   
   if self.selectable then
-    self:setItem(Item.create(item:getId(), item:getCountOrSubType()))
-    return
+    if item:isPickupable() then
+      self:setItem(Item.create(item:getId(), item:getCountOrSubType()))
+      return true
+    end
+    return false
   end
 
   local toPos = self.position
@@ -85,7 +88,7 @@ function UIItem:onMouseRelease(mousePosition, mouseButton)
   local item = self:getItem()
   if not item or not self:containsPoint(mousePosition) then return false end
 
-  if modules.client_options.getOption('classicControl') and
+  if modules.client_options.getOption('classicControl') and not g_app.isMobile() and
      ((g_mouse.isPressed(MouseLeftButton) and mouseButton == MouseRightButton) or
       (g_mouse.isPressed(MouseRightButton) and mouseButton == MouseLeftButton)) then
     g_game.look(item)

@@ -313,6 +313,13 @@ function addLine(text, color)
   table.insert(cachedLines, {text=text, color=color})
 end
 
+function terminalPrint(value)
+  if type(value) == "table" then
+    return print(json.encode(value, 2))
+  end
+  print(tostring(value))
+end
+
 function executeCommand(command)
   if command == nil or #string.gsub(command, '\n', '') == 0 then return end
 
@@ -337,7 +344,7 @@ function executeCommand(command)
   -- detect and convert commands with simple syntax
   local realCommand
   if string.sub(command, 1, 1) == '=' then
-    realCommand = 'print(tostring(' .. string.sub(command,2) .. '))'
+    realCommand = 'modules.client_terminal.terminalPrint(' .. string.sub(command,2) .. ')'
   else
     realCommand = command
   end

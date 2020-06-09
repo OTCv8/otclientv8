@@ -194,6 +194,7 @@ function toggleChat()
 end
 
 function enableChat(temporarily)
+  if g_app.isMobile() then return end
   if consoleToggleChat:isChecked() then
     return consoleToggleChat:setChecked(false)
   end
@@ -225,6 +226,7 @@ function enableChat(temporarily)
 end
 
 function disableChat(temporarily)
+  if g_app.isMobile() then return end
   if not consoleToggleChat:isChecked() then
     return consoleToggleChat:setChecked(true)
   end
@@ -587,6 +589,29 @@ function getHighlightedText(text)
       table.insert(tmpData, v)
     end
   until not(string.find(text, "{([^}]+)}", tmpData[#tmpData-1]))
+
+  return tmpData
+end
+
+function getNewHighlightedText(text, color, highlightColor)
+  local tmpData = {}
+  
+  for i, part in ipairs(text:split("{")) do
+    if i == 1 then
+      table.insert(tmpData, part)
+      table.insert(tmpData, color)
+    else
+      for j, part2 in ipairs(part:split("}")) do
+        if j == 1 then
+          table.insert(tmpData, part2)
+          table.insert(tmpData, highlightColor)
+        else
+          table.insert(tmpData, part2)
+          table.insert(tmpData, color)
+        end
+      end
+    end
+  end
 
   return tmpData
 end
@@ -1113,16 +1138,16 @@ function onTalk(name, level, mode, message, channelId, creaturePos)
     -- Remove curly braces from screen message
     local staticMessage = message
     if isNpcMode then
-      local highlightData = getHighlightedText(staticMessage)
-      if #highlightData > 0 then
-        for i = 1, #highlightData / 3 do
-          local dataBlock = { _start = highlightData[(i-1)*3+1], _end = highlightData[(i-1)*3+2], words = highlightData[(i-1)*3+3] }
-          staticMessage = staticMessage:gsub("{"..dataBlock.words.."}", dataBlock.words)
-        end
+      local highlightData = getNewHighlightedText(staticMessage, speaktype.color, "#1f9ffe")
+      if #highlightData > 2 then
+        staticText:addColoredMessage(name, mode, highlightData)
+      else
+        staticText:addMessage(name, mode, staticMessage)
       end
       staticText:setColor(speaktype.color)
+    else
+      staticText:addMessage(name, mode, staticMessage)
     end
-    staticText:addMessage(name, mode, staticMessage)
     g_map.addThing(staticText, creaturePos, -1)
   end
 

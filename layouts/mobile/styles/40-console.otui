@@ -1,0 +1,165 @@
+ConsoleLabel < UITextEdit
+  font: verdana-11px-antialised
+  height: 14
+  color: yellow
+  margin-left: 2
+  text-wrap: true
+  text-auto-resize: true
+  selection-color: #111416
+  selection-background-color: #999999
+  change-cursor-image: false
+  cursor-visible: false
+  editable: false
+  draggable: true
+  selectable: false
+  focusable: false
+
+ConsolePhantomLabel < UILabel
+  font: verdana-11px-antialised
+  height: 14
+  color: yellow
+  text-wrap: true
+  text-auto-resize: true
+  selection-color: #111416
+  selection-background-color: #999999
+
+ConsoleTabBar < MoveableTabBar
+  height: 22
+
+ConsoleTabBarPanel < MoveableTabBarPanel
+  id: consoleTab
+
+  ScrollablePanel
+    id: consoleBuffer
+    anchors.fill: parent
+    margin-right: 12
+    vertical-scrollbar: consoleScrollBar
+    layout:
+      type: verticalBox
+      align-bottom: true
+    border-width: 1
+    border-color: #202327
+    background: #00000066
+    inverted-scroll: true
+    padding: 1
+
+  VerticalScrollBar
+    id: consoleScrollBar
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    step: 14
+    pixels-scroll: true
+
+ConsoleTabBarButton < MoveableTabBarButton
+  height: 22
+  padding: 5
+
+ConsolePanel < Panel
+  image-source: /images/ui/panel_bottom
+  image-border: 4
+  
+  $first:
+    anchors.fill: parent
+    
+  $!first:
+    anchors.top: prev.bottom
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  CheckBox
+    id: toggleChat
+    !tooltip: tr('Disable chat mode, allow to walk using ASDW')
+    anchors.left: parent.left
+    anchors.top: parent.top
+    @onCheckChange: toggleChat()
+    visible: false
+
+  TabButton
+    id: prevChannelButton
+    icon: /images/game/console/leftarrow
+    anchors.left: parent.left
+    anchors.top: parent.top
+
+  ConsoleTabBar
+    id: consoleTabBar
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.right: next.left
+    tab-spacing: 2
+    movable: true
+
+  TabButton
+    id: nextChannelButton
+    icon: /images/game/console/rightarrow
+    anchors.right: next.left
+    anchors.top: parent.top
+
+  TabButton
+    id: closeChannelButton
+    !tooltip: tr('Close this channel') .. ' (Ctrl+E)'
+    icon: /images/game/console/closechannel
+    anchors.right: next.left
+    anchors.top: parent.top
+    enabled: false
+    @onClick: removeCurrentTab()
+
+  TabButton
+    id: clearChannelButton
+    !tooltip: tr('Clear current message window')
+    icon: /images/game/console/clearchannel
+    anchors.right: next.left
+    anchors.top: parent.top
+    @onClick: |
+      local consoleTabBar = self:getParent():getChildById('consoleTabBar')
+      clearChannel(consoleTabBar)
+
+  TabButton
+    id: channelsButton
+    !tooltip: tr('Open new channel') .. ' (Ctrl+O)'
+    icon: /images/game/console/channels
+    anchors.right: next.left
+    anchors.top: parent.top
+    @onClick: g_game.requestChannels()
+
+  TabButton
+    id: ignoreButton
+    !tooltip: tr('Ignore players')
+    icon: /images/game/console/ignore
+    anchors.right: parent.right
+    anchors.top: parent.top
+    @onClick: onClickIgnoreButton()
+
+  Panel
+    id: consoleContentPanel
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: consoleTextEdit.top
+    padding: 1
+    focusable: false
+    phantom: true
+
+  TabButton
+    id: sayModeButton
+    icon: /images/game/console/say
+    !tooltip: tr('Adjust volume')
+    &sayMode: 2
+    size: 22 22
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-left: 6
+    @onClick: sayModeChange()
+
+  TextEdit
+    id: consoleTextEdit
+    anchors.left: sayModeButton.right
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 22
+    margin-right: 6
+    margin-left: 6
+    shift-navigation: true
+    max-length: 255
+    text-auto-submit: true

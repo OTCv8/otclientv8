@@ -94,6 +94,7 @@ UIWindow
     border-width-left: 0
     border-width-top: 0
     multiline: false
+    text-auto-submit: true
 
     $on:
       border-width-left: 1

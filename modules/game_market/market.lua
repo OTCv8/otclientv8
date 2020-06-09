@@ -1136,10 +1136,12 @@ function Market.loadMarketItems(category)
   if category == MarketCategory.All then
     -- loop all categories
     for category = MarketCategory.First, MarketCategory.Last do
-      for i = 1, #marketItems[category] do
-        local item = marketItems[category][i]
-        if isItemValid(item, category, searchFilter) then
-          table.insert(currentItems, item)
+      if marketItems[category] then
+        for i = 1, #marketItems[category] do
+          local item = marketItems[category][i]
+          if isItemValid(item, category, searchFilter) then
+            table.insert(currentItems, item)
+          end
         end
       end
     end

@@ -4,19 +4,7 @@ dofile 'neededtranslations'
 local defaultLocaleName = 'en'
 local installedLocales
 local currentLocale
-
-function sendLocale(localeName)
-  if not g_game.getFeature(GameExtendedOpcode) then
-    return
-  end
-
-  local protocolGame = g_game.getProtocolGame()
-  if protocolGame then
-    protocolGame:sendExtendedOpcode(ExtendedIds.Locale, localeName)
-    return true
-  end
-  return false
-end
+local missingTranslations = {}
 
 function createWindow()
   localesWindow = g_ui.displayUI('locales')
@@ -51,18 +39,6 @@ function selectFirstLocale(name)
   g_settings.save()
 end
 
--- hooked functions
-function onGameStart()
-  sendLocale(currentLocale.name)
-end
-
-function onExtendedLocales(protocol, opcode, buffer)
-  local locale = installedLocales[buffer]
-  if locale and setLocale(locale.name) then
-    g_modules.reloadModules()
-  end
-end
-
 -- public functions
 function init()
   installedLocales = {}
@@ -76,18 +52,13 @@ function init()
     setLocale(defaultLocaleName)
     --connect(g_app, { onRun = createWindow })
   end
-
-  ProtocolGame.registerExtendedOpcode(ExtendedIds.Locale, onExtendedLocales)
-  connect(g_game, { onGameStart = onGameStart })
 end
 
 function terminate()
   installedLocales = nil
   currentLocale = nil
 
-  ProtocolGame.unregisterExtendedOpcode(ExtendedIds.Locale)
-  disconnect(g_app, { onRun = createWindow })
-  disconnect(g_game, { onGameStart = onGameStart })
+  --disconnect(g_app, { onRun = createWindow })
 end
 
 function generateNewTranslationTable(localename)
@@ -154,9 +125,6 @@ function setLocale(name)
     pwarning("Locale " .. name .. ' does not exist.')
     return false
   end
-  if currentLocale then
-    sendLocale(locale.name)
-  end
   currentLocale = locale
   g_settings.set('locale', name)
   if onLocaleChanged then onLocaleChanged(name) end
@@ -194,7 +162,10 @@ function _G.tr(text, ...)
       if not translation then
         if translation == nil then
           if currentLocale.name ~= defaultLocaleName then
-            pdebug('Unable to translate: \"' .. text .. '\"')
+            if not missingTranslations[text] then
+              pdebug('Unable to translate: \"' .. text .. '\"')
+              missingTranslations[text] = true
+            end
           end
         end
         translation = text

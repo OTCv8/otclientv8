@@ -34,7 +34,7 @@ Module
     - game_walking
     - game_shop
     - game_itemselector
-    - game_textedit
+    - client_textedit
     - game_actionbar
     - game_prey
     - game_imbuing

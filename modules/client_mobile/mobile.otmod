@@ -1,0 +1,9 @@
+Module
+  name: client_mobile
+  description: Handles the mobile interface for smartphones
+  author: otclient@otclient.ovh
+  website: http://otclient.net
+  sandboxed: true
+  scripts: [ mobile ]
+  @onLoad: init()
+  @onUnload: terminate()
