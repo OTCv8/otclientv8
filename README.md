@@ -6,6 +6,7 @@ Supported platforms:
 - Windows (min. Windows 7)
 - Linux
 - Android (min. 5.0)
+
 Planned support:
 - Mac OS
 - iOS
