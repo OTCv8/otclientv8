@@ -62,6 +62,7 @@ local function loadModules()
 end
 
 local function downloadFiles(url, files, index, retries, doneCallback)
+  if not updaterWindow then return end
   local entry = files[index]
   if not entry then -- finished
     return doneCallback()
@@ -101,6 +102,7 @@ local function downloadFiles(url, files, index, retries, doneCallback)
 end
 
 local function updateFiles(data, keepCurrentFiles)
+  if not updaterWindow then return end
   if type(data) ~= "table" then
     return Updater.error("Invalid data from updater api (not table)")
   end
