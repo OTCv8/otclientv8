@@ -2,17 +2,18 @@
 // CONFIG
 $files_dir = "/var/www/otclient/files";
 $files_url = "http://otclient.ovh/files";
-$files_and_dirs = array("data", "modules", "layouts", "init.lua");
+$files_and_dirs = array("init.lua", "data", "modules", "layouts");
 $checksum_file = "checksums.txt";
-$checksum_update_interval = 5; // seconds
+$checksum_update_interval = 60; // seconds
 $binaries = array(
-    "WIN32-WGL" => "otclient_dx.exe",
-    "WIN32-EGL" => "otclient_gl.exe",
-    "WIN32-WGL-GCC" => "otclient_gcc_dx.exe",
-    "WIN32-EGL-GCC" => "otclient_gcc_gl.exe",
+    "WIN32-WGL" => "otclient_gl.exe",
+    "WIN32-EGL" => "otclient_dx.exe",
+    "WIN32-WGL-GCC" => "otclient_gcc_gl.exe",
+    "WIN32-EGL-GCC" => "otclient_gcc_dx.exe",
     "X11-GLX" => "otclient_linux",
     "X11-EGL" => "otclient_linux",
-    "ANDROID-EGL" => "" // we can't update android binary
+    "ANDROID-EGL" => "", // we can't update android binary
+    "ANDROID64-EGL" => "" // we can't update android binary
 );
 // CONFIG END
 

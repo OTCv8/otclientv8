@@ -131,10 +131,10 @@ function setupActionPanel(index, panel)
   end  
   
   panel.nextButton.onClick = function()
-    panel.tabBar:moveChildToIndex(panel.tabBar:getLastChild(), 1)  
+    panel.tabBar:moveChildToIndex(panel.tabBar:getFirstChild(), panel.tabBar:getChildCount())
   end
   panel.prevButton.onClick = function()
-    panel.tabBar:moveChildToIndex(panel.tabBar:getFirstChild(), panel.tabBar:getChildCount())
+    panel.tabBar:moveChildToIndex(panel.tabBar:getLastChild(), 1)  
   end
 end
 
