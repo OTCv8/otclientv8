@@ -379,6 +379,9 @@ function walk(dir, ticks)
       player:lockWalk(100) -- bug fix for missing stairs down on map
       return
     else
+      if g_app.isMobile() and dir <= Directions.West then 
+        turn(dir, ticks > 0)
+      end
       return -- not walkable tile
     end
   end

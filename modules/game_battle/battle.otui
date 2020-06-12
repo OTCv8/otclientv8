@@ -66,11 +66,13 @@ MiniWindow
       BattlePlayers
         id: hidePlayers
         !tooltip: tr('Hide players')
+        @onSetup: if g_app.isMobile() then self:setChecked(true) end
         @onCheckChange: modules.game_battle.checkCreatures()
-
+          
       BattleNPCs
         id: hideNPCs
         !tooltip: tr('Hide Npcs')
+        @onSetup: if g_app.isMobile() then self:setChecked(true) end
         @onCheckChange: modules.game_battle.checkCreatures()
 
       BattleMonsters
@@ -86,6 +88,7 @@ MiniWindow
       BattleParty
         id: hideParty
         !tooltip: tr('Hide party members')
+        @onSetup: if g_app.isMobile() then self:setChecked(true) end
         @onCheckChange: modules.game_battle.checkCreatures()
 
     Panel

@@ -126,7 +126,11 @@ end
 function getSortType()
   local settings = g_settings.getNode('BattleList')
   if not settings then
-    return 'name'
+    if g_app.isMobile() then
+      return 'distance'
+    else
+      return 'name'
+    end
   end
   return settings['sortType']
 end
@@ -219,7 +223,7 @@ function updateBattleList()
 end
 
 function checkCreatures()
-  if not g_game.isOnline() then
+  if not battlePanel or not g_game.isOnline() then
     return
   end
 
@@ -257,11 +261,17 @@ function checkCreatures()
     local battleButton = battleButtons[i]      
     battleButton:creatureSetup(creature)
     battleButton:show()
+    battleButton:setOn(true)
+  end
+  
+  if g_app.isMobile() and #creatures > 0 then
+    onBattleButtonHoverChange(battleButtons[1], true)
   end
     
   for i=#creatures + 1,maxCreatures do
     if battleButtons[i]:isHidden() then break end
     battleButtons[i]:hide()
+    battleButton:setOn(false)
   end
 
   battlePanel:getLayout():enableUpdates()
