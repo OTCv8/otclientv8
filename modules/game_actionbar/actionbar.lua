@@ -15,12 +15,12 @@ ActionTypes = {
 
 ActionColors = {
   empty = '#00000033',
-  text = '#88888866',
-  itemUse = '#8888FF66',
-  itemUseSelf = '#00FF0066',
-  itemUseTarget = '#FF000066',
-  itemUseWith = '#F5B32566',
-  itemEquip = '#FFFFFF66'
+  text = '#00000033',
+  itemUse = '#8888FF88',
+  itemUseSelf = '#00FF0088',
+  itemUseTarget = '#FF000088',
+  itemUseWith = '#F5B32588',
+  itemEquip = '#FFFFFF88'
 }
 
 function init()
@@ -142,6 +142,7 @@ function setupAction(action)
   local config = action.config
   action.item:setShowCount(false)
   action.onMouseRelease = actionOnMouseRelease
+  action.onTouchRelease = actionOnMouseRelease
   action.callback = function(k, c, ticks) executeAction(action, ticks) end
   action.item.onItemChange = nil -- disable callbacks for setup
   
@@ -165,7 +166,7 @@ function setupAction(action)
     action.cooldownStart = 0
     if type(config.text) == 'string' and config.text:len() > 0 then
       action.text:setText(config.text)
-      action:setBorderColor(ActionColors.text)
+      action.item:setBorderColor(ActionColors.text)
       action.item:setOn(true) -- removes background
       action.item:setItemId(0)
       if Spells then
@@ -188,7 +189,7 @@ function setupAction(action)
       else
         action.item:setItemId(0)
         action.item:setOn(false)
-        action:setBorderColor(ActionColors.empty)
+        action.item:setBorderColor(ActionColors.empty)
       end    
     end
   end
@@ -212,15 +213,15 @@ function setupActionType(action, actionType)
 
   action.config.actionType = actionType
   if action.config.actionType == ActionTypes.USE then
-    action:setBorderColor(ActionColors.itemUse)
+    action.item:setBorderColor(ActionColors.itemUse)
   elseif action.config.actionType == ActionTypes.USE_SELF then
-    action:setBorderColor(ActionColors.itemUseSelf)
+    action.item:setBorderColor(ActionColors.itemUseSelf)
   elseif action.config.actionType == ActionTypes.USE_TARGET then
-    action:setBorderColor(ActionColors.itemUseTarget)
+    action.item:setBorderColor(ActionColors.itemUseTarget)
   elseif action.config.actionType == ActionTypes.USE_WITH then
-    action:setBorderColor(ActionColors.itemUseWith)
+    action.item:setBorderColor(ActionColors.itemUseWith)
   elseif action.config.actionType == ActionTypes.EQUIP then
-    action:setBorderColor(ActionColors.itemEquip)
+    action.item:setBorderColor(ActionColors.itemEquip)
   end
 end
 
@@ -237,6 +238,7 @@ function updateAction(action, newConfig)
 end
 
 function actionOnMouseRelease(action, mousePosition, mouseButton)
+  if mouseButton == MouseTouch then return end
   if mouseButton == MouseRightButton or not action.item:isOn() then
     local menu = g_ui.createWidget('PopupMenu')
     menu:setGameMenu(true)
@@ -292,7 +294,7 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
     end)
     menu:display(mousePosition)
     return true
-  elseif mouseButton == MouseLeftButton then
+  elseif mouseButton == MouseLeftButton or mouseButton == MouseTouch2 or mouseButton == MouseTouch3 then
     action.callback()
     return true
   end

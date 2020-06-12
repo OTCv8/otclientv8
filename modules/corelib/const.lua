@@ -36,6 +36,9 @@ MouseNoButton = 0
 MouseLeftButton = 1
 MouseRightButton = 2
 MouseMidButton = 3
+MouseTouch = 4
+MouseTouch2 = 5 -- multitouch, 2nd finger
+MouseTouch3 = 6 -- multitouch, 3th finger
 
 MouseNoWheel = 0
 MouseWheelUp = 1

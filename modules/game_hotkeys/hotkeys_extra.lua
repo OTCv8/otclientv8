@@ -25,7 +25,7 @@ function setupExtraHotkeys(combobox)
     local nextChild = nil
     local breakNext = false
     for i, child in ipairs(battlePanel:getChildren()) do    
-      if not child.creature or child:isDisabled() then
+      if not child.creature or not child:isOn() then
         break
       end
       nextChild = child
@@ -53,7 +53,7 @@ function setupExtraHotkeys(combobox)
     local attackedCreature = g_game.getAttackingCreature()
     local prevChild = nil
     for i, child in ipairs(battlePanel:getChildren()) do
-      if not child.creature or child:isDisabled() or child:isHidden() then
+      if not child.creature or not child:isOn() then
         break
       end
       if child.creature == attackedCreature then

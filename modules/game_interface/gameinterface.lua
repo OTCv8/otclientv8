@@ -40,6 +40,7 @@ function init()
 
   mouseGrabberWidget = gameRootPanel:getChildById('mouseGrabber')
   mouseGrabberWidget.onMouseRelease = onMouseGrabberRelease
+  mouseGrabberWidget.onTouchRelease = mouseGrabberWidget.onMouseRelease
 
   bottomSplitter = gameRootPanel:getChildById('bottomSplitter')
   gameMapPanel = gameRootPanel:getChildById('gameMapPanel')
@@ -267,6 +268,7 @@ function updateStretchShrink()
 end
 
 function onMouseGrabberRelease(self, mousePosition, mouseButton)
+  if mouseButton == MouseTouch then return end
   if selectedThing == nil then return false end
   if mouseButton == MouseLeftButton then
     local clickedWidget = gameRootPanel:recursiveGetChildByPos(mousePosition, false)
@@ -575,7 +577,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
       createThingMenu(menuPosition, lookThing, useThing, creatureThing)
       return true      
     end
-    if mouseButton ~= MouseLeftButton then
+    if mouseButton ~= MouseLeftButton and mouseButton ~= MouseTouch2 and mouseButton ~= MouseTouch3 then
       return false
     end
     local action = getLeftAction()
@@ -707,7 +709,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
   local player = g_game.getLocalPlayer()
   player:stopAutoWalk()  
 
-  if autoWalkPos and keyboardModifiers == KeyboardNoModifier and mouseButton == MouseLeftButton then
+  if autoWalkPos and keyboardModifiers == KeyboardNoModifier and (mouseButton == MouseLeftButton or mouseButton == MouseTouch2 or mouseButton == MouseTouch3) then
     local autoWalkTile = g_map.getTile(autoWalkPos)
     if autoWalkTile and not autoWalkTile:isWalkable(true) then
       modules.game_textmessage.displayFailureMessage(tr('Sorry, not possible.'))
@@ -1056,15 +1058,85 @@ function setupLeftActions()
   if not g_app.isMobile() then return end
   for _, widget in ipairs(gameLeftActions:getChildren()) do
     widget.image:setChecked(false)
+    widget.lastClicked = 0
     widget.onClick = function()
       if widget.image:isChecked() then
         widget.image:setChecked(false)
+        if widget.doubleClickAction and widget.lastClicked + 200 > g_clock.millis() then
+          widget.doubleClickAction()
+        end
         return
       end
       resetLeftActions()
       widget.image:setChecked(true)
+      widget.lastClicked = g_clock.millis()
     end
   end
+  if gameLeftActions.use then
+    gameLeftActions.use.doubleClickAction = function()
+      local player = g_game.getLocalPlayer()
+      local dir = player:getDirection()
+      local usePos = player:getPrewalkingPosition(true)
+      if dir == North then
+        usePos.y = usePos.y - 1
+      elseif dir == East then
+        usePos.x = usePos.x + 1
+      elseif dir == South then
+        usePos.y = usePos.y + 1
+      elseif dir == West then
+        usePos.x = usePos.x - 1
+      end
+      local tile = g_map.getTile(usePos)
+      if not tile then return end
+      local thing = tile:getTopUseThing()
+      if thing then
+        g_game.use(thing)
+      end
+    end
+  end
+  if gameLeftActions.attack then
+    gameLeftActions.attack.doubleClickAction = function()
+      local battlePanel = modules.game_battle.battlePanel
+      local attackedCreature = g_game.getAttackingCreature()
+      local child = battlePanel:getFirstChild()
+      if child and (not child.creature or not child:isOn()) then
+        child = nil
+      end
+      if child then
+        g_game.attack(child.creature)
+      else
+        g_game.attack(nil)
+      end
+    end
+  end
+  if gameLeftActions.follow then
+    gameLeftActions.follow.doubleClickAction = function()
+      local battlePanel = modules.game_battle.battlePanel
+      local attackedCreature = g_game.getAttackingCreature()
+      local child = battlePanel:getFirstChild()
+      if child and (not child.creature or not child:isOn()) then
+        child = nil
+      end
+      if child then
+        g_game.follow(child.creature)
+      else
+        g_game.follow(nil)
+      end
+    end
+  end
+  if gameLeftActions.look then
+    gameLeftActions.look.doubleClickAction = function()
+      local battlePanel = modules.game_battle.battlePanel
+      local attackedCreature = g_game.getAttackingCreature()
+      local child = battlePanel:getFirstChild()
+      if child and (not child.creature or child:isHidden()) then
+        child = nil
+      end
+      if child then
+        g_game.look(child.creature)
+      end
+    end
+  end  
   if not gameLeftActions.chat then return end
   gameLeftActions.chat.onClick = function()
     if gameBottomPanel:getHeight() <= 5 then
@@ -1078,6 +1150,7 @@ end
 function resetLeftActions()
   for _, widget in ipairs(gameLeftActions:getChildren()) do
     widget.image:setChecked(false)
+    widget.lastClicked = 0
   end
 end
 

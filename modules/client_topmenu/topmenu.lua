@@ -29,11 +29,12 @@ local function addButton(id, description, icon, callback, panel, toggle, front, 
   button:setTooltip(description)
   button:setIcon(resolvepath(icon, 3))
   button.onMouseRelease = function(widget, mousePos, mouseButton)
-    if widget:containsPoint(mousePos) and mouseButton ~= MouseMidButton then
+    if widget:containsPoint(mousePos) and mouseButton ~= MouseMidButton and mouseButton ~= MouseTouch then
       callback()
       return true
     end
   end
+  button.onTouchRelease = button.onMouseRelease
   if not button.index and type(index) == 'number' then
     button.index = index
   end

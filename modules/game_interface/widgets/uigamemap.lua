@@ -172,6 +172,12 @@ function UIGameMap:onMouseRelease(mousePosition, mouseButton)
   return ret
 end
 
+function UIGameMap:onTouchRelease(mousePosition, mouseButton)
+  if mouseButton ~= MouseTouch then
+    return self:onMouseRelease(mousePosition, mouseButton)
+  end
+end
+
 function UIGameMap:canAcceptDrop(widget, mousePos)
   if not widget or not widget.currentDragThing then return false end
 
