@@ -9,6 +9,7 @@ local render = nil
 local atlas = nil
 local adaptiveRender = nil
 local slowMain = nil
+local slowRender = nil
 local widgetsInfo = nil
 
 local updateEvent = nil
@@ -37,6 +38,7 @@ function init()
   atlas = statsWindow:recursiveGetChildById('atlas')
   adaptiveRender = statsWindow:recursiveGetChildById('adaptiveRender')
   slowMain = statsWindow:recursiveGetChildById('slowMain')
+  slowRender = statsWindow:recursiveGetChildById('slowRender')
   widgetsInfo = statsWindow:recursiveGetChildById('widgetsInfo')
   
   lastSend = os.time()
@@ -166,7 +168,7 @@ function sendStats()
 end
 
 function update()
-  updateEvent = scheduleEvent(update, 200)
+  updateEvent = scheduleEvent(update, 20)
   if lastSend + sendInterval < os.time() then
     sendStats()
   end
@@ -175,26 +177,37 @@ function update()
     return
   end
   
-  statsWindow.debugPanel.sleepTime:setText("GFPS: " .. g_app.getGraphicsFps() .. " PFPS: " .. g_app.getProcessingFps() .. " Packets: " .. g_game.getRecivedPacketsCount() .. " , " .. (g_game.getRecivedPacketsSize() / 1024) .. " KB")
-  statsWindow.debugPanel.luaRamUsage:setText("Ram usage by lua: " .. gcinfo() .. " kb")
-  local adaptive = "Adaptive: " .. g_adaptiveRenderer.getLevel() .. " | " .. g_adaptiveRenderer.getDebugInfo()
-  adaptiveRender:setText(adaptive)
-  atlas:setText("Atlas: " .. g_atlas.getStats())
-  render:setText(g_stats.get(2, 10, true))  
-  mainStats:setText(g_stats.get(1, 5, true))
-  dispatcherStats:setText(g_stats.get(3, 5, true))
-  luaStats:setText(g_stats.get(4, 5, true))
-  luaCallback:setText(g_stats.get(5, 5, true))
-  slowMain:setText(g_stats.getSlow(3, 10, 10, true) .. "\n\n\n" .. g_stats.getSlow(1, 20, 20, true))    
-  widgetsInfo:setText(g_stats.getWidgetsInfo(10, true))
-  
-  if g_proxy then  
-    local text = ""
-    local proxiesDebug = g_proxy.getProxiesDebugInfo()
-    for proxy_name, proxy_debug in pairs(proxiesDebug) do
-      text = text .. proxy_name .. " - " .. proxy_debug .. "\n"
+  iter = (iter + 1) % 8 -- some functions are slow (~5ms), it will avoid lags
+  if iter == 0 then
+    statsWindow.debugPanel.sleepTime:setText("GFPS: " .. g_app.getGraphicsFps() .. " PFPS: " .. g_app.getProcessingFps() .. " Packets: " .. g_game.getRecivedPacketsCount() .. " , " .. (g_game.getRecivedPacketsSize() / 1024) .. " KB")
+    statsWindow.debugPanel.luaRamUsage:setText("Ram usage by lua: " .. gcinfo() .. " kb")
+  elseif iter == 1 then
+    local adaptive = "Adaptive: " .. g_adaptiveRenderer.getLevel() .. " | " .. g_adaptiveRenderer.getDebugInfo()
+    adaptiveRender:setText(adaptive)
+    atlas:setText("Atlas: " .. g_atlas.getStats())
+  elseif iter == 2 then
+    render:setText(g_stats.get(2, 10, true))  
+    mainStats:setText(g_stats.get(1, 5, true))
+    dispatcherStats:setText(g_stats.get(3, 5, true))
+  elseif iter == 3 then
+    luaStats:setText(g_stats.get(4, 5, true))
+    luaCallback:setText(g_stats.get(5, 5, true))
+  elseif iter == 4 then
+    slowMain:setText(g_stats.getSlow(3, 10, 10, true) .. "\n\n\n" .. g_stats.getSlow(1, 20, 20, true))    
+  elseif iter == 5 then
+    slowRender:setText(g_stats.getSlow(2, 10, 10, true))
+  elseif iter == 6 then
+    --disabled because takes a lot of cpu
+    --widgetsInfo:setText(g_stats.getWidgetsInfo(10, true))
+  elseif iter == 7 then
+    if g_proxy then  
+      local text = ""
+      local proxiesDebug = g_proxy.getProxiesDebugInfo()
+      for proxy_name, proxy_debug in pairs(proxiesDebug) do
+        text = text .. proxy_name .. " - " .. proxy_debug .. "\n"
+      end
+      statsWindow.debugPanel.proxies:setText(text)
     end
-    statsWindow.debugPanel.proxies:setText(text)
   end
 end
 
