@@ -182,6 +182,8 @@ GameBotProtection = 99
 GameFasterAnimations = 101
 GameCenteredOutfits = 102
 GameSendIdentifiers = 103
+GameWingsAndAura = 104
+GamePlayerStateU32 = 105
 
 GamePacketSizeU32 = 110
 GamePacketCompression = 111

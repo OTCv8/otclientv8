@@ -122,7 +122,7 @@ context.findPath = function(startPos, destPos, maxDist, params)
       marginMin
       marginMax
   ]]--
-  if startPos.z ~= destPos.z then
+  if not destPos or startPos.z ~= destPos.z then
     return
   end
   if type(maxDist) ~= 'number' then

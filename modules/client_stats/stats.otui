@@ -24,12 +24,11 @@ MainWindow
   margin: 0 0 0 0
   padding: 25 3 3 3
   opacity: 0.9
-
+  $mobile:
+    size: 550 300
   @onEnter: modules.client_stats.toggle()
   @onEscape: modules.client_stats.toggle()
   
-  $mobile:
-    size: 550 300
   
   ScrollablePanel 
     id: debugPanel
@@ -103,13 +102,20 @@ MainWindow
 
     DebugText
       id: widgetsInfo
-      text: -      
+      text: Disabled, edit stats.lua to enable     
 
     DebugLabel
       !text: tr('Slow main functions')
 
     DebugText
       id: slowMain
+      text: -
+
+    DebugLabel
+      !text: tr('Slow render functions')
+
+    DebugText
+      id: slowRender
       text: -
       
   VerticalScrollBar  

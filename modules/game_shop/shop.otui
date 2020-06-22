@@ -134,6 +134,8 @@ MainWindow
   !text: tr('Shop')
   size: 750 500
   @onEscape: modules.game_shop.hide()
+  $mobile:
+    size: 500 360
 
   Panel
     id: infoPanel
