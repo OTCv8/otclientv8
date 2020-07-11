@@ -1,9 +1,10 @@
 HTTP = {
   timeout=5,
   websocketTimeout=15,
+  agent="Mozilla/5.0",
   imageId=1000,
   images={},
-  operations={}
+  operations={},
 }
 
 function HTTP.get(url, callback)
@@ -274,4 +275,4 @@ connect(g_http,
     onWsClose = HTTP.onWsClose,
     onWsError = HTTP.onWsError,
   })
- 
+g_http.setUserAgent(HTTP.agent)

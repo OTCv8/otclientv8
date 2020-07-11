@@ -11,7 +11,7 @@ ADDON_SETS = {
 outfitWindow = nil
 outfit = nil
 outfits = nil
-outfitCreature = nil
+outfitCreatureBox = nil
 currentOutfit = 1
 
 addons = nil
@@ -21,7 +21,7 @@ colorBoxes = {}
 
 mount = nil
 mounts = nil
-mountCreature = nil
+mountCreatureBox = nil
 currentMount = 1
 ignoreNextOutfitWindow = 0
 
@@ -51,7 +51,65 @@ function updateMount()
   mountCreature:setOutfit(mount)
 end
 
-function create(creatureOutfit, outfitList, creatureMount, mountList)
+function setupSelector(widget, id, outfit, list)
+  widget:setId(id)
+  local pos = 1
+  for i, o in pairs(list) do
+    if outfit[id] == o[1] then
+      pos = i
+    end
+  end
+  if list[pos] then
+    widget.outfit = list[pos]
+    if id == "shader" then
+      widget.creature:setOutfit({
+        shader = list[pos][1]
+      })
+    else
+      widget.creature:setOutfit({
+        type = list[pos][1]
+      })    
+    end
+    widget.label:setText(list[pos][2])
+  end
+  widget.prevButton.onClick = function()
+    if pos == 1 then
+      pos = #list
+    else
+      pos = pos - 1
+    end
+    local outfit = widget.creature:getOutfit()
+    if id == "shader" then
+      outfit.shader = list[pos][1]
+    else
+      outfit.type = list[pos][1]    
+    end
+    widget.outfit = list[pos]
+    widget.creature:setOutfit(outfit)
+    widget.label:setText(list[pos][2])    
+    updateOutfit()
+  end
+  widget.nextButton.onClick = function()
+    if pos == #list then
+      pos = 1
+    else
+      pos = pos + 1
+    end
+    local outfit = widget.creature:getOutfit()
+    if id == "shader" then
+      outfit.shader = list[pos][1]
+    else
+      outfit.type = list[pos][1]    
+    end
+    widget.outfit = list[pos]
+    widget.creature:setOutfit(outfit)
+    widget.label:setText(list[pos][2])   
+    updateOutfit()    
+  end  
+  return w
+end
+
+function create(currentOutfit, outfitList, mountList, wingList, auraList, shaderList)
   if ignoreNextOutfitWindow and g_clock.millis() < ignoreNextOutfitWindow + 1000 then
     return
   end
@@ -59,38 +117,51 @@ function create(creatureOutfit, outfitList, creatureMount, mountList)
     return
   end
 
-  outfitCreature = creatureOutfit
-  mountCreature = creatureMount
-  outfits = outfitList
-  mounts = mountList
   destroy()
 
   outfitWindow = g_ui.displayUI('outfitwindow')
-  local colorBoxPanel = outfitWindow:getChildById('colorBoxPanel')
-
-  -- setup outfit/mount display boxs
-  local outfitCreatureBox = outfitWindow:getChildById('outfitCreatureBox')
-  if outfitCreature then
-    outfit = outfitCreature:getOutfit()
-    outfitCreatureBox:setCreature(outfitCreature)
-  else
-    outfitCreatureBox:hide()
-    outfitWindow:getChildById('outfitName'):hide()
-    outfitWindow:getChildById('outfitNextButton'):hide()
-    outfitWindow:getChildById('outfitPrevButton'):hide()
+  
+  setupSelector(outfitWindow.type, "type", currentOutfit, outfitList)
+  
+  local outfit = outfitWindow.type.creature:getOutfit()
+  outfit.head = currentOutfit.head
+  outfit.body = currentOutfit.body
+  outfit.legs = currentOutfit.legs
+  outfit.feet = currentOutfit.feet
+  outfitWindow.type.creature:setOutfit(outfit)
+  
+  if g_game.getFeature(GamePlayerMounts) then
+    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "mount", currentOutfit, mountList)
   end
-
-  local mountCreatureBox = outfitWindow:getChildById('mountCreatureBox')
-  if mountCreature then
-    mount = mountCreature:getOutfit()
-    mountCreatureBox:setCreature(mountCreature)
-  else
-    mountCreatureBox:hide()
-    outfitWindow:getChildById('mountName'):hide()
-    outfitWindow:getChildById('mountNextButton'):hide()
-    outfitWindow:getChildById('mountPrevButton'):hide()
+  if g_game.getFeature(GameWingsAndAura) then
+    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "wings", currentOutfit, wingList)
+    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "aura", currentOutfit, auraList)
   end
+  if g_game.getFeature(GameOutfitShaders) then
+    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "shader", currentOutfit, shaderList)  
+  end
+  
+  if not outfitWindow.extensions:getFirstChild() then
+    outfitWindow:setHeight(outfitWindow:getHeight() - 128)
+  end
+  
+  for j=0,6 do
+    for i=0,18 do
+      local colorBox = g_ui.createWidget('ColorBox', outfitWindow.colorBoxPanel)
+      local outfitColor = getOutfitColor(j*19 + i)
+      colorBox:setImageColor(outfitColor)
+      colorBox:setId('colorBox' .. j*19+i)
+      colorBox.colorId = j*19 + i
 
+      if j*19 + i == currentOutfit.head then
+        currentColorBox = colorBox
+        colorBox:setChecked(true)
+      end
+      colorBox.onCheckChange = onColorCheckChange
+      colorBoxes[#colorBoxes+1] = colorBox
+    end
+  end
+  
   -- set addons
   addons = {
     [1] = {widget = outfitWindow:getChildById('addon1'), value = 1},
@@ -102,63 +173,26 @@ function create(creatureOutfit, outfitList, creatureMount, mountList)
     addon.widget.onCheckChange = function(self) onAddonCheckChange(self, addon.value) end
   end
 
-  if outfit.addons and outfit.addons > 0 then
-    for _, i in pairs(ADDON_SETS[outfit.addons]) do
+  if currentOutfit.addons and currentOutfit.addons > 0 then
+    for _, i in pairs(ADDON_SETS[currentOutfit.addons]) do
       addons[i].widget:setChecked(true)
     end
   end
 
   -- hook outfit sections
-  currentClotheButtonBox = outfitWindow:getChildById('head')
-  outfitWindow:getChildById('head').onCheckChange = onClotheCheckChange
-  outfitWindow:getChildById('primary').onCheckChange = onClotheCheckChange
-  outfitWindow:getChildById('secondary').onCheckChange = onClotheCheckChange
-  outfitWindow:getChildById('detail').onCheckChange = onClotheCheckChange
-
-  -- populate color panel
-  for j=0,6 do
-    for i=0,18 do
-      local colorBox = g_ui.createWidget('ColorBox', colorBoxPanel)
-      local outfitColor = getOutfitColor(j*19 + i)
-      colorBox:setImageColor(outfitColor)
-      colorBox:setId('colorBox' .. j*19+i)
-      colorBox.colorId = j*19 + i
-
-      if j*19 + i == outfit.head then
-        currentColorBox = colorBox
-        colorBox:setChecked(true)
-      end
-      colorBox.onCheckChange = onColorCheckChange
-      colorBoxes[#colorBoxes+1] = colorBox
-    end
-  end
-
-  -- set current outfit/mount
-  currentOutfit = 1
-  for i=1,#outfitList do
-    if outfit and outfitList[i][1] == outfit.type then
-      currentOutfit = i
-      break
-    end
-  end
-  currentMount = 1
-  for i=1,#mountList do
-    if mount and mountList[i][1] == mount.type then
-      currentMount = i
-      break
-    end
-  end
-
+  currentClotheButtonBox = outfitWindow.head
+  outfitWindow.head.onCheckChange = onClotheCheckChange
+  outfitWindow.primary.onCheckChange = onClotheCheckChange
+  outfitWindow.secondary.onCheckChange = onClotheCheckChange
+  outfitWindow.detail.onCheckChange = onClotheCheckChange
+  
   updateOutfit()
-  updateMount()
 end
 
 function destroy()
   if outfitWindow then
     outfitWindow:destroy()
     outfitWindow = nil
-    outfitCreature = nil
-    mountCreature = nil
     currentColorBox = nil
     currentClotheButtonBox = nil
     colorBoxes = {}
@@ -168,10 +202,10 @@ end
 
 function randomize()
   local outfitTemplate = {
-    outfitWindow:getChildById('head'),
-    outfitWindow:getChildById('primary'),
-    outfitWindow:getChildById('secondary'),
-    outfitWindow:getChildById('detail')
+    outfitWindow.head,
+    outfitWindow.primary,
+    outfitWindow.secondary,
+    outfitWindow.detail
   }
 
   for i = 1, #outfitTemplate do
@@ -183,65 +217,30 @@ function randomize()
 end
 
 function accept()
-  if mount then outfit.mount = mount.type end
+  local outfit = outfitWindow.type.creature:getOutfit()
+  for i, child in pairs(outfitWindow.extensions:getChildren()) do
+    if child:getId() == "shader" then
+      outfit[child:getId()] = child.creature:getOutfit().shader
+    else
+      outfit[child:getId()] = child.creature:getOutfit().type
+    end
+  end
   g_game.changeOutfit(outfit)
   destroy()
 end
 
-function nextOutfitType()
-  if not outfits then
-    return
-  end
-  currentOutfit = currentOutfit + 1
-  if currentOutfit > #outfits then
-    currentOutfit = 1
-  end
-  updateOutfit()
-end
-
-function previousOutfitType()
-  if not outfits then
-    return
-  end
-  currentOutfit = currentOutfit - 1
-  if currentOutfit <= 0 then
-    currentOutfit = #outfits
-  end
-  updateOutfit()
-end
-
-function nextMountType()
-  if not mounts then
-    return
-  end
-  currentMount = currentMount + 1
-  if currentMount > #mounts then
-    currentMount = 1
-  end
-  updateMount()
-end
-
-function previousMountType()
-  if not mounts then
-    return
-  end
-  currentMount = currentMount - 1
-  if currentMount <= 0 then
-    currentMount = #mounts
-  end
-  updateMount()
-end
-
 function onAddonCheckChange(addon, value)
+  local outfit = outfitWindow.type.creature:getOutfit()
   if addon:isChecked() then
     outfit.addons = outfit.addons + value
   else
     outfit.addons = outfit.addons - value
   end
-  outfitCreature:setOutfit(outfit)
+  outfitWindow.type.creature:setOutfit(outfit)
 end
 
 function onColorCheckChange(colorBox)
+  local outfit = outfitWindow.type.creature:getOutfit()
   if colorBox == currentColorBox then
     colorBox.onCheckChange = nil
     colorBox:setChecked(true)
@@ -264,12 +263,12 @@ function onColorCheckChange(colorBox)
     elseif currentClotheButtonBox:getId() == 'detail' then
       outfit.feet = currentColorBox.colorId
     end
-
-    outfitCreature:setOutfit(outfit)
+    outfitWindow.type.creature:setOutfit(outfit)
   end
 end
 
 function onClotheCheckChange(clotheButtonBox)
+  local outfit = outfitWindow.type.creature:getOutfit()
   if clotheButtonBox == currentClotheButtonBox then
     clotheButtonBox.onCheckChange = nil
     clotheButtonBox:setChecked(true)
@@ -296,14 +295,11 @@ function onClotheCheckChange(clotheButtonBox)
 end
 
 function updateOutfit()
-  if table.empty(outfits) or not outfit then
-    return
-  end
-  local nameWidget = outfitWindow:getChildById('outfitName')
-  nameWidget:setText(outfits[currentOutfit][2])
+  local currentSelection = outfitWindow.type.outfit
+  if not currentSelection then return end
+  local outfit = outfitWindow.type.creature:getOutfit()
 
-  local availableAddons = outfits[currentOutfit][3]
-
+  local availableAddons = currentSelection[3]
   local prevAddons = {}
   for k, addon in pairs(addons) do
     prevAddons[k] = addon.widget:isChecked()
@@ -311,6 +307,7 @@ function updateOutfit()
     addon.widget:setEnabled(false)
   end
   outfit.addons = 0
+  outfitWindow.type.creature:setOutfit(outfit)
 
   if availableAddons > 0 then
     for _, i in pairs(ADDON_SETS[availableAddons]) do
@@ -318,8 +315,5 @@ function updateOutfit()
       addons[i].widget:setChecked(true)
     end
   end
-
-  outfit.type = outfits[currentOutfit][1]
-  outfitCreature:setOutfit(outfit)
 end
 

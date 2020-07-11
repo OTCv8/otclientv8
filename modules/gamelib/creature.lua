@@ -168,3 +168,9 @@ function Creature:onIconChange(iconId)
     self:setIconTexture(imagePath)
   end
 end
+
+function Creature:setOutfitShader(shader)
+  local outfit = self:getOutfit()
+  outfit.shader = shader
+  self:setOutfit(outfit)
+end

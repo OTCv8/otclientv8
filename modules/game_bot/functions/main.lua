@@ -34,11 +34,16 @@ context.macro = function(timeout, name, hotkey, callback, parent)
     hotkey = retranslateKeyComboDesc(hotkey)
   end
   
+  -- min timeout is 50, to avoid lags
+  if timeout < 50 then
+    timeout = 50
+  end
+  
   table.insert(context._macros, {
     enabled = false,
     name = name,
     timeout = timeout,
-    lastExecution = context.now,
+    lastExecution = context.now + math.random(0, 100),
     hotkey = hotkey,    
   })
   local macro = context._macros[#context._macros]

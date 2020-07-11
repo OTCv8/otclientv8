@@ -30,29 +30,18 @@
 class ShaderManager
 {
 public:
-    enum {
-        ITEM_ID_UNIFORM = 10,
-        MAP_CENTER_COORD = 10,
-        MAP_GLOBAL_COORD = 11,
-        MAP_ZOOM = 12
-    };
-
     void init();
     void terminate();
 
-    PainterShaderProgramPtr createShader(const std::string& name);
-    PainterShaderProgramPtr createFragmentShader(const std::string& name, std::string file);
-    PainterShaderProgramPtr createFragmentShaderFromCode(const std::string& name, const std::string& code);
-
-    PainterShaderProgramPtr createItemShader(const std::string& name, const std::string& file);
-    PainterShaderProgramPtr createMapShader(const std::string& name, const std::string& file);
-
+    void createShader(const std::string& name, std::string vertex, std::string fragment, bool colorMatrix = false);
+    void createOutfitShader(const std::string& name, std::string vertex, std::string fragment)
+    {
+        return createShader(name, vertex, fragment, true);
+    }
+    void addTexture(const std::string& name, const std::string& file);
     PainterShaderProgramPtr getShader(const std::string& name);
 
 private:
-    void setupItemShader(const PainterShaderProgramPtr& shader);
-    void setupMapShader(const PainterShaderProgramPtr& shader);
-
     std::unordered_map<std::string, PainterShaderProgramPtr> m_shaders;
 };
 

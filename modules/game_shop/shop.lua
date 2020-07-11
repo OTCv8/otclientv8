@@ -147,9 +147,13 @@ function onStoreCategories(categories)
   if not shop or otcv8shop then return end
   local correctCategories = {}
   for i, category in ipairs(categories) do
+    local image = ""
+    if category.icon:len() > 0 then
+      image = storeUrl .. category.icon
+    end
     table.insert(correctCategories, {
       type = "image",
-      image = storeUrl .. category.icon,
+      image = image,
       name = category.name,
       offers = {}
     })
@@ -176,10 +180,14 @@ function onStoreOffers(categoryName, offers)
           category.offers[offer] = nil
         end
         for i, offer in ipairs(offers) do
+          local image = ""
+          if offer.icon:len() > 0 then
+            image = storeUrl .. offer.icon
+          end
           table.insert(category.offers, {
             id=offer.id,
             type="image",
-            image=storeUrl .. offer.icon,
+            image=image,
             cost=offer.price,
             title=offer.name,
             description=offer.description        
@@ -397,7 +405,7 @@ function addCategory(data)
     end
   elseif data["type"] == "image" then
     category = g_ui.createWidget('ShopCategoryImage', shop.categories)
-    if data["image"]:sub(1, 4):lower() == "http" then
+    if data["image"] and data["image"]:sub(1, 4):lower() == "http" then
        HTTP.downloadImage(data['image'], function(path, err) 
         if err then g_logger.warning("HTTP error: " .. err) return end
         category.image:setImageSource(path)
@@ -446,7 +454,7 @@ function addOffer(category, data)
     end
   elseif data["type"] == "image" then
     offer = g_ui.createWidget('ShopOfferImage', shop.offers)
-    if data["image"]:sub(1, 4):lower() == "http" then
+    if data["image"] and data["image"]:sub(1, 4):lower() == "http" then
       HTTP.downloadImage(data['image'], function(path, err) 
         if err then g_logger.warning("HTTP error: " .. err) return end
         if not offer.image then return end

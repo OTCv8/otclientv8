@@ -256,14 +256,18 @@ function updateStatus()
   if not Services or not Services.status or Services.status:len() < 4 then return end
   if not topMenu.onlineLabel then return end
   if g_game.isOnline() then return end
-  HTTP.getJSON(Services.status, function(data, err)
+  HTTP.postJSON(Services.status, {type="cacheinfo"}, function(data, err)
     if err then
       g_logger.warning("HTTP error for " .. Services.status .. ": " .. err) 
       statusUpdateEvent = scheduleEvent(updateStatus, 5000)
       return
     end
-    if data.online and topMenu.onlineLabel then
-      topMenu.onlineLabel:setText(data.online)
+    if topMenu.onlineLabel then
+      if data.online then
+        topMenu.onlineLabel:setText(data.online)
+      elseif data.playersonline then
+        topMenu.onlineLabel:setText(data.playersonline .. " players online")
+      end
     end
     if data.discord_online and topMenu.discordLabel then
       topMenu.discordLabel:setText(data.discord_online)
