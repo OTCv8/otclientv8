@@ -189,5 +189,12 @@ function updateFeatures(version)
         g_game.enableFeature(GamePrey)    
     end
     
+    if(version >= 1200) then
+      g_game.enableFeature(GameSequencedPackets)
+      --g_game.enableFeature(GameSendWorldName)
+      g_game.enableFeature(GamePlayerStateU32)
+      g_game.enableFeature(GameTibia12Protocol)
+    end
+    
     modules.game_things.load()
 end

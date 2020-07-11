@@ -15,7 +15,7 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
-local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1077", "1090", "1096", "1098", "1099", "1100"}
+local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200"}
 
 local checkedByUpdater = {}
 
@@ -107,13 +107,90 @@ local function validateThings(things)
   return incorrectThings
 end
 
+local function onTibia12HTTPResult(session, playdata)
+  local characters = {}
+  local worlds = {}
+  local account = {
+    status = 0,
+    subStatus = 0,
+    premDays = 0
+  }
+  if session["status"] ~= "active" then
+    account.status = 1
+  end
+  if session["ispremium"] then
+    account.subStatus = 1 -- premium
+  end
+  if session["premiumuntil"] > g_clock.seconds() then
+    account.subStatus = math.floor((session["premiumuntil"] - g_clock.seconds()) / 86400)
+  end
+    
+  local things = {
+    data = {G.clientVersion .. "/Tibia.dat", ""},
+    sprites = {G.clientVersion .. "/Tibia.spr", ""},
+  }
+  
+  local incorrectThings = validateThings(things)
+  if #incorrectThings > 0 then
+    g_logger.error(incorrectThings)
+    if Updater and not checkedByUpdater[G.clientVersion] then
+      checkedByUpdater[G.clientVersion] = true
+      return Updater.check({
+        version = G.clientVersion,
+        host = G.host
+      })
+    else
+      return EnterGame.onError(incorrectThings)
+    end
+  end
+  
+  onSessionKey(nil, session["sessionkey"])
+  
+  for _, world in pairs(playdata["worlds"]) do
+    worlds[world.id] = {
+      name = world.name,
+      port = world.externalportunprotected or world.externalportprotected,
+      address = world.externaladdressunprotected or world.externaladdressprotected
+    }
+  end
+  
+  for _, character in pairs(playdata["characters"]) do
+    local world = worlds[character.worldid]
+    if world then
+      table.insert(characters, {
+        name = character.name,
+        worldName = world.name,
+        worldIp = world.address,
+        worldPort = world.port
+      })
+    end
+  end
+  
+  g_game.setCustomProtocolVersion(0)
+  g_game.chooseRsa(G.host)
+  g_game.setClientVersion(G.clientVersion)
+  g_game.setProtocolVersion(g_game.getClientProtocolVersion(G.clientVersion))
+  g_game.setCustomOs(-1) -- disable
+  if not g_game.getFeature(GameExtendedOpcode) then
+    g_game.setCustomOs(5) -- set os to windows if opcodes are disabled
+  end
+  
+  onCharacterList(nil, characters, account, nil)  
+end
+
 local function onHTTPResult(data, err)  
   if err then
     return EnterGame.onError(err)
   end
-  if data['error'] and #data['error'] > 0 then
+  if data['error'] and data['error']:len() > 0 then
     return EnterGame.onLoginError(data['error'])
+  elseif data['errorMessage'] and data['errorMessage']:len() > 0 then
+    return EnterGame.onLoginError(data['errorMessage'])
   end
+  
+  if type(data["session"]) == "table" and type(data["playdata"]) == "table" then
+    return onTibia12HTTPResult(data["session"], data["playdata"])
+  end  
   
   local characters = data["characters"]
   local account = data["account"]
@@ -331,11 +408,18 @@ function EnterGame.doLogin()
   g_settings.set('client-version', G.clientVersion)
   g_settings.save()
 
-  if G.host:find("http") ~= nil then
+  local server_params = G.host:split(":")
+  if G.host:lower():find("http") ~= nil then
+    if #server_params >= 4 then
+      G.host = server_params[1] .. ":" .. server_params[2] .. ":" .. server_params[3] 
+      G.clientVersion = tonumber(server_params[4])
+    elseif #server_params >= 3 then
+      G.host = server_params[1] .. ":" .. server_params[2] 
+      G.clientVersion = tonumber(server_params[3])
+    end
     return EnterGame.doLoginHttp()      
   end
   
-  local server_params = G.host:split(":")
   local server_ip = server_params[1]
   local server_port = 7171
   if #server_params >= 2 then
@@ -381,6 +465,9 @@ function EnterGame.doLogin()
                                   EnterGame.show()
                                 end })
 
+  if G.clientVersion == 1000 then -- some people don't understand that tibia 10 uses 1100 protocol
+    G.clientVersion = 1100
+  end
   -- if you have custom rsa or protocol edit it here
   g_game.setClientVersion(G.clientVersion)
   g_game.setProtocolVersion(g_game.getClientProtocolVersion(G.clientVersion))
@@ -421,14 +508,20 @@ function EnterGame.doLoginHttp()
                                   loadBox = nil
                                   EnterGame.show()
                                 end })                                
-                                  
+                              
   local data = {
+    type = "login",
     account = G.account,
+    accountname = G.account,
+    email = G.account,
     password = G.password,
+    accountpassword = G.password,
     token = G.authenticatorToken,
     version = APP_VERSION,
-    uid = G.UUID
-  }          
+    uid = G.UUID,
+    stayloggedin = true
+  }
+  
   HTTP.postJSON(G.host, data, onHTTPResult)
   EnterGame.hide()
 end

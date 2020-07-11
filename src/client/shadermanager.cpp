@@ -24,6 +24,7 @@
 #include <framework/graphics/paintershaderprogram.h>
 #include <framework/graphics/graphics.h>
 #include <framework/core/resourcemanager.h>
+#include <framework/core/eventdispatcher.h>
 
 ShaderManager g_shaders;
 
@@ -37,51 +38,36 @@ void ShaderManager::terminate()
     m_shaders.clear();
 }
 
-PainterShaderProgramPtr ShaderManager::createShader(const std::string& name)
+void ShaderManager::createShader(const std::string& name, std::string vertex, std::string fragment, bool colorMatrix)
 {
-    return nullptr;
+    if (vertex.find("\n") == std::string::npos) { // file
+        vertex = g_resources.guessFilePath(vertex, "frag");
+        vertex = g_resources.readFileContents(vertex);
+    }
+    if (fragment.find("\n") == std::string::npos) { // file
+        fragment = g_resources.guessFilePath(fragment, "frag");
+        fragment = g_resources.readFileContents(fragment);
+    }
+
+    g_graphicsDispatcher.addEventEx("createShader", [&, name, vertex, fragment, colorMatrix] {
+        auto program = PainterShaderProgram::create(vertex, fragment, colorMatrix);
+        if (program)
+            m_shaders[name] = program;
+    });
 }
 
-PainterShaderProgramPtr ShaderManager::createFragmentShader(const std::string& name, std::string file)
+void ShaderManager::addTexture(const std::string& name, const std::string& file)
 {
-    return nullptr;
-}
-
-PainterShaderProgramPtr ShaderManager::createFragmentShaderFromCode(const std::string& name, const std::string& code)
-{
-    return nullptr;
-}
-
-PainterShaderProgramPtr ShaderManager::createItemShader(const std::string& name, const std::string& file)
-{
-    PainterShaderProgramPtr shader = createFragmentShader(name, file);
-    if(shader)
-        setupItemShader(shader);
-    return shader;
-}
-
-PainterShaderProgramPtr ShaderManager::createMapShader(const std::string& name, const std::string& file)
-{
-    PainterShaderProgramPtr shader = createFragmentShader(name, file);
-    if(shader)
-        setupMapShader(shader);
-    return shader;
-}
-
-void ShaderManager::setupItemShader(const PainterShaderProgramPtr& shader)
-{
-    if (!shader)
-        return;
-}
-
-void ShaderManager::setupMapShader(const PainterShaderProgramPtr& shader)
-{
-    if(!shader)
-        return;
+    g_graphicsDispatcher.addEventEx("addTexture", [&, name, file] {
+        auto program = getShader(name);
+        if (program)
+            program->addMultiTexture(file);
+    });
 }
 
 PainterShaderProgramPtr ShaderManager::getShader(const std::string& name)
 {
+    VALIDATE_GRAPHICS_THREAD();
     auto it = m_shaders.find(name);
     if(it != m_shaders.end())
         return it->second;

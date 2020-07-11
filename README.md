@@ -1,7 +1,9 @@
 # OTClientV8
 
-OTClientV8 is highly optimized tile based 2d game engine built with c++, lua, physfs, OpenGL ES 2.0 and OpenAL.
-It works well even on 12 years old computers. In 2020 it has been used by more than 90k unique players.
+OTClientV8 is highly optimized, cross-platform tile based 2d game engine built with c++17, lua, physfs, OpenGL ES 2.0 and OpenAL.
+It has been created as alternative client for game called [Tibia](https://tibia.com/), but now it's much more functional and powerful.
+It works well even on 12 years old computers. In June 2020 it reached 100k unique installations.
+
 Supported platforms:
 - Windows (min. Windows 7)
 - Linux
@@ -12,7 +14,7 @@ Planned support:
 - iOS
 - WebAssembly
 
-On this GitHub you can find free version of OTClientV8. It comes without c++ sources, there are prebuilt executables instead.
+On this GitHub you can find free version of OTClientV8. It comes without all c++ sources, there are prebuilt executables instead.
 In many cases, you won't need access to sources, you can add a lot of custom features in lua.
 If you're interested in buying access to sources, contact otclient@otclient.ovh or kondrah#7945 on discord.
 

@@ -28,12 +28,12 @@
 #include <framework/util/crypt.h>
 #include <framework/util/extras.h>
 
-void ProtocolGame::send(const OutputMessagePtr& outputMessage)
+void ProtocolGame::send(const OutputMessagePtr& outputMessage, bool rawPacket)
 {
     // avoid usage of automated sends (bot modules)
     if(!g_game.checkBotProtection())
         return;
-    Protocol::send(outputMessage);
+    Protocol::send(outputMessage, rawPacket);
 }
 
 void ProtocolGame::sendExtendedOpcode(uint8 opcode, const std::string& buffer)
@@ -49,6 +49,13 @@ void ProtocolGame::sendExtendedOpcode(uint8 opcode, const std::string& buffer)
         g_logger.error(stdext::format("Unable to send extended opcode %d, extended opcodes are not enabled on this server.", opcode));
     }
     g_game.disableBotCall();
+}
+
+void ProtocolGame::sendWorldName()
+{
+    OutputMessagePtr msg(new OutputMessage);
+    msg->addRawString(m_worldName + "\n");
+    send(msg, true);
 }
 
 void ProtocolGame::sendLoginPacket(uint challengeTimestamp, uint8 challengeRandom)
@@ -161,6 +168,9 @@ void ProtocolGame::sendLoginPacket(uint challengeTimestamp, uint8 challengeRando
 
     if (g_game.getFeature(Otc::GamePacketCompression))
         enableCompression();
+
+    if (g_game.getFeature(Otc::GameSequencedPackets))
+        enabledSequencedPackets();
 }
 
 void ProtocolGame::sendEnterGame()
@@ -804,6 +814,12 @@ void ProtocolGame::sendChangeOutfit(const Outfit& outfit)
         msg->addU8(outfit.getAddons());
     if(g_game.getFeature(Otc::GamePlayerMounts))
         msg->addU16(outfit.getMount());
+    if (g_game.getFeature(Otc::GameWingsAndAura)) {
+        msg->addU16(outfit.getWings());
+        msg->addU16(outfit.getAura());
+    }
+    if(g_game.getFeature(Otc::GameOutfitShaders))
+        msg->addString(outfit.getShader());
     send(msg);
 }
 

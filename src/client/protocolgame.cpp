@@ -25,13 +25,14 @@
 #include "item.h"
 #include "localplayer.h"
 
-void ProtocolGame::login(const std::string& accountName, const std::string& accountPassword, const std::string& host, uint16 port, const std::string& characterName, const std::string& authenticatorToken, const std::string& sessionKey)
+void ProtocolGame::login(const std::string& accountName, const std::string& accountPassword, const std::string& host, uint16 port, const std::string& characterName, const std::string& authenticatorToken, const std::string& sessionKey, const std::string& worldName)
 {
     m_accountName = accountName;
     m_accountPassword = accountPassword;
     m_authenticatorToken = authenticatorToken;
     m_sessionKey = sessionKey;
     m_characterName = characterName;
+    m_worldName = worldName;
 
     connect(host, port);
 }
@@ -42,6 +43,9 @@ void ProtocolGame::onConnect()
     Protocol::onConnect();
 
     m_localPlayer = g_game.getLocalPlayer();
+
+    if (g_game.getFeature(Otc::GameSendWorldName))
+        sendWorldName();
 
     if (g_game.getFeature(Otc::GamePacketSizeU32))
         enableBigPackets();

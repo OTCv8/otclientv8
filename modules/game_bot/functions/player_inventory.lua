@@ -32,6 +32,9 @@ context.getContainers = function() return g_game.getContainers() end
 context.getContainer = function(index) return g_game.getContainer(index) end
 
 context.moveToSlot = function(item, slot, count)
+  if type(item) == 'number' then
+    item = context.findItem(item)
+  end
   if not item then
     return
   end

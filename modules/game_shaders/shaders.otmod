@@ -1,0 +1,9 @@
+Module
+  name: game_shaders
+  description: Load shaders
+  author: otclientv8
+  website: http://otclient.ovh
+  scripts: [ shaders ]
+  sandboxed: true
+  @onLoad: init()
+  @onUnload: terminate()

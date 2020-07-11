@@ -52,6 +52,10 @@ int push_luavalue(const Outfit& outfit)
         g_lua.pushInteger(outfit.getAura());
         g_lua.setField("aura");
     }
+    if (g_game.getFeature(Otc::GameOutfitShaders)) {
+        g_lua.pushString(outfit.getShader());
+        g_lua.setField("shader");
+    }
     return 1;
 }
 
@@ -84,6 +88,10 @@ bool luavalue_cast(int index, Outfit& outfit)
             g_lua.getField("aura", index);
             outfit.setMount(g_lua.popInteger());
         }
+        //if (g_game.getFeature(Otc::GameOutfitShaders)) {
+            g_lua.getField("shader", index);
+            outfit.setShader(g_lua.popString());
+        //}
         return true;
     }
     return false;

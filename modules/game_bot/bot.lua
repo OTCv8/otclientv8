@@ -335,7 +335,7 @@ function check()
     return
   end
 
-  checkEvent = scheduleEvent(check, 25)  
+  checkEvent = scheduleEvent(check, 10)
   
   local status, result = pcall(function() 
     return botExecutor.script() 

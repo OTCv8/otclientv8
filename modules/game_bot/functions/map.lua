@@ -5,11 +5,27 @@ context.getMapPanel = context.getMapView
 context.zoomIn = function() modules.game_interface.getMapPanel():zoomIn() end
 context.zoomOut = function() modules.game_interface.getMapPanel():zoomOut() end
 
-context.getSpectators = function(multifloor)
-  if multifloor ~= true then
-    multifloor = false
+context.getSpectators = function(param1, param2)
+--[[
+  if param1 is table (position) then it's used for central position, then param2 is used as param1
+  if param1 is true/false then it's used for multifloor, example: getSpectators(true)
+  if param1 is string then it's used for getSpectatorsByPattern
+]]--
+  local pos = context.player:getPosition()
+  if type(param1) == 'table' then
+    pos = param1
+    param1 = param2
   end
-  return g_map.getSpectators(context.player:getPosition(), multifloor)
+  
+  if type(param1) == 'string' then
+    return g_map.getSpectatorsByPattern(pos, param1)  
+  end
+  
+  local multifloor = false
+  if type(param1) == 'boolean' and param1 == true then
+    multifloor = true
+  end
+  return g_map.getSpectators(pos, multifloor)
 end
 
 context.getCreatureById = function(id, multifloor)

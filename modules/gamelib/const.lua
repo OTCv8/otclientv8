@@ -162,12 +162,15 @@ GameDoubleMagicLevel = 79
 
 GameExtendedOpcode = 80
 GameMinimapLimitedToSingleFloor = 81
+GameSendWorldName = 82
 
 GameDoubleLevel = 83
 GameDoubleSoul = 84
 GameDoublePlayerGoodsMoney = 85
 GameCreatureWalkthrough = 86 -- add Walkthrough for versions less than 854, unpass = msg->getU8(); in protocolgameparse.cpp
 GameDoubleTradeMoney = 87
+GameSequencedPackets = 88
+GameTibia12Protocol = 89
 
 GameNewWalking = 90
 GameSlowerManualWalking = 91
@@ -184,6 +187,7 @@ GameCenteredOutfits = 102
 GameSendIdentifiers = 103
 GameWingsAndAura = 104
 GamePlayerStateU32 = 105
+GameOutfitShaders = 106
 
 GamePacketSizeU32 = 110
 GamePacketCompression = 111
