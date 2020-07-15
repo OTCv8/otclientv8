@@ -802,6 +802,11 @@ void ProtocolGame::sendChangeOutfit(const Outfit& outfit)
 {
     OutputMessagePtr msg(new OutputMessage);
     msg->addU8(Proto::ClientChangeOutfit);
+
+    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getClientVersion() >= 1220) {
+        msg->addU8(0); // outfit type
+    }
+
     if(g_game.getFeature(Otc::GameLooktypeU16))
         msg->addU16(outfit.getId());
     else

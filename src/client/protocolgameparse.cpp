@@ -420,7 +420,7 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
             case Proto::GameServerNews:
                 parseGameNews(msg);
                 break;
-            case Proto::GameServerSendBlessDialog:
+            case Proto::GameServerBlessDialog:
                 parseBlessDialog(msg);
                 break;
             case Proto::GameServerMessageDialog:
@@ -468,7 +468,7 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
             case Proto::GameServerImbuementWindow:
                 parseImbuementWindow(msg);
                 break;
-            case Proto::GaneServerCloseImbuementWindow:
+            case Proto::GameServerCloseImbuementWindow:
                 parseCloseImbuementWindow(msg);
                 break;
             case Proto::GameServerCyclopediaNewDetails:
@@ -633,8 +633,9 @@ void ProtocolGame::parseRestingAreaState(const InputMessagePtr& msg)
 void ProtocolGame::parseBlessings(const InputMessagePtr& msg)
 {
     uint16 blessings = msg->getU16();
-    if (g_game.getFeature(Otc::GameTibia12Protocol))
+    if (g_game.getFeature(Otc::GameTibia12Protocol)) {
         msg->getU8(); // blessStatus - 1 = Disabled | 2 = normal | 3 = green
+    }
     m_localPlayer->setBlessings(blessings);
 }
 
@@ -716,7 +717,7 @@ void ProtocolGame::parseCompleteStorePurchase(const InputMessagePtr& msg)
     std::string message = msg->getString();
     g_lua.callGlobalField("g_game", "onStorePurchase", message);
 
-    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() < 1220) {
+    if (g_game.getProtocolVersion() < 1220) {
         int coins = msg->getU32();
         int transferableCoins = msg->getU32();
         g_lua.callGlobalField("g_game", "onCoinBalance", coins, transferableCoins);
@@ -813,7 +814,8 @@ void ProtocolGame::parseStoreOffers(const InputMessagePtr& msg)
                 msg->getU16();
             }
             if (g_game.getProtocolVersion() >= 1212)
-                msg->getU8();
+                msg->getU8(); // has category?
+
             msg->getString(); // filter
             msg->getU32(); // TimeAddedToStore 
             msg->getU16(); // TimesBought 
@@ -2590,6 +2592,9 @@ void ProtocolGame::parseBlessDialog(const InputMessagePtr& msg)
     for (int i = 0; i < totalBless; i++) {
         msg->getU16(); // bless bit wise
         msg->getU8(); // player bless count
+        if (g_game.getClientVersion() >= 1220) {
+            msg->getU8(); // store?
+        }
     }
 
     // parse general info
@@ -3102,7 +3107,7 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
                     creatureType = Proto::CreatureTypeNpc;
             }
 
-            if (creatureType == Proto::CreatureTypeSummonOwn)
+            if (g_game.getFeature(Otc::GameTibia12Protocol) && creatureType == Proto::CreatureTypeSummonOwn)
                 msg->getU32(); // master
 
             std::string name = g_game.formatCreatureName(msg->getString());
@@ -3159,6 +3164,8 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
             creatureType = msg->getU8();
             if (creatureType == Proto::CreatureTypeSummonOwn)
                 msg->getU32(); // master
+            if (g_game.getClientVersion() >= 1220 && creatureType == Proto::CreatureTypePlayer)
+                msg->getU8(); // vocation id
         }
 
         if(g_game.getFeature(Otc::GameCreatureIcons)) {

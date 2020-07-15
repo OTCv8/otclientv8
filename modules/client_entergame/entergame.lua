@@ -15,7 +15,7 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
-local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200"}
+local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200", "1220"}
 
 local checkedByUpdater = {}
 
@@ -149,8 +149,8 @@ local function onTibia12HTTPResult(session, playdata)
   for _, world in pairs(playdata["worlds"]) do
     worlds[world.id] = {
       name = world.name,
-      port = world.externalportunprotected or world.externalportprotected,
-      address = world.externaladdressunprotected or world.externaladdressprotected
+      port = world.externalportunprotected or world.externalportprotected or world.externaladdress,
+      address = world.externaladdressunprotected or world.externaladdressprotected or world.externalport
     }
   end
   
@@ -414,8 +414,10 @@ function EnterGame.doLogin()
       G.host = server_params[1] .. ":" .. server_params[2] .. ":" .. server_params[3] 
       G.clientVersion = tonumber(server_params[4])
     elseif #server_params >= 3 then
-      G.host = server_params[1] .. ":" .. server_params[2] 
-      G.clientVersion = tonumber(server_params[3])
+      if tonumber(server_params[3]) == server_params[3] then
+        G.host = server_params[1] .. ":" .. server_params[2] 
+        G.clientVersion = tonumber(server_params[3])
+      end
     end
     return EnterGame.doLoginHttp()      
   end
