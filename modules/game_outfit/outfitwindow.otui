@@ -157,13 +157,6 @@ MainWindow
       fit-children: true
       spacing: 3
 
-  HorizontalSeparator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 5
-    margin-top: 5
-
   Button
     id: outfitOkButton
     !text: tr('Ok')

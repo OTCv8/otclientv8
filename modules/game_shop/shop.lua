@@ -366,7 +366,7 @@ function processAd(data)
   
   if data['image'] and data['image']:sub(1, 4):lower() == "http" then
     HTTP.downloadImage(data['image'], function(path, err) 
-      if err then g_logger.warning("HTTP error: " .. err) return end
+      if err then g_logger.warning("HTTP error: " .. err .. " - " .. data['image']) return end
       shop.adPanel:setHeight(shop.infoPanel:getHeight())
       shop.adPanel.ad:setText("")
       shop.adPanel.ad:setImageSource(path)
@@ -407,7 +407,7 @@ function addCategory(data)
     category = g_ui.createWidget('ShopCategoryImage', shop.categories)
     if data["image"] and data["image"]:sub(1, 4):lower() == "http" then
        HTTP.downloadImage(data['image'], function(path, err) 
-        if err then g_logger.warning("HTTP error: " .. err) return end
+        if err then g_logger.warning("HTTP error: " .. err .. " - " .. data["image"]) return end
         category.image:setImageSource(path)
       end)
     else
@@ -456,7 +456,7 @@ function addOffer(category, data)
     offer = g_ui.createWidget('ShopOfferImage', shop.offers)
     if data["image"] and data["image"]:sub(1, 4):lower() == "http" then
       HTTP.downloadImage(data['image'], function(path, err) 
-        if err then g_logger.warning("HTTP error: " .. err) return end
+        if err then g_logger.warning("HTTP error: " .. err .. " - " .. data['image']) return end
         if not offer.image then return end
         offer.image:setImageSource(path)
       end)

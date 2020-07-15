@@ -38,7 +38,7 @@ local function setup()
     local targetPos = target:getPosition()
     if targetPos.x == 0xFFFF then return end
     lastPos = pos
-    CaveBot.addAction("usewith", itemId .. "," .. pos.x .. "," .. pos.y .. "," .. pos.z, true)
+    CaveBot.addAction("usewith", itemId .. "," .. targetPos.x .. "," .. targetPos.y .. "," .. targetPos.z, true)
   end)
 end
 

@@ -32,7 +32,7 @@ void Effect::draw(const Point& dest, int offsetX, int offsetY, bool animate, Lig
         return;
 
     if(animate) {
-        if(g_game.getFeature(Otc::GameEnhancedAnimations)) {
+        if(g_game.getFeature(Otc::GameEnhancedAnimations) && rawGetThingType()->getAnimator()) {
             // This requires a separate getPhaseAt method as using getPhase would make all magic effects use the same phase regardless of their appearance time
             m_animationPhase = rawGetThingType()->getAnimator()->getPhaseAt(m_animationTimer, m_animationPhase);
         } else {
@@ -46,11 +46,11 @@ void Effect::draw(const Point& dest, int offsetX, int offsetY, bool animate, Lig
         }
     }
 
-    int xPattern = offsetX % getNumPatternX();
+    int xPattern = m_position.x % getNumPatternX();
     if(xPattern < 0)
         xPattern += getNumPatternX();
 
-    int yPattern = offsetY % getNumPatternY();
+    int yPattern = m_position.y % getNumPatternY();
     if(yPattern < 0)
         yPattern += getNumPatternY();
 

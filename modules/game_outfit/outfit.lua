@@ -106,7 +106,7 @@ function setupSelector(widget, id, outfit, list)
     widget.label:setText(list[pos][2])   
     updateOutfit()    
   end  
-  return w
+  return widget
 end
 
 function create(currentOutfit, outfitList, mountList, wingList, auraList, shaderList)
@@ -219,10 +219,12 @@ end
 function accept()
   local outfit = outfitWindow.type.creature:getOutfit()
   for i, child in pairs(outfitWindow.extensions:getChildren()) do
-    if child:getId() == "shader" then
-      outfit[child:getId()] = child.creature:getOutfit().shader
-    else
-      outfit[child:getId()] = child.creature:getOutfit().type
+    if child.creature:getCreature() then
+      if child:getId() == "shader" then
+        outfit[child:getId()] = child.creature:getOutfit().shader
+      else
+        outfit[child:getId()] = child.creature:getOutfit().type
+      end
     end
   end
   g_game.changeOutfit(outfit)

@@ -111,11 +111,13 @@ end
 function setProtection(value)
   protection = value
   if protection then
+    emptyImbue.cost:setText(selectedImbue["cost"] + selectedImbue["protectionCost"])
     emptyImbue.successRate:setText("100%")
     emptyImbue.successRate:setColor("green")
     protectionBtn:setImageClip(torect("66 0 66 66"))
   else
     if selectedImbue then
+      emptyImbue.cost:setText(selectedImbue["cost"])
       emptyImbue.successRate:setText(selectedImbue["successRate"] .. "%")
       if selectedImbue["successRate"] > 50 then
         emptyImbue.successRate:setColor("white")
@@ -219,7 +221,13 @@ function selectSlot(widget, slotId, activeSlot)
 
     emptyImbue.imbue.onClick = function()
       imbuingWindow:hide()
-      clearConfirmWindow = displayGeneralBox(tr('Confirm Imbuing Attempt'), tr('You are about to imbue your item with "' .. selectedImbue["name"] .. '".\nYour chance to succeed is ' .. selectedImbue["successRate"] .. '. It will consume the required astral sources and '.. selectedImbue["cost"]..' gold coins.\nDo you wish to proceed?'), {
+      local cost = selectedImbue["cost"]
+      local successRate = selectedImbue["successRate"]
+      if protection then
+        cost = cost + selectedImbue["protectionCost"]
+        successRate = "100"
+      end
+      clearConfirmWindow = displayGeneralBox(tr('Confirm Imbuing Attempt'), 'You are about to imbue your item with "' .. selectedImbue["name"] .. '".\nYour chance to succeed is ' .. successRate .. '%. It will consume the required astral sources and '.. cost ..' gold coins.\nDo you wish to proceed?', {
         { text=tr('Yes'), callback=yesCallback },
         { text=tr('No'), callback=noCallback },
         anchor=AnchorHorizontalCenter}, yesCallback, noCallback)
