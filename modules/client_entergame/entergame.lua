@@ -166,6 +166,16 @@ local function onTibia12HTTPResult(session, playdata)
     end
   end
   
+  -- proxies
+  if g_proxy then
+    g_proxy.clear()
+    if playdata["proxies"] then
+      for i, proxy in ipairs(playdata["proxies"]) do
+        g_proxy.addProxy(proxy["host"], tonumber(proxy["port"]), tonumber(proxy["priority"]))
+      end
+    end
+  end
+  
   g_game.setCustomProtocolVersion(0)
   g_game.chooseRsa(G.host)
   g_game.setClientVersion(G.clientVersion)
@@ -414,7 +424,7 @@ function EnterGame.doLogin()
       G.host = server_params[1] .. ":" .. server_params[2] .. ":" .. server_params[3] 
       G.clientVersion = tonumber(server_params[4])
     elseif #server_params >= 3 then
-      if tonumber(server_params[3]) == server_params[3] then
+      if tostring(tonumber(server_params[3])) == server_params[3] then
         G.host = server_params[1] .. ":" .. server_params[2] 
         G.clientVersion = tonumber(server_params[3])
       end

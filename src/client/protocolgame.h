@@ -251,8 +251,9 @@ private:
     void parseVipAdd(const InputMessagePtr& msg);
     void parseVipState(const InputMessagePtr& msg);
     void parseVipLogout(const InputMessagePtr& msg);
+    void parseVipGroupData(const InputMessagePtr& msg);
     void parseTutorialHint(const InputMessagePtr& msg);
-    void parseAutomapFlag(const InputMessagePtr& msg);
+    void parseCyclopediaMapData(const InputMessagePtr& msg);
     void parseQuestLog(const InputMessagePtr& msg);
     void parseQuestLine(const InputMessagePtr& msg);
     void parseChannelEvent(const InputMessagePtr& msg);
@@ -274,7 +275,11 @@ private:
     void parseDailyReward(const InputMessagePtr& msg);
     void parseDailyRewardHistory(const InputMessagePtr& msg);
     void parseKillTracker(const InputMessagePtr& msg);
+    void parseLootContainers(const InputMessagePtr& msg);
+    void parseSupplyStash(const InputMessagePtr& msg);
+    void parseDepotState(const InputMessagePtr& msg);
     void parseSupplyTracker(const InputMessagePtr& msg);
+    void parseTournamentLeaderboard(const InputMessagePtr& msg);
     void parseImpactTracker(const InputMessagePtr& msg);
     void parseItemsPrices(const InputMessagePtr& msg);
     void parseLootTracker(const InputMessagePtr& msg);

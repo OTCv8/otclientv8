@@ -486,7 +486,11 @@ function changeCategory(widget, newCategory)
   end
   
   if g_game.getFeature(GameIngameStore) and widget ~= newCategory and not otcv8shop then
-    g_game.requestStoreOffers(newCategory.name:getText())
+    local serviceType = 0
+    if g_game.getFeature(GameTibia12Protocol) then
+      serviceType = 2
+    end
+    g_game.requestStoreOffers(newCategory.name:getText(), serviceType)
   end
   
   browsingHistory = false

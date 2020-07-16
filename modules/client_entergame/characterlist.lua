@@ -303,9 +303,9 @@ function CharacterList.create(characters, account, otui)
     status = tr(' (Suspended)')
   end
 
-  if account.subStatus == SubscriptionStatus.Free then
+  if account.subStatus == SubscriptionStatus.Free and account.premDays < 1 then
     accountStatusLabel:setText(('%s%s'):format(tr('Free Account'), status))
-  elseif account.subStatus == SubscriptionStatus.Premium then
+  else
     if account.premDays == 0 or account.premDays == 65535 then
       accountStatusLabel:setText(('%s%s'):format(tr('Gratis Premium Account'), status))
     else
