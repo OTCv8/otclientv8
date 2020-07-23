@@ -10,6 +10,7 @@ LoginServerUpdateNeeded = 30
 LoginServerSessionKey = 40
 LoginServerCharacterList = 100
 LoginServerExtendedCharacterList = 101
+LoginServerProxyList = 110
 
 -- Since 10.76
 LoginServerRetry = 10
@@ -182,9 +183,19 @@ function ProtocolLogin:onRecv(msg)
       self:parseExtendedCharacterList(msg)
     elseif opcode == LoginServerUpdate then
       local signature = msg:getString()
-      signalcall(self.onUpdateNeeded, self, signature)
+      signalcall(self.onUpdateNeeded, self, signature)      
     elseif opcode == LoginServerSessionKey then
       self:parseSessionKey(msg)
+    elseif opcode == LoginServerProxyList then
+      local proxies = {}
+      local proxiesCount = msg:getU8()
+      for i=1, proxiesCount do
+        local host = msg:getString()
+        local port = msg:getU16()
+        local priority = msg:getU16()        
+        table.insert(proxies, {host=host, port=port, priority=priority})
+      end      
+      signalcall(self.onProxyList, self, proxies)
     else
       self:parseOpcode(opcode, msg)
     end

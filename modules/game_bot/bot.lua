@@ -17,6 +17,8 @@ local enableButton = nil
 local executeEvent = nil
 local statusLabel = nil
 
+local configManagerUrl = "http://otclient.ovh/configs.php"
+
 function init()
   dofile("executor")
   
@@ -263,6 +265,13 @@ function onError(message)
 end
 
 function edit()
+  local configs = g_resources.listDirectoryFiles("/bot", false, false)  
+  editWindow.manager.upload.config:clearOptions()  
+  for i=1,#configs do 
+    editWindow.manager.upload.config:addOption(configs[i])
+  end
+  editWindow.manager.download.config:setText("")
+  
   editWindow:show()
   editWindow:focus()
   editWindow:raise()
@@ -303,6 +312,102 @@ function createDefaultConfigs()
         end
       end
     end
+  end
+end
+
+function uploadConfig()
+  local config = editWindow.manager.upload.config:getCurrentOption().text
+  local archive = compressConfig(config)
+  if not archive then
+      return displayErrorBox(tr("Config upload failed"), tr("Config %s is invalid (can't be compressed)", config))
+  end
+  if archive:len() > 64 * 1024 then
+      return displayErrorBox(tr("Config upload failed"), tr("Config %s is too big, maximum size is 64KB. Now it has %s KB.", config, math.floor(archive / 1024)))
+  end
+  
+  local infoBox = displayInfoBox(tr("Uploading config"), tr("Uploading config %s. Please wait.", config))
+  
+  HTTP.postJSON(configManagerUrl .. "?config=" .. config:gsub("%s+", "_"), archive, function(data, err)
+    if infoBox then
+      infoBox:destroy()
+    end
+    if err or data["error"] then      
+      return displayErrorBox(tr("Config upload failed"), tr("Error while upload config %s:\n%s", config, err or data["error"]))
+    end
+    displayInfoBox(tr("Succesful config upload"), tr("Config %s has been uploaded.\n%s", config, data["message"]))
+  end)  
+end
+
+function downloadConfig()
+  local hash = editWindow.manager.download.config:getText()
+  if hash:len() == 0 then
+      return displayErrorBox(tr("Config download error"), tr("Enter correct config hash"))  
+  end
+  local infoBox = displayInfoBox(tr("Downloading config"), tr("Downloading config with hash %s. Please wait.", hash))
+  HTTP.download(configManagerUrl .. "?hash=" .. hash, hash .. ".zip", function(path, checksum, err)
+    if infoBox then
+      infoBox:destroy()
+    end
+    if err then
+      return displayErrorBox(tr("Config download error"), tr("Config with hash %s cannot be downloaded", hash))      
+    end
+    modules.client_textedit.show("", {
+      title="Enter name for downloaded config",
+      description="Config with hash " .. hash .. " has been downloaded. Enter name for new config.\nWarning: if config with same name already exist, it will be overwritten!",
+      width=500
+    }, function(configName)
+      decompressConfig(configName, "/downloads/" .. path)
+      refresh()
+      edit()
+    end)
+  end)
+end
+
+function compressConfig(configName)
+  if not g_resources.directoryExists("/bot/" .. configName) then
+    return onError("Config " .. configName .. " doesn't exist")
+  end
+  local forArchive = {}
+  for _, file in ipairs(g_resources.listDirectoryFiles("/bot/" .. configName)) do
+    local fullPath = "/bot/" .. configName .. "/" .. file
+    if g_resources.fileExists(fullPath) then -- regular file
+        forArchive[file] = g_resources.readFileContents(fullPath)
+    else -- dir
+      for __, file2 in ipairs(g_resources.listDirectoryFiles(fullPath)) do
+        local fullPath2 = fullPath .. "/" .. file2
+        if g_resources.fileExists(fullPath2) then -- regular file
+            forArchive[file .. "/" .. file2] = g_resources.readFileContents(fullPath2)
+        end
+      end
+    end
+  end
+  return g_resources.createArchive(forArchive)
+end
+
+function decompressConfig(configName, archive)
+  if g_resources.directoryExists("/bot/" .. configName) then
+    g_resources.deleteFile("/bot/" .. configName) -- also delete dirs
+  end
+  local files = g_resources.decompressArchive(archive)
+  g_resources.makeDir("/bot/" .. configName)
+  if not g_resources.directoryExists("/bot/" .. configName) then
+    return onError("Can't create /bot/" .. configName .. " directory in " .. g_resources.getWriteDir())
+  end
+  
+  for file, contents in pairs(files) do
+    local split = file:split("/")
+    split[#split] = nil -- remove file name
+    local dirPath = "/bot/" .. configName
+    for _, s in ipairs(split) do
+      dirPath = dirPath .. "/" .. s
+      if not g_resources.directoryExists(dirPath) then
+        g_resources.makeDir(dirPath)
+        if not g_resources.directoryExists(dirPath) then
+          return onError("Can't create " .. dirPath .. " directory in " .. g_resources.getWriteDir())
+        end
+      end
+    end
+    g_resources.writeFileContents("/bot/" .. configName .. file, contents)
   end
 end
 

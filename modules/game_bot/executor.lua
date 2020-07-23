@@ -86,17 +86,22 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.getDistanceBetween = function(p1, p2)
     return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))
   end
+  context.isMobile = g_app.isMobile
+  context.getVersion = g_app.getVersion
   
   -- classes
   context.g_resources = g_resources
   context.g_game = g_game
   context.g_map = g_map
   context.g_ui = g_ui
-  context.g_platform = g_platform
   context.g_sounds = g_sounds
   context.g_window = g_window
   context.g_mouse = g_mouse
   context.g_things = g_things
+  context.g_platform = {
+    openUrl = g_platform.openUrl,
+    openDir = g_platform.openDir,
+  }
 
   context.Item = Item
   context.Creature = Creature

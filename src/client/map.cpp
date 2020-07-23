@@ -967,3 +967,118 @@ bool Map::isWalkable(const Position& pos, bool ignoreCreatures)
     const MinimapTile& mtile = g_minimap.getTile(pos);
     return !mtile.hasFlag(MinimapTileNotPathable);
 }
+
+std::vector<CreaturePtr> Map::getSpectatorsByPattern(const Position& centerPos, const std::string& pattern, Otc::Direction direction)
+{
+    std::vector<bool> finalPattern(pattern.size(), false);
+    std::vector<CreaturePtr> creatures;
+    int width = 0, height = 0, lineLength = 0, p = 0;
+    for (auto& c : pattern) {
+        lineLength += 1;
+        if (c == '0' || c == '-') {
+            p += 1;
+        } else if (c == '1' || c == '+') {
+            finalPattern[p++] = true;
+        } else if (c == 'N' || c == 'n') {
+            finalPattern[p++] = direction == Otc::North;
+        } else if (c == 'E' || c == 'e') {
+            finalPattern[p++] = direction == Otc::East;
+        } else if (c == 'W' || c == 'w') {
+            finalPattern[p++] = direction == Otc::West;
+        } else if (c == 'S' || c == 's') {
+            finalPattern[p++] = direction == Otc::South;
+        } else {
+            lineLength -= 1;
+            if (lineLength > 1) {
+                if (width == 0)
+                    width = lineLength;
+                if (width != lineLength) {
+                    g_logger.error(stdext::format("Invalid pattern for getSpectatorsByPattern: %s", pattern));
+                    return creatures;
+                }
+                height += 1;
+                lineLength = 0;
+            }
+        }
+    }
+    if (lineLength > 0) {
+        if (width == 0)
+            width = lineLength;
+        if (width != lineLength) {
+            g_logger.error(stdext::format("Invalid pattern for getSpectatorsByPattern: %s", pattern));
+            return creatures;
+        }
+        height += 1;
+    }
+    if (width % 2 != 1 || height % 2 != 1) {
+        g_logger.error(stdext::format("Invalid pattern for getSpectatorsByPattern, width and height should be odd (height: %i width: %i)", height, width));
+        return creatures;
+    }
+
+    p = 0;
+    for (int y = centerPos.y - height / 2, endy = centerPos.y + height / 2; y <= endy; ++y) {
+        for (int x = centerPos.x - width / 2, endx = centerPos.x + width / 2; x <= endx; ++x) {
+            if (!finalPattern[p++])
+                continue;
+            TilePtr tile = getTile(Position(x, y, centerPos.z));
+            if (!tile)
+                continue;
+            auto tileCreatures = tile->getCreatures();
+            creatures.insert(creatures.end(), tileCreatures.rbegin(), tileCreatures.rend());
+        }
+    }
+    return creatures;
+}
+
+bool Map::isSightClear(const Position& fromPos, const Position& toPos)
+{
+    if (fromPos == toPos) {
+        return true;
+    }
+
+    Position start(fromPos.z > toPos.z ? toPos : fromPos);
+    Position destination(fromPos.z > toPos.z ? fromPos : toPos);
+
+    const int8_t mx = start.x < destination.x ? 1 : start.x == destination.x ? 0 : -1;
+    const int8_t my = start.y < destination.y ? 1 : start.y == destination.y ? 0 : -1;
+
+    int32_t A = destination.y - start.y;
+    int32_t B = start.x - destination.x;
+    int32_t C = -(A * destination.x + B * destination.y);
+
+    while (start.x != destination.x || start.y != destination.y) {
+        int32_t move_hor = std::abs(A * (start.x + mx) + B * (start.y) + C);
+        int32_t move_ver = std::abs(A * (start.x) + B * (start.y + my) + C);
+        int32_t move_cross = std::abs(A * (start.x + mx) + B * (start.y + my) + C);
+
+        if (start.y != destination.y && (start.x == destination.x || move_hor > move_ver || move_hor > move_cross)) {
+            start.y += my;
+        }
+
+        if (start.x != destination.x && (start.y == destination.y || move_ver > move_hor || move_ver > move_cross)) {
+            start.x += mx;
+        }
+
+        auto tile = getTile(Position(start.x, start.y, start.z));
+        if (tile && tile->isBlockingProjectile()) {
+            return false;
+        }
+    }
+
+    while (start.z != destination.z) {
+        auto tile = getTile(Position(start.x, start.y, start.z));
+        if (tile && tile->getThingCount() > 0) {
+            return false;
+        }
+        start.z++;
+    }
+
+    return true;
+}
+
+bool Map::checkSightLine(const Position& fromPos, const Position& toPos)
+{
+    if (fromPos.z != toPos.z)
+        return false;
+    return checkSightLine(fromPos, toPos) || checkSightLine(toPos, fromPos);
+}
