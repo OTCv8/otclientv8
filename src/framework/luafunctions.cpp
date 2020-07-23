@@ -109,13 +109,15 @@ void Application::registerLuaFunctions()
 
     // Platform
     g_lua.registerSingletonClass("g_platform");
+#ifdef UNSAFE_LUA_FUNCTIONS
     g_lua.bindSingletonFunction("g_platform", "spawnProcess", &Platform::spawnProcess, &g_platform);
-    g_lua.bindSingletonFunction("g_platform", "getProcessId", &Platform::getProcessId, &g_platform);
-    g_lua.bindSingletonFunction("g_platform", "isProcessRunning", &Platform::isProcessRunning, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "copyFile", &Platform::copyFile, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "fileExists", &Platform::fileExists, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "removeFile", &Platform::removeFile, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "killProcess", &Platform::killProcess, &g_platform);
+#endif
+    g_lua.bindSingletonFunction("g_platform", "getProcessId", &Platform::getProcessId, &g_platform);
+    g_lua.bindSingletonFunction("g_platform", "isProcessRunning", &Platform::isProcessRunning, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "getTempPath", &Platform::getTempPath, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "openUrl", &Platform::openUrl, &g_platform);
     g_lua.bindSingletonFunction("g_platform", "openDir", &Platform::openDir, &g_platform);
@@ -226,6 +228,7 @@ void Application::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_http", "wsSend", &Http::wsSend, &g_http);
     g_lua.bindSingletonFunction("g_http", "wsClose", &Http::wsClose, &g_http);
     g_lua.bindSingletonFunction("g_http", "cancel", &Http::cancel, &g_http);
+    g_lua.bindSingletonFunction("g_http", "setUserAgent", &Http::setUserAgent, &g_http);
 
     g_lua.registerSingletonClass("g_atlas");
     g_lua.bindSingletonFunction("g_atlas", "getStats", &Atlas::getStats, &g_atlas);
@@ -273,6 +276,8 @@ void Application::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_resources", "selfChecksum", &ResourceManager::selfChecksum, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "updateData", &ResourceManager::updateData, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "updateExecutable", &ResourceManager::updateExecutable, &g_resources);
+    g_lua.bindSingletonFunction("g_resources", "createArchive", &ResourceManager::createArchive, &g_resources);
+    g_lua.bindSingletonFunction("g_resources", "decompressArchive", &ResourceManager::decompressArchive, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "setLayout", &ResourceManager::setLayout, &g_resources);
     g_lua.bindSingletonFunction("g_resources", "getLayout", &ResourceManager::getLayout, &g_resources);
 

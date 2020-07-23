@@ -169,6 +169,8 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_map", "getMinimapColor", &Map::getMinimapColor, &g_map);
     g_lua.bindSingletonFunction("g_map", "isPatchable", &Map::isPatchable, &g_map);
     g_lua.bindSingletonFunction("g_map", "isWalkable", &Map::isWalkable, &g_map);
+    g_lua.bindSingletonFunction("g_map", "checkSightLine", &Map::checkSightLine, &g_map);
+    g_lua.bindSingletonFunction("g_map", "isSightClear", &Map::isSightClear, &g_map);
 
     g_lua.registerSingletonClass("g_minimap");
     g_lua.bindSingletonFunction("g_minimap", "clean", &Minimap::clean, &g_minimap);
@@ -523,6 +525,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Creature>("isDead", &Creature::isDead);
     g_lua.bindClassMemberFunction<Creature>("isRemoved", &Creature::isRemoved);
     g_lua.bindClassMemberFunction<Creature>("canBeSeen", &Creature::canBeSeen);
+    g_lua.bindClassMemberFunction<Creature>("canShoot", &Creature::canShoot);
     g_lua.bindClassMemberFunction<Creature>("jump", &Creature::jump);
     g_lua.bindClassMemberFunction<Creature>("getPrewalkingPosition", &Creature::getPrewalkingPosition);
     g_lua.bindClassMemberFunction<Creature>("setInformationColor", &Creature::setInformationColor);
@@ -772,6 +775,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Tile>("isFullGround", &Tile::isFullGround);
     g_lua.bindClassMemberFunction<Tile>("isFullyOpaque", &Tile::isFullyOpaque);
     g_lua.bindClassMemberFunction<Tile>("isLookPossible", &Tile::isLookPossible);
+    g_lua.bindClassMemberFunction<Tile>("isBlockingProjectile", &Tile::isBlockingProjectile);
     g_lua.bindClassMemberFunction<Tile>("hasCreature", &Tile::hasCreature);
     g_lua.bindClassMemberFunction<Tile>("hasBlockingCreature", &Tile::hasBlockingCreature);
     g_lua.bindClassMemberFunction<Tile>("isEmpty", &Tile::isEmpty);
@@ -789,6 +793,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Tile>("getElevation", &Tile::getElevation);
     g_lua.bindClassMemberFunction<Tile>("hasElevation", &Tile::hasElevation);
     g_lua.bindClassMemberFunction<Tile>("isBlocking", &Tile::isBlocking);
+    g_lua.bindClassMemberFunction<Tile>("canShoot", &Tile::canShoot);
     // for bot
     g_lua.bindClassMemberFunction<Tile>("setText", &Tile::setText);
     g_lua.bindClassMemberFunction<Tile>("getText", &Tile::getText);

@@ -227,6 +227,7 @@ function accept()
       end
     end
   end
+
   g_game.changeOutfit(outfit)
   destroy()
 end

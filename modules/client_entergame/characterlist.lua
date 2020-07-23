@@ -125,11 +125,13 @@ end
 
 function onGameConnectionError(message, code)
   CharacterList.destroyLoadBox()
-  local text = translateNetworkError(code, g_game.getProtocolGame() and g_game.getProtocolGame():isConnecting(), message)
-  errorBox = displayErrorBox(tr("Connection Error"), text)
-  errorBox.onOk = function()
-    errorBox = nil
-    CharacterList.showAgain()
+  if (not g_game.isOnline() or code ~= 2) and not errorBox then -- code 2 is normal disconnect, end of file
+    local text = translateNetworkError(code, g_game.getProtocolGame() and g_game.getProtocolGame():isConnecting(), message)
+    errorBox = displayErrorBox(tr("Connection Error"), text)
+    errorBox.onOk = function()
+      errorBox = nil
+      CharacterList.showAgain()
+    end
   end
   scheduleAutoReconnect()
 end
@@ -144,8 +146,8 @@ function onGameUpdateNeeded(signature)
 end
 
 function onGameEnd()
-  CharacterList.showAgain()
   scheduleAutoReconnect()
+  CharacterList.showAgain()
 end
 
 function onLogout()
@@ -163,7 +165,7 @@ function scheduleAutoReconnect()
 end
 
 function executeAutoReconnect()  
-  if not autoReconnectButton or not autoReconnectButton:isOn() then
+  if not autoReconnectButton or not autoReconnectButton:isOn() or g_game.isOnline() then
     return
   end
   if errorBox then

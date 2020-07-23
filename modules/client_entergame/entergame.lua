@@ -63,6 +63,12 @@ local function onUpdateNeeded(protocol, signature)
   return EnterGame.onError(tr('Your client needs updating, try redownloading it.'))
 end
 
+local function onProxyList(protocol, proxies)
+  for _, proxy in ipairs(proxies) do
+    g_proxy.addProxy(proxy["host"], proxy["port"], proxy["priority"])
+  end
+end
+
 local function parseFeatures(features)
   for feature_id, value in pairs(features) do
       if value == "1" or value == "true" or value == true then
@@ -468,6 +474,7 @@ function EnterGame.doLogin()
   protocolLogin.onSessionKey = onSessionKey
   protocolLogin.onCharacterList = onCharacterList
   protocolLogin.onUpdateNeeded = onUpdateNeeded
+  protocolLogin.onProxyList = onProxyList
 
   EnterGame.hide()
   loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to login server...'))

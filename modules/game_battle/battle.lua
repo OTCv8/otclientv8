@@ -13,6 +13,7 @@ prevCreature = nil
 
 battleButtons = {}
 local ageNumber = 1
+local ages = {}
 
 function init()  
   g_ui.importStyle('battlebutton')
@@ -239,8 +240,12 @@ function checkCreatures()
   local creatures = {}
   for _, creature in ipairs(spectators) do
     if doCreatureFitFilters(creature) and #creatures < maxCreatures then
-      if not creature.age then
-        creature.age = ageNumber
+      if not ages[creature:getId()] then
+        if ageNumber > 10000 then
+          ageNumber = 1
+          ages = {}
+        end
+        ages[creature:getId()] = ageNumber
         ageNumber = ageNumber + 1
       end
       table.insert(creatures, creature)	
@@ -324,23 +329,23 @@ function sortCreatures(creatures)
     local playerPos = player:getPosition()
     table.sort(creatures, function(a, b) 
       if getDistanceBetween(playerPos, a:getPosition()) == getDistanceBetween(playerPos, b:getPosition()) then
-        return a.age > b.age
+        return ages[a:getId()] > ages[b:getId()]
       end
       return getDistanceBetween(playerPos, a:getPosition()) > getDistanceBetween(playerPos, b:getPosition()) 
     end)
   elseif getSortType() == 'health' then
     table.sort(creatures, function(a, b) 
       if a:getHealthPercent() == b:getHealthPercent() then
-        return a.age > b.age
+        return ages[a:getId()] > ages[b:getId()]
       end
       return a:getHealthPercent() > b:getHealthPercent() 
     end)
   elseif getSortType() == 'age' then
-    table.sort(creatures, function(a, b) return a.age > b.age end)
+    table.sort(creatures, function(a, b) return ages[a:getId()] > ages[b:getId()] end)
   else -- name
     table.sort(creatures, function(a, b)
       if a:getName():lower() == b:getName():lower() then
-        return a.age > b.age
+        return ages[a:getId()] > ages[b:getId()]
       end
       return a:getName():lower() > b:getName():lower() 
     end)

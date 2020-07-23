@@ -8,17 +8,25 @@ context.zoomOut = function() modules.game_interface.getMapPanel():zoomOut() end
 context.getSpectators = function(param1, param2)
 --[[
   if param1 is table (position) then it's used for central position, then param2 is used as param1
+  if param1 is creature, then creature position and direction of creature is used, then param2 is used as param1
   if param1 is true/false then it's used for multifloor, example: getSpectators(true)
   if param1 is string then it's used for getSpectatorsByPattern
 ]]--
   local pos = context.player:getPosition()
+  local direction = context.player:getDirection()
   if type(param1) == 'table' then
     pos = param1
+    direction = 8 -- invalid direction
+    param1 = param2
+  end
+  if type(param1) == 'userdata' then
+    pos = param1:getPosition()
+    direction = param1:getDirection()
     param1 = param2
   end
   
   if type(param1) == 'string' then
-    return g_map.getSpectatorsByPattern(pos, param1)  
+    return g_map.getSpectatorsByPattern(pos, param1, direction)  
   end
   
   local multifloor = false
@@ -221,4 +229,13 @@ end
 context.getTileUnderCursor = function()
   if not modules.game_interface.gameMapPanel.mousePos then return end
   return modules.game_interface.gameMapPanel:getTile(modules.game_interface.gameMapPanel.mousePos)
+end
+
+context.canShoot = function(pos, distance)
+  if not distance then distance = 5 end
+  local tile = g_map.getTile(pos, distance)
+  if tile then
+    return tile:canShoot(distance)
+  end
+  return false
 end
