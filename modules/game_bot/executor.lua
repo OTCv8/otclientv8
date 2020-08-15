@@ -10,7 +10,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     end
     if ext[#ext]:lower() == "ui" or ext[#ext]:lower() == "otui" then
       table.insert(uiFiles, file)
-    end    
+    end
   end
   
   if #luaFiles == 0 then
@@ -74,6 +74,13 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.tonumber = tonumber
   context.type = type
   context.pcall = pcall
+  context.os = {
+    time = os.time,
+    date = os.date,
+    difftime = os.difftime,
+    date = os.date,
+    clock = os.clock
+  }
   context.load = function(str) return assert(load(str, nil, nil, context)) end
   context.loadstring = context.load
   context.assert = assert

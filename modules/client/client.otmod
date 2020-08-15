@@ -17,7 +17,6 @@ Module
     - client_textedit
     - client_options
     - client_entergame
-    - client_entergamev2
     - client_terminal
     - client_stats
     - client_feedback

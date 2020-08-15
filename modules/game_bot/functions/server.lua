@@ -58,6 +58,7 @@ context.BotServer.init = function(name, channel)
       end
       context.BotServer._wasConnected = false
       context.BotServer._websocket = nil
+      context.BotServer.ping = 0
       context.BotServer.init(name, channel)
     end    
   }, context.BotServer.timeout)

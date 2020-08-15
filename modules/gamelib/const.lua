@@ -188,6 +188,7 @@ GameSendIdentifiers = 103
 GameWingsAndAura = 104
 GamePlayerStateU32 = 105
 GameOutfitShaders = 106
+GameForceAllowItemHotkeys = 107
 
 GamePacketSizeU32 = 110
 GamePacketCompression = 111

@@ -828,15 +828,24 @@ void ProtocolGame::sendChangeOutfit(const Outfit& outfit)
     send(msg);
 }
 
-void ProtocolGame::sendMountStatus(bool mount)
+void ProtocolGame::sendOutfitExtensionStatus(int mount, int wings, int aura, int shader)
 {
-    if(g_game.getFeature(Otc::GamePlayerMounts)) {
+    if(g_game.getFeature(Otc::GamePlayerMounts) || g_game.getFeature(Otc::GameWingsAndAura) || g_game.getFeature(Otc::GameWingsAndAura)) {
         OutputMessagePtr msg(new OutputMessage);
         msg->addU8(Proto::ClientMount);
-        msg->addU8(mount);
+        if (g_game.getFeature(Otc::GamePlayerMounts)) {
+            msg->addU8(mount);
+        }
+        if (g_game.getFeature(Otc::GameWingsAndAura)) {
+            msg->addU8(wings);
+            msg->addU8(aura);
+        }
+        if (g_game.getFeature(Otc::GameOutfitShaders)) {
+            msg->addU8(shader);
+        }
         send(msg);
     } else {
-        g_logger.error("ProtocolGame::sendMountStatus does not support the current protocol.");
+        g_logger.error("ProtocolGame::sendOutfitExtensionStatus does not support the current protocol.");
     }
 }
 

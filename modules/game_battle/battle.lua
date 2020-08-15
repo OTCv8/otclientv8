@@ -47,7 +47,8 @@ function init()
 
   sortTypeBox:addOption('Name', 'name')
   sortTypeBox:addOption('Distance', 'distance')
-  sortTypeBox:addOption('Age', 'age')
+  sortTypeBox:addOption('Total age', 'age')
+  sortTypeBox:addOption('Screen age', 'screenage')
   sortTypeBox:addOption('Health', 'health')
   sortTypeBox:setCurrentOptionByData(getSortType())
   sortTypeBox.onOptionChange = onChangeSortType
@@ -207,13 +208,13 @@ function toggleFilterPanel()
   end
 end
 
-function onChangeSortType(comboBox, option)
-  setSortType(option:lower())
+function onChangeSortType(comboBox, option, value)
+  setSortType(value:lower())
 end
 
-function onChangeSortOrder(comboBox, option)
+function onChangeSortOrder(comboBox, option, value)
   -- Replace dot in option name
-  setSortOrder(option:lower():gsub('[.]', ''))
+  setSortOrder(value:lower():gsub('[.]', ''))
 end
 
 -- functions
@@ -238,10 +239,16 @@ function checkCreatures()
   local maxCreatures = battlePanel:getChildCount()
   
   local creatures = {}
+  local now = g_clock.millis()
+  local resetAgePoint = now - 250
   for _, creature in ipairs(spectators) do
     if doCreatureFitFilters(creature) and #creatures < maxCreatures then
+      if not creature.lastSeen or creature.lastSeen < resetAgePoint then
+        creature.screenAge = now        
+      end      
+      creature.lastSeen = now
       if not ages[creature:getId()] then
-        if ageNumber > 10000 then
+        if ageNumber > 1000 then
           ageNumber = 1
           ages = {}
         end
@@ -342,6 +349,8 @@ function sortCreatures(creatures)
     end)
   elseif getSortType() == 'age' then
     table.sort(creatures, function(a, b) return ages[a:getId()] > ages[b:getId()] end)
+  elseif getSortType() == 'screenage' then
+    table.sort(creatures, function(a, b) return a.screenAge > b.screenAge end)
   else -- name
     table.sort(creatures, function(a, b)
       if a:getName():lower() == b:getName():lower() then
