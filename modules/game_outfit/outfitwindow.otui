@@ -5,11 +5,18 @@ PrevMountButton < PreviousButton
 
 OutfitSelectorPanel < Panel
   size: 125 120
+  
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
 
   UICreature
     id: creature
-    size: 96 96
-    anchors.top: parent.top
+    size: 100 80
+    anchors.top: prev.bottom
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: 1
   
@@ -39,7 +46,7 @@ OutfitSelectorPanel < Panel
 
 MainWindow
   !text: tr('Select Outfit')
-  size: 540 335
+  size: 540 330
 
   @onEnter: modules.game_outfit.accept()
   @onEscape: modules.game_outfit.destroy()

@@ -53,9 +53,12 @@ end
 
 function setupSelector(widget, id, outfit, list)
   widget:setId(id)
+  widget.title:setText(id:gsub("^%l", string.upper))
+  table.insert(list, 1, {0, "-"})
+  
   local pos = 1
   for i, o in pairs(list) do
-    if outfit[id] == o[1] then
+    if (id == "shader" and outfit[id] == o[2]) or outfit[id] == o[1] then
       pos = i
     end
   end
@@ -63,7 +66,7 @@ function setupSelector(widget, id, outfit, list)
     widget.outfit = list[pos]
     if id == "shader" then
       widget.creature:setOutfit({
-        shader = list[pos][1]
+        shader = list[pos][2]
       })
     else
       widget.creature:setOutfit({
@@ -80,7 +83,7 @@ function setupSelector(widget, id, outfit, list)
     end
     local outfit = widget.creature:getOutfit()
     if id == "shader" then
-      outfit.shader = list[pos][1]
+      outfit.shader = list[pos][2]
     else
       outfit.type = list[pos][1]    
     end
@@ -97,7 +100,7 @@ function setupSelector(widget, id, outfit, list)
     end
     local outfit = widget.creature:getOutfit()
     if id == "shader" then
-      outfit.shader = list[pos][1]
+      outfit.shader = list[pos][2]
     else
       outfit.type = list[pos][1]    
     end
@@ -311,6 +314,15 @@ function updateOutfit()
   end
   outfit.addons = 0
   outfitWindow.type.creature:setOutfit(outfit)
+
+  local shader = outfitWindow.extensions:getChildById("shader")
+  if shader then
+    outfit.shader = shader.creature:getOutfit().shader
+    if outfit.shader == "-" then
+      outfit.shader = ""
+    end
+    shader.creature:setOutfit(outfit)
+  end
 
   if availableAddons > 0 then
     for _, i in pairs(ADDON_SETS[availableAddons]) do

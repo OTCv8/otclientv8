@@ -1384,7 +1384,14 @@ void Game::mount(bool mount)
 {
     if(!canPerformGameAction())
         return;
-    m_protocolGame->sendMountStatus(mount);
+    m_protocolGame->sendOutfitExtensionStatus(mount ? 1 : 0);
+}
+
+void Game::setOutfitExtensions(int mount, int wings, int aura, int shader)
+{
+    if (!canPerformGameAction())
+        return;
+    m_protocolGame->sendOutfitExtensionStatus(mount, wings, aura, shader);
 }
 
 void Game::requestItemInfo(const ItemPtr& item, int index)

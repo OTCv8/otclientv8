@@ -84,9 +84,9 @@ bool luavalue_cast(int index, Outfit& outfit)
         }
         if (g_game.getFeature(Otc::GameWingsAndAura)) {
             g_lua.getField("wings", index);
-            outfit.setMount(g_lua.popInteger());
+            outfit.setWings(g_lua.popInteger());
             g_lua.getField("aura", index);
-            outfit.setMount(g_lua.popInteger());
+            outfit.setAura(g_lua.popInteger());
         }
         //if (g_game.getFeature(Otc::GameOutfitShaders)) {
             g_lua.getField("shader", index);

@@ -60,7 +60,7 @@ end
 
 function UIItem:onHoverChange(hovered)
   UIWidget.onHoverChange(self, hovered)
-
+    
   if self:isVirtual() or not self:isDraggable() then return end
 
   local draggingWidget = g_ui.getDraggingWidget()
@@ -126,4 +126,12 @@ function UIItem:onClick(mousePos)
   if modules.game_itemselector then
     modules.game_itemselector.show(self)
   end
+end
+
+function UIItem:onItemChange()
+  local tooltip = nil
+  if self:getItem() and self:getItem():getTooltip():len() > 0 then
+    tooltip = self:getItem():getTooltip()
+  end
+  self:setTooltip(tooltip)
 end
