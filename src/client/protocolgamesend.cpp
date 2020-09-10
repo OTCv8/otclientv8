@@ -348,7 +348,10 @@ void ProtocolGame::sendEquipItem(int itemId, int countOrSubType)
     OutputMessagePtr msg(new OutputMessage);
     msg->addU8(Proto::ClientEquipItem);
     msg->addU16(itemId);
-    msg->addU8(countOrSubType);
+    if (g_game.getFeature(Otc::GameCountU16))
+        msg->addU16(countOrSubType);
+    else
+        msg->addU8(countOrSubType);
     send(msg);
 }
 
@@ -360,7 +363,10 @@ void ProtocolGame::sendMove(const Position& fromPos, int thingId, int stackpos, 
     msg->addU16(thingId);
     msg->addU8(stackpos);
     addPosition(msg, toPos);
-    msg->addU8(count);
+    if(g_game.getFeature(Otc::GameCountU16))
+        msg->addU16(count);
+    else
+        msg->addU8(count);
     send(msg);
 }
 
@@ -369,7 +375,10 @@ void ProtocolGame::sendInspectNpcTrade(int itemId, int count)
     OutputMessagePtr msg(new OutputMessage);
     msg->addU8(Proto::ClientInspectNpcTrade);
     msg->addU16(itemId);
-    msg->addU8(count);
+    if (g_game.getFeature(Otc::GameCountU16))
+        msg->addU16(count);
+    else
+        msg->addU8(count);
     send(msg);
 }
 
@@ -830,7 +839,7 @@ void ProtocolGame::sendChangeOutfit(const Outfit& outfit)
 
 void ProtocolGame::sendOutfitExtensionStatus(int mount, int wings, int aura, int shader)
 {
-    if(g_game.getFeature(Otc::GamePlayerMounts) || g_game.getFeature(Otc::GameWingsAndAura) || g_game.getFeature(Otc::GameWingsAndAura)) {
+    if(g_game.getFeature(Otc::GamePlayerMounts) || g_game.getFeature(Otc::GameWingsAndAura) || g_game.getFeature(Otc::GameOutfitShaders)) {
         OutputMessagePtr msg(new OutputMessage);
         msg->addU8(Proto::ClientMount);
         if (g_game.getFeature(Otc::GamePlayerMounts)) {

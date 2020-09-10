@@ -54,7 +54,9 @@ end
 function setupSelector(widget, id, outfit, list)
   widget:setId(id)
   widget.title:setText(id:gsub("^%l", string.upper))
-  table.insert(list, 1, {0, "-"})
+  if id ~= "type" or #list == 0 then
+    table.insert(list, 1, {0, "-"})
+  end
   
   local pos = 1
   for i, o in pairs(list) do

@@ -46,17 +46,18 @@ Panel
     text-offset: 0 2
     anchors.top: parent.top
     anchors.left: parent.left
-    margin-top: 44
+    margin-top: 20
     margin-left: 6
 
   Table
     id: mySellingTable
     anchors.top: prev.bottom
-    anchors.left: prev.left
+    anchors.left: parent.left
     anchors.right: parent.right
-    height: 150
+    height: 160
     margin-top: 5
     margin-bottom: 5
+    margin-left: 6
     margin-right: 6
     padding: 1
     focusable: false
@@ -82,10 +83,10 @@ Panel
         width: 125
       OfferTableHeaderColumn
         !text: tr('Amount')
-        width: 110
+        width: 100
       OfferTableHeaderColumn
         !text: tr('Auction End')
-        width: 110
+        width: 120
 
   TableData
     id: mySellingTableData
@@ -103,34 +104,35 @@ Panel
     step: 28
     pixels-scroll: true
 
+  Label
+    !text: tr('Buy Offers')
+    font: verdana-11px-rounded
+    text-offset: 0 2
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 20
+    margin-left: 6
+
   Button
     id: buyCancelButton
     !text: tr('Cancel')
     anchors.right: parent.right
-    anchors.top: prev.bottom
+    anchors.bottom: prev.bottom
     margin-top: 5
     margin-right: 6
     width: 80
     enabled: false
 
-  Label
-    !text: tr('Buy Offers')
-    font: verdana-11px-rounded
-    text-offset: 0 2
-    anchors.top: prev.top
-    anchors.left: parent.left
-    margin-top: 9
-    margin-left: 6
-
   Table
     id: myBuyingTable
     anchors.top: prev.bottom
-    anchors.left: prev.left
+    anchors.left: parent.left
     anchors.right: parent.right
     margin-top: 5
     margin-bottom: 5
+    margin-left: 6
     margin-right: 6
-    height: 150
+    height: 160
     padding: 1
     focusable: false
     background-color: #222833
@@ -155,10 +157,10 @@ Panel
         width: 125
       OfferTableHeaderColumn
         !text: tr('Amount')
-        width: 110
+        width: 100
       OfferTableHeaderColumn
         !text: tr('Auction End')
-        width: 110
+        width: 120
 
   TableData
     id: myBuyingTableData

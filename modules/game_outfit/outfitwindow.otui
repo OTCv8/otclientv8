@@ -46,7 +46,7 @@ OutfitSelectorPanel < Panel
 
 MainWindow
   !text: tr('Select Outfit')
-  size: 540 330
+  size: 560 330
 
   @onEnter: modules.game_outfit.accept()
   @onEscape: modules.game_outfit.destroy()
@@ -162,7 +162,7 @@ MainWindow
     layout:
       type: horizontalBox
       fit-children: true
-      spacing: 3
+      spacing: 8
 
   Button
     id: outfitOkButton
