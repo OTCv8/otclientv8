@@ -1337,7 +1337,7 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 
     for (int i = 0; i < listCount; ++i) {
         uint16 itemId = msg->getU16();
-        uint8 count = msg->getU8();
+        uint16 count = g_game.getFeature(Otc::GameCountU16) ? msg->getU16() : msg->getU8();
 
         ItemPtr item = Item::create(itemId);
         item->setCountOrSubType(count);
@@ -2653,7 +2653,7 @@ void ProtocolGame::parseItemInfo(const InputMessagePtr& msg)
     for (int i = 0; i < size; ++i) {
         ItemPtr item(new Item);
         item->setId(msg->getU16());
-        item->setCountOrSubType(msg->getU8());
+        item->setCountOrSubType(g_game.getFeature(Otc::GameCountU16) ? msg->getU16() : msg->getU8());
 
         std::string desc = msg->getString();
         list.push_back(std::make_tuple(item, desc));
@@ -3267,9 +3267,13 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
                 g_logger.traceError("server said that a creature is known, but it's not");
         } else {
             uint removeId = msg->getU32();
-            g_map.removeCreatureById(removeId);
-
             uint id = msg->getU32();
+            if (id == removeId) {
+                creature = g_map.getCreatureById(id);
+            } else {
+                g_map.removeCreatureById(removeId);
+            }
+
 
             int creatureType;
             if (g_game.getClientVersion() >= 910)
@@ -3288,28 +3292,32 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
 
             std::string name = g_game.formatCreatureName(msg->getString());
 
-            if (id == m_localPlayer->getId())
-                creature = m_localPlayer;
-            else if (creatureType == Proto::CreatureTypePlayer) {
-                // fixes a bug server side bug where GameInit is not sent and local player id is unknown
-                if (m_localPlayer->getId() == 0 && name == m_localPlayer->getName())
-                    creature = m_localPlayer;
-                else
-                    creature = PlayerPtr(new Player);
-            } else if (creatureType == Proto::CreatureTypeMonster)
-                creature = MonsterPtr(new Monster);
-            else if (creatureType == Proto::CreatureTypeNpc)
-                creature = NpcPtr(new Npc);
-            else if (creatureType == Proto::CreatureTypeSummonOwn) {
-                creature = MonsterPtr(new Monster);
-            } else
-                g_logger.traceError("creature type is invalid");
-
             if (creature) {
-                creature->setId(id);
                 creature->setName(name);
+            } else {
+                if (id == m_localPlayer->getId())
+                    creature = m_localPlayer;
+                else if (creatureType == Proto::CreatureTypePlayer) {
+                    // fixes a bug server side bug where GameInit is not sent and local player id is unknown
+                    if (m_localPlayer->getId() == 0 && name == m_localPlayer->getName())
+                        creature = m_localPlayer;
+                    else
+                        creature = PlayerPtr(new Player);
+                } else if (creatureType == Proto::CreatureTypeMonster)
+                    creature = MonsterPtr(new Monster);
+                else if (creatureType == Proto::CreatureTypeNpc)
+                    creature = NpcPtr(new Npc);
+                else if (creatureType == Proto::CreatureTypeSummonOwn) {
+                    creature = MonsterPtr(new Monster);
+                } else
+                    g_logger.traceError("creature type is invalid");
 
-                g_map.addCreature(creature);
+                if (creature) {
+                    creature->setId(id);
+                    creature->setName(name);
+
+                    g_map.addCreature(creature);
+                }
             }
         }
 
@@ -3431,7 +3439,7 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id, bool hasDescri
     }
 
     if (item->isStackable() || item->isFluidContainer() || item->isSplash() || item->isChargeable())
-        item->setCountOrSubType(msg->getU8());
+        item->setCountOrSubType(g_game.getFeature(Otc::GameCountU16) ? msg->getU16() : msg->getU8());
     else if (item->rawGetThingType()->isContainer() && g_game.getFeature(Otc::GameTibia12Protocol)) {
         // not sure about this part
         uint8_t hasQuickLootFlags = msg->getU8();

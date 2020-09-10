@@ -102,7 +102,7 @@ public:
     void sendRefreshContainer(int containerId);
     void sendRequestOutfit();
     void sendChangeOutfit(const Outfit& outfit);
-    void sendMountStatus(bool mount);
+    void sendOutfitExtensionStatus(int mount = -1, int wings = -1, int aura = -1, int shader = -1);
     void sendApplyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm);
     void sendClearImbuement(uint8_t slot);
     void sendCloseImbuingWindow();
