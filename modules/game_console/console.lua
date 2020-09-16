@@ -640,59 +640,10 @@ function addTabText(text, speaktype, tab, creatureName)
   label:setColor(speaktype.color)
   consoleTabBar:blinkTab(tab)
 
-  -- Overlay for consoleBuffer which shows highlighted words only  
-  local labelHighlight = label:getChildById("consoleLabelHighlight")
-  if labelHighlight then
-    labelHighlight:setText("")
-  end  
-
   if speaktype.npcChat and (g_game.getCharacterName() ~= creatureName or g_game.getCharacterName() == 'Account Manager') then
-    local highlightData = getHighlightedText(text)
-    if #highlightData > 0 then
-      if not labelHighlight then
-        labelHighlight = g_ui.createWidget('ConsolePhantomLabel', label)
-        labelHighlight:fill('parent')
-        labelHighlight:setId('consoleLabelHighlight')
-        labelHighlight:setColor("#1f9ffe")
-      end
-
-      -- Remove the curly braces
-      for i = 1, #highlightData / 3 do
-        local dataBlock = { _start = highlightData[(i-1)*3+1], _end = highlightData[(i-1)*3+2], words = highlightData[(i-1)*3+3] }
-        text = text:gsub("%{(.-)%}", dataBlock.words, 1)
-
-        -- Recalculate positions as braces are removed
-        highlightData[(i-1)*3+1] = dataBlock._start - ((i-1) * 2)
-        highlightData[(i-1)*3+2] = dataBlock._end - (1 + (i-1) * 2)
-      end
-      label:setText(text)
-
-      -- Calculate the positions of the highlighted text and fill with string.char(127) [Width: 1]
-      local drawText = label:getDrawText()
-      local tmpText = ""
-      for i = 1, #highlightData / 3 do
-        local dataBlock = { _start = highlightData[(i-1)*3+1], _end = highlightData[(i-1)*3+2], words = highlightData[(i-1)*3+3] }
-        local lastBlockEnd = (highlightData[(i-2)*3+2] or 1)
-
-        for letter = lastBlockEnd, dataBlock._start-1 do
-          local tmpChar = string.byte(drawText:sub(letter, letter))
-          local fillChar = (tmpChar == 10 or tmpChar == 32) and string.char(tmpChar) or string.char(127)
-
-          tmpText = tmpText .. string.rep(fillChar, letterWidth[tmpChar])
-        end
-        tmpText = tmpText .. dataBlock.words
-      end
-
-      -- Fill the highlight label to the same size as default label
-      local finalBlockEnd = (highlightData[(#highlightData/3-1)*3+2] or 1)
-      for letter = finalBlockEnd, drawText:len() do
-          local tmpChar = string.byte(drawText:sub(letter, letter))
-          local fillChar = (tmpChar == 10 or tmpChar == 32) and string.char(tmpChar) or string.char(127)
-
-          tmpText = tmpText .. string.rep(fillChar, letterWidth[tmpChar])
-      end
-
-      labelHighlight:setText(tmpText)
+    local highlightData = getNewHighlightedText(text, speaktype.color, "#1f9ffe")
+    if #highlightData > 2 then
+      label:setColoredText(highlightData)
     end
   end
 
