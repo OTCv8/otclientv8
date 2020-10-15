@@ -468,6 +468,7 @@ function initCallbacks()
   connect(g_game, { 
     onTalk = botOnTalk,
     onTextMessage = botOnTextMessage,
+	onLoginAdvice = botOnLoginAdvice,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -517,6 +518,7 @@ function terminateCallbacks()
   disconnect(g_game, { 
     onTalk = botOnTalk,
     onTextMessage = botOnTextMessage,
+	onLoginAdvice = botOnLoginAdvice,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -589,6 +591,11 @@ end
 function botOnTextMessage(mode, text)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onTextMessage(mode, text) end)
+end
+
+function botOnLoginAdvice(message)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onLoginAdvice(message) end)
 end
 
 function botAddThing(tile, thing)

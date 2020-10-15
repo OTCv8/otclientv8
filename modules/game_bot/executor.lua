@@ -231,6 +231,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
           callback(name, level, mode, text, channelId, pos)
         end
       end,
+	  onLoginAdvice = function(message)
+        for i, callback in ipairs(context._callbacks.onLoginAdvice) do
+          callback(message)
+        end
+      end,
       onTextMessage = function(mode, text)
         for i, callback in ipairs(context._callbacks.onTextMessage) do
           callback(mode, text)

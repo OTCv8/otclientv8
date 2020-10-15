@@ -70,6 +70,11 @@ context.onTextMessage = function(callback)
   return context.callback("onTextMessage", callback)
 end
 
+-- onLoginAdvice(callback) -- callback = function(message)
+context.onLoginAdvice = function(callback) 
+  return context.callback("onLoginAdvice", callback)
+end
+
 -- onAddThing(callback) -- callback = function(tile, thing)
 context.onAddThing = function(callback) 
   return context.callback("onAddThing", callback)
