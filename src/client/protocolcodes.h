@@ -57,13 +57,14 @@ namespace Proto {
         GameServerChallenge                 = 31,
         GameServerDeath                     = 40,
         GameServerSupplyStash               = 41,
-        GameServerDepotState                = 42,
+        GameServerSpecialContainer          = 42,
 
         // all in game opcodes must be greater than 50
         GameServerFirstGameOpcode           = 50,
 
         // otclient ONLY
         GameServerExtendedOpcode            = 50,
+        GameServerProgressBar               = 59,
 
         // NOTE: add any custom opcodes in this range
         // OTClientV8 64-79
@@ -100,6 +101,7 @@ namespace Proto {
         GameServerCreateContainer           = 112,
         GameServerChangeInContainer         = 113,
         GameServerDeleteInContainer         = 114,
+        GameServerItemDetail                = 118,
         GameServerSetInventory              = 120,
         GameServerDeleteInventory           = 121,
         GameServerOpenNpcTrade              = 122,
@@ -158,6 +160,7 @@ namespace Proto {
         GameServerWalkWait                  = 182,
         GameServerUnjustifiedStats          = 183,
         GameServerPvpSituations             = 184,
+        GameServerHunting                   = 187,
         GameServerFloorChangeUp             = 190,
         GameServerFloorChangeDown           = 191,
         GameServerLootContainers            = 192,
@@ -173,6 +176,7 @@ namespace Proto {
         GameServerVipState                  = 211,
         GameServerVipLogoutOrGroupData      = 212,
         GameServerCyclopediaNewDetails      = 217,
+        GameServerCyclopedia                = 218,
         GameServerTutorialHint              = 220,
         GameServerCyclopediaMapData         = 221,
         GameServerDailyRewardState          = 222,

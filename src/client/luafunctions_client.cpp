@@ -278,6 +278,7 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_game", "requestQuestLog", &Game::requestQuestLog, &g_game);
     g_lua.bindSingletonFunction("g_game", "requestQuestLine", &Game::requestQuestLine, &g_game);
     g_lua.bindSingletonFunction("g_game", "equipItem", &Game::equipItem, &g_game);
+    g_lua.bindSingletonFunction("g_game", "equipItemId", &Game::equipItemId, &g_game);
     g_lua.bindSingletonFunction("g_game", "mount", &Game::mount, &g_game);
     g_lua.bindSingletonFunction("g_game", "setOutfitExtensions", &Game::setOutfitExtensions, &g_game);
     g_lua.bindSingletonFunction("g_game", "requestItemInfo", &Game::requestItemInfo, &g_game);
@@ -553,6 +554,11 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Creature>("clearTopWidgets", &Creature::clearTopWidgets);
     g_lua.bindClassMemberFunction<Creature>("clearBottomWidgets", &Creature::clearBottomWidgets);
     g_lua.bindClassMemberFunction<Creature>("clearDirectionalWidgets", &Creature::clearDirectionalWidgets);
+
+    // progress bar
+    g_lua.bindClassMemberFunction<Creature>("setProgressBar", &Creature::setProgressBar);
+    g_lua.bindClassMemberFunction<Creature>("getProgressBarPercent", &Creature::getProgressBarPercent);
+    
 
     g_lua.registerClass<ItemType>();
     g_lua.bindClassMemberFunction<ItemType>("getServerId", &ItemType::getServerId);

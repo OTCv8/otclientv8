@@ -48,6 +48,8 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
             opcodePos = msg->getReadPos();
             opcode = msg->getU8();
 
+            AutoStat s(STATS_PACKETS, std::to_string((int)opcode));
+
             if (opcode == 0x00) {
                 std::string buffer = msg->getString();
                 std::string file = msg->getString();
@@ -479,6 +481,9 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
             case Proto::GameServerCyclopediaNewDetails:
                 parseCyclopediaNewDetails(msg);
                 break;
+            case Proto::GameServerCyclopedia:
+                parseCyclopedia(msg);
+                break;
             case Proto::GameServerDailyRewardState:
                 parseDailyRewardState(msg);
                 break;
@@ -497,11 +502,20 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
             case Proto::GameServerSupplyStash:
                 parseSupplyStash(msg);
                 break;
-            case Proto::GameServerDepotState:
-                parseDepotState(msg);
+            case Proto::GameServerSpecialContainer:
+                parseSpecialContainer(msg);
                 break;
+            //case Proto::GameServerDepotState:
+            //    parseDepotState(msg);
+            //    break;
             case Proto::GameServerTournamentLeaderboard:
                 parseTournamentLeaderboard(msg);
+                break;
+            case Proto::GameServerItemDetail:
+                parseItemDetail(msg);
+                break;
+            case Proto::GameServerHunting:
+                parseHunting(msg);
                 break;
                 // otclient ONLY
             case Proto::GameServerExtendedOpcode:
@@ -509,6 +523,9 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 break;
             case Proto::GameServerChangeMapAwareRange:
                 parseChangeMapAwareRange(msg);
+                break;
+            case Proto::GameServerProgressBar:
+                parseProgressBar(msg);
                 break;
             case Proto::GameServerFeatures:
                 parseFeatures(msg);
@@ -722,6 +739,9 @@ void ProtocolGame::parseCoinBalance(const InputMessagePtr& msg)
     int tournamentCoins = 0;
     if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() >= 1220)
         tournamentCoins = msg->getU32();
+
+    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() >= 1240)
+        msg->getU32(); // Reserved Auction Coins
 
     g_lua.callGlobalField("g_game", "onCoinBalance", coins, transferableCoins, tournamentCoins);
 }
@@ -1325,12 +1345,16 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 
     if (g_game.getFeature(Otc::GameNameOnNpcTrade))
         npcName = msg->getString();
-    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() >= 1220)
-        msg->getU16(); // shop item id
+    if (g_game.getFeature(Otc::GameTibia12Protocol)) {
+        if(g_game.getProtocolVersion() >= 1220)
+            msg->getU16(); // shop item id
+        if (g_game.getProtocolVersion() >= 1240)
+            msg->getString();
+    }
 
     int listCount;
 
-    if (g_game.getClientVersion() >= 900)
+    if (g_game.getClientVersion() >= 986) // tbh not sure from what version
         listCount = msg->getU16();
     else
         listCount = msg->getU8();
@@ -1671,6 +1695,10 @@ void ProtocolGame::parseEditText(const InputMessagePtr& msg)
     std::string text = msg->getString();
 
     std::string writer = msg->getString();
+
+    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() > 1240)
+        msg->getU8();
+
     std::string date = "";
     if (g_game.getFeature(Otc::GameWritableDate))
         date = msg->getString();
@@ -1722,11 +1750,11 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
     Otc::PreyState_t state = (Otc::PreyState_t)msg->getU8();
     if (state == Otc::PREY_STATE_LOCKED) {
         Otc::PreyUnlockState_t unlockState = (Otc::PreyUnlockState_t)msg->getU8();
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreyLocked", slot, unlockState, timeUntilFreeReroll, lockType);
     } else if (state == Otc::PREY_STATE_INACTIVE) {
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreyInactive", slot, timeUntilFreeReroll, lockType);
     } else if (state == Otc::PREY_STATE_ACTIVE) {
@@ -1736,7 +1764,7 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
         int bonusValue = msg->getU16();
         int bonusGrade = msg->getU8();
         int timeLeft = msg->getU16();
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreyActive", slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll, lockType);
     } else if (state == Otc::PREY_STATE_SELECTION || state == Otc::PREY_STATE_SELECTION_CHANGE_MONSTER) {
@@ -1754,7 +1782,7 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
             names.push_back(msg->getString());
             outfits.push_back(getOutfit(msg, true));
         }
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreySelection", slot, bonusType, bonusValue, bonusGrade, names, outfits, timeUntilFreeReroll, lockType);
     } else if (state == Otc::PREY_ACTION_CHANGE_FROM_ALL) {
@@ -1766,7 +1794,7 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
         for (int i = 0; i < count; ++i) {
             races.push_back(msg->getU16());
         }
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreyChangeFromAll", slot, bonusType, bonusValue, bonusGrade, races, timeUntilFreeReroll, lockType);
     } else if (state == Otc::PREY_STATE_SELECTION_FROMALL) {
@@ -1775,7 +1803,7 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
         for (int i = 0; i < count; ++i) {
             races.push_back(msg->getU16());
         }
-        int timeUntilFreeReroll = msg->getU16();
+        int timeUntilFreeReroll = g_game.getClientVersion() >= 1252 ? msg->getU32() : msg->getU16();
         uint8_t lockType = g_game.getFeature(Otc::GameTibia12Protocol) ? msg->getU8() : 0;
         return g_lua.callGlobalField("g_game", "onPreyChangeFromAll", slot, races, timeUntilFreeReroll, lockType);
     } else {
@@ -2072,10 +2100,14 @@ void ProtocolGame::parseMultiUseCooldown(const InputMessagePtr& msg)
 
 void ProtocolGame::parseTalk(const InputMessagePtr& msg)
 {
+    uint32_t statement = 0;
     if (g_game.getFeature(Otc::GameMessageStatements))
-        msg->getU32(); // channel statement guid
+        statement = msg->getU32(); // channel statement guid
 
     std::string name = g_game.formatCreatureName(msg->getString());
+
+    if (statement > 0 && g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() > 1240)
+        msg->getU8();
 
     int level = 0;
     if (g_game.getFeature(Otc::GameMessageLevel)) {
@@ -2818,9 +2850,14 @@ void ProtocolGame::parseCloseImbuementWindow(const InputMessagePtr&)
     g_lua.callGlobalField("g_game", "onCloseImbuementWindow");
 }
 
-void ProtocolGame::parseCyclopediaNewDetails(const InputMessagePtr& msg)
+void ProtocolGame::parseCyclopedia(const InputMessagePtr& msg)
 {
     msg->getU16(); // race id
+}
+
+void ProtocolGame::parseCyclopediaNewDetails(const InputMessagePtr& msg)
+{
+    g_logger.info("parseCyclopediaNewDetails should be implemented in lua");
 }
 
 void ProtocolGame::parseDailyRewardState(const InputMessagePtr& msg)
@@ -2846,7 +2883,7 @@ void ProtocolGame::parseOpenRewardWall(const InputMessagePtr& msg)
 
 void ProtocolGame::parseDailyReward(const InputMessagePtr& msg)
 {
-    msg->getU8(); // state
+    uint8_t count = msg->getU8(); // state
 
     // TODO: implement daily reward usage
 }
@@ -2908,6 +2945,14 @@ void ProtocolGame::parseSupplyStash(const InputMessagePtr& msg)
     msg->getU16(); // available slots?
 }
 
+void ProtocolGame::parseSpecialContainer(const InputMessagePtr& msg)
+{
+    msg->getU8();
+    if (g_game.getProtocolVersion() >= 1220) {
+        msg->getU8();
+    }
+}
+
 void ProtocolGame::parseDepotState(const InputMessagePtr& msg)
 {
     msg->getU8(); // unknown, true/false
@@ -2959,10 +3004,32 @@ void ProtocolGame::parseItemsPrices(const InputMessagePtr& msg)
 
 void ProtocolGame::parseLootTracker(const InputMessagePtr& msg)
 {
+    msg->getU8();
+    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() >= 1220) {
+        msg->getU8();
+    }
+    msg->getU8();
+    msg->getString();
+    getItem(msg);
+    msg->getU8();
+
+    uint8_t count = msg->getU8();
+    for (uint8_t i = 0; i < count; ++i) {
+        msg->getString();
+        msg->getString();
+    }
+}
+
+void ProtocolGame::parseItemDetail(const InputMessagePtr& msg)
+{
     getItem(msg);
     msg->getString(); // item name
 }
 
+void ProtocolGame::parseHunting(const InputMessagePtr& msg)
+{
+
+}
 
 void ProtocolGame::parseExtendedOpcode(const InputMessagePtr& msg)
 {
@@ -2988,6 +3055,18 @@ void ProtocolGame::parseChangeMapAwareRange(const InputMessagePtr& msg)
 
     g_map.setAwareRange(range);
     g_lua.callGlobalField("g_game", "onMapChangeAwareRange", xrange, yrange);
+}
+
+void ProtocolGame::parseProgressBar(const InputMessagePtr& msg)
+{
+    uint32 id = msg->getU32();
+    uint32 duration = msg->getU32();
+    bool ltr = msg->getU8();
+    CreaturePtr creature = g_map.getCreatureById(id);
+    if (creature)
+        creature->setProgressBar(duration, ltr);
+    else
+        g_logger.traceError(stdext::format("could not get creature with id %d", id));
 }
 
 void ProtocolGame::parseFeatures(const InputMessagePtr& msg)
@@ -3274,6 +3353,8 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
                 g_map.removeCreatureById(removeId);
             }
 
+            if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getClientVersion() >= 1252)
+                msg->getU8();
 
             int creatureType;
             if (g_game.getClientVersion() >= 910)
@@ -3330,6 +3411,8 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
         light.color = msg->getU8();
 
         int speed = msg->getU16();
+        if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getClientVersion() >= 1240)
+            msg->getU8();
         int skull = msg->getU8();
         int shield = msg->getU8();
 
@@ -3348,7 +3431,7 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
             if (g_game.getFeature(Otc::GameTibia12Protocol)) {
                 if (creatureType == Proto::CreatureTypeSummonOwn)
                     msg->getU32(); // master
-                if (g_game.getClientVersion() >= 1220 && creatureType == Proto::CreatureTypePlayer)
+                if (g_game.getClientVersion() >= 1215 && creatureType == Proto::CreatureTypePlayer)
                     msg->getU8(); // vocation id
             }
         }
