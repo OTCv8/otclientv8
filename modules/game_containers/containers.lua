@@ -1,9 +1,14 @@
+local gameStart = 0
+
 function init()
   connect(Container, { onOpen = onContainerOpen,
                        onClose = onContainerClose,
                        onSizeChange = onContainerChangeSize,
                        onUpdateItem = onContainerUpdateItem })
-  connect(Game, { onGameEnd = clean() })
+  connect(g_game, {
+    onGameStart = markStart,
+    onGameEnd = clean
+  })
 
   reloadContainers()
 end
@@ -13,7 +18,10 @@ function terminate()
                           onClose = onContainerClose,
                           onSizeChange = onContainerChangeSize,
                           onUpdateItem = onContainerUpdateItem })
-  disconnect(Game, { onGameEnd = clean() })
+  disconnect(g_game, { 
+    onGameStart = markStart,
+    onGameEnd = clean
+  })
 end
 
 function reloadContainers()
@@ -27,6 +35,10 @@ function clean()
   for containerid,container in pairs(g_game.getContainers()) do
     destroy(container)
   end
+end
+
+function markStart()
+  gameStart = g_clock.millis()
 end
 
 function destroy(container)
@@ -93,7 +105,12 @@ function onContainerOpen(container, previousContainer)
   else
     containerWindow = g_ui.createWidget('ContainerWindow', modules.game_interface.getContainerPanel())
   end
-  containerWindow:setId('container' .. container:getId())
+  
+  containerWindow:setId('container' .. container:getId() .. '_' .. container:getName())
+  if gameStart + 1000 < g_clock.millis() then
+    containerWindow:clearSettings()
+  end
+  
   local containerPanel = containerWindow:getChildById('contentsPanel')
   local containerItemWidget = containerWindow:getChildById('containerItemWidget')
   containerWindow.onClose = function()

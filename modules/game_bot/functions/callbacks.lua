@@ -70,6 +70,11 @@ context.onTextMessage = function(callback)
   return context.callback("onTextMessage", callback)
 end
 
+-- onLoginAdvice(callback) -- callback = function(message)
+context.onLoginAdvice = function(callback) 
+  return context.callback("onLoginAdvice", callback)
+end
+
 -- onAddThing(callback) -- callback = function(tile, thing)
 context.onAddThing = function(callback) 
   return context.callback("onAddThing", callback)
@@ -165,6 +170,10 @@ context.onTurn = function(callback)
   return context.callback("onTurn", callback)
 end
 
+-- onWalk -- callback = function(creature, oldPos, newPos)
+context.onWalk = function(callback)
+  return context.callback("onWalk", callback)
+end
 
 -- CUSTOM CALLBACKS
 
