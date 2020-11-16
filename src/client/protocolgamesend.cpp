@@ -69,6 +69,9 @@ void ProtocolGame::sendLoginPacket(uint challengeTimestamp, uint8 challengeRando
     if (g_game.getFeature(Otc::GameClientVersion))
         msg->addU32(g_game.getClientVersion());
 
+    if (g_game.getFeature(Otc::GameTibia12Protocol) && g_game.getProtocolVersion() >= 1240)
+        msg->addString(std::to_string(g_game.getClientVersion()));
+
     if (g_game.getFeature(Otc::GameContentRevision))
         msg->addU16(g_things.getContentRevision());
 

@@ -270,6 +270,7 @@ private:
     void parseImbuementWindow(const InputMessagePtr& msg);
     void parseCloseImbuementWindow(const InputMessagePtr& msg);
     void parseCyclopediaNewDetails(const InputMessagePtr& msg);
+    void parseCyclopedia(const InputMessagePtr& msg);
     void parseDailyRewardState(const InputMessagePtr& msg);
     void parseOpenRewardWall(const InputMessagePtr& msg);
     void parseDailyReward(const InputMessagePtr& msg);
@@ -277,14 +278,18 @@ private:
     void parseKillTracker(const InputMessagePtr& msg);
     void parseLootContainers(const InputMessagePtr& msg);
     void parseSupplyStash(const InputMessagePtr& msg);
+    void parseSpecialContainer(const InputMessagePtr& msg);
     void parseDepotState(const InputMessagePtr& msg);
     void parseSupplyTracker(const InputMessagePtr& msg);
     void parseTournamentLeaderboard(const InputMessagePtr& msg);
     void parseImpactTracker(const InputMessagePtr& msg);
     void parseItemsPrices(const InputMessagePtr& msg);
     void parseLootTracker(const InputMessagePtr& msg);
+    void parseItemDetail(const InputMessagePtr& msg);
+    void parseHunting(const InputMessagePtr& msg);
     void parseExtendedOpcode(const InputMessagePtr& msg);
     void parseChangeMapAwareRange(const InputMessagePtr& msg);
+    void parseProgressBar(const InputMessagePtr& msg);
     void parseFeatures(const InputMessagePtr& msg);
     void parseCreaturesMark(const InputMessagePtr& msg);
     void parseNewCancelWalk(const InputMessagePtr& msg);

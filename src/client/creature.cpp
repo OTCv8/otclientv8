@@ -68,6 +68,8 @@ Creature::Creature() : Thing()
     m_footStep = 0;
     //m_speedFormula.fill(-1);
     m_outfitColor = Color::white;
+    m_progressBarPercent = 0;
+    m_progressBarUpdateEvent = nullptr;
     g_stats.addCreature();
 }
 
@@ -110,7 +112,7 @@ void Creature::draw(const Point& dest, bool animate, LightView* lightView)
 
     // local player always have a minimum light in complete darkness
     if (isLocalPlayer()) {
-        light.intensity = std::max<uint8>(light.intensity, 3);
+        light.intensity = std::max<uint8>(light.intensity, 2);
         if (light.color == 0 || light.color > 215)
             light.color = 215;
     }
@@ -201,6 +203,18 @@ void Creature::drawInformation(const Point& point, bool useGray, const Rect& par
                 g_drawQueue->addFilledRect(manaRect, Color::blue);
             }
         }
+
+        if (getProgressBarPercent()) {
+            backgroundRect.moveTop(backgroundRect.bottom());
+
+            g_drawQueue->addFilledRect(backgroundRect, Color::black);
+
+            Rect progressBarRect = backgroundRect.expanded(-1);
+            double maxBar = 100;
+            progressBarRect.setWidth(getProgressBarPercent() / (maxBar * 1.0) * 25);
+
+            g_drawQueue->addFilledRect(progressBarRect, Color::white);
+        }
     }
 
     if (drawFlags & Otc::DrawNames) {
@@ -240,8 +254,15 @@ void Creature::drawInformation(const Point& point, bool useGray, const Rect& par
 
 bool Creature::isInsideOffset(Point offset)
 {
-    Rect rect(getDrawOffset() - getDisplacement(), Size(Otc::TILE_PIXELS, Otc::TILE_PIXELS));
+    // for worse precision:
+    // Rect rect(getDrawOffset() - (m_walking ? m_walkOffset : Point(0,0)), Size(Otc::TILE_PIXELS - getDisplacementY(), Otc::TILE_PIXELS - getDisplacementX()));
+    Rect rect(getDrawOffset() - m_walkOffset - getDisplacement(), Size(Otc::TILE_PIXELS, Otc::TILE_PIXELS));
     return rect.contains(offset);
+}
+
+bool Creature::canShoot(int distance)
+{
+    return getTile() ? getTile()->canShoot(distance) : false;
 }
 
 void Creature::turn(Otc::Direction direction)
@@ -610,9 +631,6 @@ void Creature::setDirection(Otc::Direction direction)
 
 void Creature::setOutfit(const Outfit& outfit)
 {
-    // optimization for UICreature
-    m_outfitNumber = g_clock.micros();
-
     Outfit oldOutfit = m_outfit;
     if (outfit.getCategory() != ThingCategoryCreature) {
         if (!g_things.isValidDatId(outfit.getAuxId(), outfit.getCategory()))
@@ -631,9 +649,6 @@ void Creature::setOutfit(const Outfit& outfit)
 
 void Creature::setOutfitColor(const Color& color, int duration)
 {
-    // optimization for UICreature
-    m_outfitNumber = g_clock.micros();
-
     if (m_outfitColorUpdateEvent) {
         m_outfitColorUpdateEvent->cancel();
         m_outfitColorUpdateEvent = nullptr;
@@ -1098,4 +1113,38 @@ void Creature::drawBottomWidgets(const Point& dest, const Otc::Direction directi
             widget->draw(dest_rect, Fw::ForegroundPane);
         }
     }
+}
+
+void Creature::setProgressBar(uint32 duration, bool ltr)
+{
+    if (m_progressBarUpdateEvent) {
+        m_progressBarUpdateEvent->cancel();
+        m_progressBarUpdateEvent = nullptr;
+    }
+
+    if (duration > 0) {
+        m_progressBarTimer.restart();
+        updateProgressBar(duration, ltr);
+    } else
+        m_progressBarPercent = 0;
+
+    callLuaField("onProgressBarStart", duration, ltr);
+}
+
+void Creature::updateProgressBar(uint32 duration, bool ltr)
+{
+    if (m_progressBarTimer.ticksElapsed() < duration) {
+        if (ltr)
+            m_progressBarPercent = abs(m_progressBarTimer.ticksElapsed() / static_cast<double>(duration) * 100);
+        else
+            m_progressBarPercent = abs((m_progressBarTimer.ticksElapsed() / static_cast<double>(duration) * 100) - 100);
+
+        auto self = static_self_cast<Creature>();
+        m_progressBarUpdateEvent = g_dispatcher.scheduleEvent([=] {
+            self->updateProgressBar(duration, ltr);
+        }, 50);
+    } else {
+        m_progressBarPercent = 0;
+    }
+    callLuaField("onProgressBarUpdate", m_progressBarPercent, duration, ltr);
 }

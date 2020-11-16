@@ -99,7 +99,6 @@ public:
     Otc::Direction getDirection() { return m_direction; }
     Otc::Direction getWalkDirection() { return m_walkDirection; }
     Outfit getOutfit() { return m_outfit; }
-    int getOutfitNumber() { return m_outfitNumber; }
     Light getLight() { return m_light; }
     uint16 getSpeed() { return m_speed; }
     double getBaseSpeed() { return m_baseSpeed; }
@@ -143,6 +142,7 @@ public:
     bool canBeSeen() { return !isInvisible() || isPlayer(); }
 
     bool isCreature() { return true; }
+    bool canShoot(int distance);
 
     const ThingTypePtr& getThingType();
     ThingType *rawGetThingType();
@@ -185,6 +185,11 @@ public:
     void drawTopWidgets(const Point& rect, const Otc::Direction direction);
     void drawBottomWidgets(const Point& rect, const Otc::Direction direction);
 
+    // progress bar
+    uint8 getProgressBarPercent() { return m_progressBarPercent; }
+    void setProgressBar(uint32 duration, bool ltr);
+    void updateProgressBar(uint32 duration, bool ltr);
+
 protected:
     virtual void updateWalkAnimation(int totalPixelsWalked);
     virtual void updateWalkOffset(int totalPixelsWalked, bool inNextFrame = false);
@@ -203,7 +208,6 @@ protected:
     Otc::Direction m_direction;
     Otc::Direction m_walkDirection;
     Outfit m_outfit;
-    int m_outfitNumber = 0;
     Light m_light;
     int m_speed;
     double m_baseSpeed;
@@ -270,6 +274,11 @@ protected:
     std::list<UIWidgetPtr> m_bottomWidgets;
     std::list<UIWidgetPtr> m_directionalWidgets;
     std::list<UIWidgetPtr> m_topWidgets;
+
+    // progress bar
+    uint8 m_progressBarPercent;
+    ScheduledEventPtr m_progressBarUpdateEvent;
+    Timer m_progressBarTimer;
 };
 
 // @bindclass
