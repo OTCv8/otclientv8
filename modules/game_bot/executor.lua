@@ -42,6 +42,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onKeyPress = {},
     onTalk = {},
     onTextMessage = {},
+    onLoginAdvice = {},
     onAddThing = {},
     onRemoveThing = {},
     onCreatureAppear = {},
@@ -60,7 +61,8 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onOpenChannel = {},
     onCloseChannel = {},
     onChannelEvent = {},
-    onTurn = {}
+    onTurn = {},
+    onWalk = {}
   }
   
   -- basic functions & classes
@@ -235,6 +237,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
         for i, callback in ipairs(context._callbacks.onTextMessage) do
           callback(mode, text)
         end
+      end,
+      onLoginAdvice = function(message)
+        for i, callback in ipairs(context._callbacks.onLoginAdvice) do
+          callback(message)
+        end
       end,      
       onAddThing = function(tile, thing)
         for i, callback in ipairs(context._callbacks.onAddThing) do
@@ -331,6 +338,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
           callback(creature, direction)
         end      
       end,
+      onWalk = function(creature, oldPos, newPos)
+        for i, callback in ipairs(context._callbacks.onWalk) do
+          callback(creature, oldPos, newPos)
+        end      
+      end,      
     }    
   }
 end

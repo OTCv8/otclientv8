@@ -15,9 +15,10 @@ local serverSelector
 local clientVersionSelector
 local serverHostTextEdit
 local rememberPasswordBox
-local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200", "1220"}
+local protos = {"740", "760", "772", "792", "800", "810", "854", "860", "870", "910", "961", "1000", "1077", "1090", "1096", "1098", "1099", "1100", "1200", "1220", "1230", "1240", "1250", "1252"}
 
 local checkedByUpdater = {}
+local waitingForHttpResults = 0
 
 -- private functions
 local function onProtocolError(protocol, message, errorCode)
@@ -194,10 +195,20 @@ local function onTibia12HTTPResult(session, playdata)
   onCharacterList(nil, characters, account, nil)  
 end
 
-local function onHTTPResult(data, err)  
+local function onHTTPResult(data, err)
+  if waitingForHttpResults == 0 then
+    return
+  end
+  
+  waitingForHttpResults = waitingForHttpResults - 1
+  if err and waitingForHttpResults > 0 then
+    return -- ignore, wait for other requests
+  end
+
   if err then
     return EnterGame.onError(err)
   end
+  waitingForHttpResults = 0 
   if data['error'] and data['error']:len() > 0 then
     return EnterGame.onLoginError(data['error'])
   elseif data['errorMessage'] and data['errorMessage']:len() > 0 then
@@ -396,7 +407,11 @@ function EnterGame.onServerChange()
     customServerSelectorPanel:setOn(false)
   end
   if Servers and Servers[server] ~= nil then
-    serverHostTextEdit:setText(Servers[server])
+    if type(Servers[server]) == "table" then
+      serverHostTextEdit:setText(Servers[server][1])
+    else
+      serverHostTextEdit:setText(Servers[server])
+    end
   end
 end
 
@@ -541,7 +556,19 @@ function EnterGame.doLoginHttp()
     stayloggedin = true
   }
   
-  HTTP.postJSON(G.host, data, onHTTPResult)
+  local server = serverSelector:getText()
+  if Servers and Servers[server] ~= nil then
+    if type(Servers[server]) == "table" then
+      local urls = Servers[server]      
+      waitingForHttpResults = #urls
+      for _, url in ipairs(urls) do
+        HTTP.postJSON(url, data, onHTTPResult)
+      end
+    else
+      waitingForHttpResults = 1
+      HTTP.postJSON(G.host, data, onHTTPResult)    
+    end
+  end
   EnterGame.hide()
 end
 

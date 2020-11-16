@@ -190,6 +190,7 @@ GamePlayerStateU32 = 105
 GameOutfitShaders = 106
 GameForceAllowItemHotkeys = 107
 GameCountU16 = 108
+GameDrawAuraOnTop = 109
 
 GamePacketSizeU32 = 110
 GamePacketCompression = 111

@@ -165,8 +165,7 @@ function UIMiniWindow:setup()
           self:eraseSettings({height = true})
         end
       end
-
-      if selfSettings.closed and not self.forceOpen then
+      if selfSettings.closed and not self.forceOpen and not self.containerWindow then
         self:close(true)
       end
 
@@ -174,7 +173,7 @@ function UIMiniWindow:setup()
         self:lock(true)
       end
     else 
-      if not self.forceOpen and self.autoOpen ~= nil and (self.autoOpen == 0 or self.autoOpen == false) then
+      if not self.forceOpen and self.autoOpen ~= nil and (self.autoOpen == 0 or self.autoOpen == false) and not self.containerWindow then
         self:close(true)
       end
     end
@@ -185,7 +184,7 @@ function UIMiniWindow:setup()
   self.miniLoaded = true
 
   if self.save then
-    if oldParent and oldParent:getClassName() == 'UIMiniWindowContainer' then
+    if oldParent and oldParent:getClassName() == 'UIMiniWindowContainer' and not self.containerWindow then
       addEvent(function() oldParent:order() end)
     end
     if newParent and newParent:getClassName() == 'UIMiniWindowContainer' and newParent ~= oldParent then
@@ -346,6 +345,20 @@ function UIMiniWindow:eraseSettings(data)
   for key,value in pairs(data) do
     settings[id][key] = nil
   end
+
+  g_settings.setNode('MiniWindows', settings)
+end
+
+function UIMiniWindow:clearSettings()
+  if not self.save then return end
+
+  local settings = g_settings.getNode('MiniWindows')
+  if not settings then
+    settings = {}
+  end
+
+  local id = self:getId()
+  settings[id] = {}
 
   g_settings.setNode('MiniWindows', settings)
 end

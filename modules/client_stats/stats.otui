@@ -105,6 +105,13 @@ MainWindow
       text: Disabled, edit stats.lua to enable     
 
     DebugLabel
+      !text: tr('Packets')
+
+    DebugText
+      id: packets
+      text: -
+
+    DebugLabel
       !text: tr('Slow main functions')
 
     DebugText
@@ -116,6 +123,13 @@ MainWindow
 
     DebugText
       id: slowRender
+      text: -
+
+    DebugLabel
+      !text: tr('Slow packets')
+
+    DebugText
+      id: slowPackets
       text: -
       
   VerticalScrollBar  

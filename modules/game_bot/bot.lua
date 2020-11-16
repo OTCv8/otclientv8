@@ -285,30 +285,30 @@ function createDefaultConfigs()
       if not g_resources.directoryExists("/bot/" .. config_name) then
         return onError("Can't create /bot/" .. config_name .. " directory in " .. g_resources.getWriteDir())
       end
-    end
 
-    local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
-    for i, file in ipairs(defaultConfigFiles) do
-      local baseName = file:split("/")
-      baseName = baseName[#baseName]
-      if g_resources.directoryExists(file) then
-        g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
-        if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
-          return onError("Can't create /bot/" .. config_name  .. "/" .. baseName .. " directory in " .. g_resources.getWriteDir())
-        end
-        local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
-        for i, file in ipairs(defaultConfigFiles2) do
-          local baseName2 = file:split("/")
-          baseName2 = baseName2[#baseName2]
+      local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
+      for i, file in ipairs(defaultConfigFiles) do
+        local baseName = file:split("/")
+        baseName = baseName[#baseName]
+        if g_resources.directoryExists(file) then
+          g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
+          if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
+            return onError("Can't create /bot/" .. config_name  .. "/" .. baseName .. " directory in " .. g_resources.getWriteDir())
+          end
+          local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
+          for i, file in ipairs(defaultConfigFiles2) do
+            local baseName2 = file:split("/")
+            baseName2 = baseName2[#baseName2]
+            local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
+            if contents:len() > 0 then
+              g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2, contents)
+            end  
+          end
+        else
           local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
           if contents:len() > 0 then
-            g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2, contents)
-          end  
-        end
-      else
-        local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
-        if contents:len() > 0 then
-          g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+            g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
+          end
         end
       end
     end
@@ -321,8 +321,8 @@ function uploadConfig()
   if not archive then
       return displayErrorBox(tr("Config upload failed"), tr("Config %s is invalid (can't be compressed)", config))
   end
-  if archive:len() > 64 * 1024 then
-      return displayErrorBox(tr("Config upload failed"), tr("Config %s is too big, maximum size is 64KB. Now it has %s KB.", config, math.floor(archive / 1024)))
+  if archive:len() > 1024 * 1024 then
+      return displayErrorBox(tr("Config upload failed"), tr("Config %s is too big, maximum size is 1024KB. Now it has %s KB.", config, math.floor(archive:len() / 1024)))
   end
   
   local infoBox = displayInfoBox(tr("Uploading config"), tr("Uploading config %s. Please wait.", config))
@@ -468,6 +468,7 @@ function initCallbacks()
   connect(g_game, { 
     onTalk = botOnTalk,
     onTextMessage = botOnTextMessage,
+    onLoginAdvice = botOnLoginAdvice,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -486,12 +487,15 @@ function initCallbacks()
     onDisappear = botCreatureDisappear,
     onPositionChange = botCreaturePositionChange,
     onHealthPercentChange = botCraetureHealthPercentChange,
-    onTurn = botCreatureTurn
-  })  
+    onTurn = botCreatureTurn,
+    onWalk = botCreatureWalk,
+  })
   
   connect(LocalPlayer, {
     onPositionChange = botCreaturePositionChange,
-    onHealthPercentChange = botCraetureHealthPercentChange
+    onHealthPercentChange = botCraetureHealthPercentChange,
+    onTurn = botCreatureTurn,
+    onWalk = botCreatureWalk,
   })
   
   connect(Container, {
@@ -517,6 +521,7 @@ function terminateCallbacks()
   disconnect(g_game, { 
     onTalk = botOnTalk,
     onTextMessage = botOnTextMessage,
+    onLoginAdvice = botOnLoginAdvice,
     onUse = botOnUse,
     onUseWith = botOnUseWith,
     onChannelList = botChannelList,
@@ -535,12 +540,15 @@ function terminateCallbacks()
     onDisappear = botCreatureDisappear,
     onPositionChange = botCreaturePositionChange,
     onHealthPercentChange = botCraetureHealthPercentChange,
-    onTurn = botCreatureTurn
+    onTurn = botCreatureTurn,
+    onWalk = botCreatureWalk,
   })  
   
   disconnect(LocalPlayer, {
     onPositionChange = botCreaturePositionChange,
-    onHealthPercentChange = botCraetureHealthPercentChange
+    onHealthPercentChange = botCraetureHealthPercentChange,
+    onTurn = botCreatureTurn,
+    onWalk = botCreatureWalk,
   })
   
   disconnect(Container, {
@@ -589,6 +597,11 @@ end
 function botOnTextMessage(mode, text)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onTextMessage(mode, text) end)
+end
+
+function botOnLoginAdvice(message)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onLoginAdvice(message) end)
 end
 
 function botAddThing(tile, thing)
@@ -684,4 +697,9 @@ end
 function botCreatureTurn(creature, direction)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onTurn(creature, direction) end)
+end
+
+function botCreatureWalk(creature, oldPos, newPos)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onWalk(creature, oldPos, newPos) end)
 end

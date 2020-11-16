@@ -1,0 +1,207 @@
+AttackEntry < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+  height: 16
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('x')
+    anchors.right: parent.right
+    margin-right: 15
+    width: 15
+    height: 15
+
+AttackWindow < MainWindow
+  !text: tr('AttackBot')
+  size: 490 350
+  @onEscape: self:hide()
+
+  TextList
+    id: attackList
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    padding: 1
+    size: 470 150    
+    margin-left: 3
+    margin-top: 3
+    margin-left: 3
+    vertical-scrollbar: attackListScrollBar
+
+  VerticalScrollBar
+    id: attackListScrollBar
+    anchors.top: attackList.top
+    anchors.bottom: attackList.bottom
+    anchors.right: attackList.right
+    step: 14
+    pixels-scroll: true
+
+  Label
+    id: category
+    anchors.top: attackList.bottom
+    anchors.left: attackList.left
+    anchors.right: attackList.right
+    text-align: center
+    margin-top: 5
+    image-source: /images/ui/panel_flat
+    image-border: 5
+    height: 21
+    margin-left: 25
+    margin-right: 25
+
+  NextButton
+    id: categoryNext
+    anchors.left: category.right
+    anchors.verticalCenter: category.verticalCenter
+    margin-left: 10
+
+  PreviousButton
+    id: categoryPrev
+    anchors.right: category.left
+    anchors.verticalCenter: category.verticalCenter
+    margin-right: 10
+
+  Label
+    id: parameter1
+    anchors.top: category.bottom
+    anchors.left: category.left
+    anchors.right: category.horizontalCenter
+    margin-top: 5
+    margin-right: 25
+    height: 21
+    text-align: center
+    image-source: /images/ui/panel_flat
+    image-border: 5
+
+  NextButton
+    id: parameter1Next
+    anchors.left: parameter1.right
+    anchors.verticalCenter: parameter1.verticalCenter
+    margin-left: 10
+
+  PreviousButton
+    id: parameter1Prev
+    anchors.right: parameter1.left
+    anchors.verticalCenter: parameter1.verticalCenter
+    margin-right: 10
+
+  Label
+    id: parameter2
+    anchors.top: category.bottom
+    anchors.left: category.horizontalCenter
+    anchors.right: category.right
+    margin-top: 5
+    margin-left: 25
+    height: 21
+    text-align: center
+    image-source: /images/ui/panel_flat
+    image-border: 5
+
+  NextButton
+    id: parameter2Next
+    anchors.left: parameter2.right
+    anchors.verticalCenter: parameter2.verticalCenter
+    margin-left: 10
+
+  PreviousButton
+    id: parameter2Prev
+    anchors.right: parameter2.left
+    anchors.verticalCenter: parameter2.verticalCenter
+    margin-right: 10
+
+  TextEdit
+    id: spellFormula
+    anchors.left: parent.left
+    anchors.top: parameter2Prev.bottom
+    margin-top: 27
+    margin-left: 5
+    width: 200
+
+  Label
+    id: spellDescription
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.bottom: prev.top
+    margin-bottom: 2
+    text-align: center 
+    text: Insert Spell Formula Below  
+
+  BotItem
+    id: itemId
+    anchors.left: parent.left
+    anchors.top: parameter2Prev.bottom
+    margin-top: 20
+    margin-left: 5
+
+  Label
+    id: itemDescription
+    anchors.left: itemId.right
+    margin-left: 5
+    anchors.verticalCenter: itemId.verticalCenter
+    text: < insert id or drag item here
+
+  Label
+    anchors.left: parameter2Prev.left
+    anchors.top: parameter2Prev.bottom
+    margin-top: 17
+    text-align: center
+    text: Min Monsters: 
+
+  TextEdit
+    id: minMonsters
+    anchors.left: prev.right
+    anchors.verticalCenter: prev.verticalCenter
+    margin-left: 5
+    width: 30
+
+  Label
+    anchors.left: parameter2Prev.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-align: center
+    text: Min Mana%: 
+
+  TextEdit
+    id: minMana
+    anchors.left: minMonsters.left
+    anchors.verticalCenter: prev.verticalCenter
+    width: 30
+
+  CheckBox
+    id: pvpSpell
+    anchors.left: minMonsters.right
+    width: 100
+    margin-left: 10
+    anchors.verticalCenter: minMonsters.verticalCenter
+    text: Spell for PVP
+
+  Button 
+    id: addButton
+    anchors.horizontalCenter: pvpSpell.horizontalCenter
+    anchors.verticalCenter: minMana.verticalCenter
+    text-align: center
+    text: Add
+    margin-left: 5
+    margin-left: 5
+    size: 45 21
+
+  HorizontalSeparator
+    id: BottomSeparator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: CloseButton.top
+    margin-bottom: 8
+
+  Button
+    id: CloseButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5

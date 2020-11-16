@@ -55,13 +55,15 @@ local function parseMarketEnter(protocol, msg)
     end    
   end
   
-  local balance
-  if g_game.getClientVersion() >= 981 or g_game.getClientVersion() < 944 then
-    balance = msg:getU64()
-  else
-    balance = msg:getU32()
+  local balance = 0
+  if g_game.getClientVersion() <= 1250 or not g_game.getFeature(GameTibia12Protocol) then
+    if g_game.getClientVersion() >= 981 or g_game.getClientVersion() < 944 then
+      balance = msg:getU64()
+    else
+      balance = msg:getU32()
+    end
   end
-
+  
   local vocation = -1
   if g_game.getClientVersion() >= 944 and g_game.getClientVersion() < 950 then
     vocation = msg:getU8() -- get vocation id

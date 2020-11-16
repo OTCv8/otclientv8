@@ -159,6 +159,7 @@ context.cancelFollow = g_game.cancelFollow
 context.cancelAttackAndFollow = g_game.cancelAttackAndFollow
 
 context.logout = g_game.forceLogout
+context.safeLogout = g_game.safeLogout
 context.ping = g_game.getPing
 
 modules.game_cooldown.isGroupCooldownIconActive(id)
