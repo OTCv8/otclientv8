@@ -44,7 +44,7 @@ targetbotMacro = macro(100, function()
   local highestPriorityParams = nil
   for i, creature in ipairs(creatures) do
     local path = findPath(player:getPosition(), creature:getPosition(), 7, {ignoreLastCreature=true, ignoreNonPathable=true, ignoreCost=true})
-    if creature:isMonster() and path then
+    if creature:isMonster() and creature:getType() < 3 and path then
       local params = TargetBot.Creature.calculateParams(creature, path) -- return {craeture, config, danger, priority}
       dangerLevel = dangerLevel + params.danger
       if params.priority > 0 then

@@ -105,7 +105,7 @@ if storage[analyserPanelName].lootItems and #storage[analyserPanelName].lootItem
 end
 
 lootListWindow.AddLoot.onClick = function(widget)
-  local lootName = lootListWindow.LootName:getText()
+  local lootName = lootListWindow.LootName:getText():lower()
   if lootName:len() > 0 and not table.contains(storage[analyserPanelName].lootItems, lootName, true) then
     table.insert(storage[analyserPanelName].lootItems, lootName)
     local label = g_ui.createWidget("LootItemName", lootListWindow.LootList)

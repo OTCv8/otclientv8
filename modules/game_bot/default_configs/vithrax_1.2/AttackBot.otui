@@ -1,8 +1,17 @@
 AttackEntry < Label
   background-color: alpha
-  text-offset: 2 0
+  text-offset: 18 0
   focusable: true
   height: 16
+
+  CheckBox
+    id: enabled
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    width: 15
+    height: 15
+    margin-top: 2
+    margin-left: 3
 
   $focus:
     background-color: #00000055
@@ -17,7 +26,7 @@ AttackEntry < Label
 
 AttackWindow < MainWindow
   !text: tr('AttackBot')
-  size: 490 350
+  size: 520 350
   @onEscape: self:hide()
 
   TextList
@@ -26,7 +35,7 @@ AttackWindow < MainWindow
     anchors.right: parent.right
     anchors.top: parent.top
     padding: 1
-    size: 470 150    
+    size: 500 150    
     margin-left: 3
     margin-top: 3
     margin-left: 3
@@ -147,7 +156,7 @@ AttackWindow < MainWindow
   Label
     anchors.left: parameter2Prev.left
     anchors.top: parameter2Prev.bottom
-    margin-top: 17
+    margin-top: 10
     text-align: center
     text: Min Monsters: 
 
@@ -173,21 +182,39 @@ AttackWindow < MainWindow
 
   CheckBox
     id: pvpSpell
-    anchors.left: minMonsters.right
+    anchors.right: minMana.right
+    anchors.top: minMana.bottom
     width: 100
-    margin-left: 10
-    anchors.verticalCenter: minMonsters.verticalCenter
+    margin-left: 30
+    margin-top: 6
     text: Spell for PVP
 
   Button 
     id: addButton
-    anchors.horizontalCenter: pvpSpell.horizontalCenter
-    anchors.verticalCenter: minMana.verticalCenter
+    anchors.right: CloseButton.right
+    anchors.bottom: BottomSeparator.top
     text-align: center
     text: Add
-    margin-left: 5
-    margin-left: 5
-    size: 45 21
+    margin-bottom: 10
+    size: 80 20
+    margin-right: 15
+
+  Button 
+    id: MoveUp
+    anchors.right: prev.right
+    anchors.bottom: prev.top
+    size: 80 20
+    text: Move Up
+    margin-bottom: 2
+    
+  Button 
+    id: MoveDown
+    anchors.right: prev.right
+    anchors.bottom: prev.top
+    size: 80 20
+    text: Move Down
+    text-align: center
+    margin-bottom: 2
 
   HorizontalSeparator
     id: BottomSeparator

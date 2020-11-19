@@ -82,7 +82,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 				local dest = g_map.getTile(tPos)
 				if not comparePosition(pos(), dest:getPosition()) then
 					if not dest:getCreatures()[1] and dest:isWalkable() then
-						if autoWalk(dest:getPosition(), {ignoreNonPathable=true}) then
+						if CaveBot.walkTo(dest:getPosition(), {ignoreNonPathable=true}) then
 							storage.stopSearch = true
 							delay(100)
 						end
