@@ -20,6 +20,10 @@ addExampleFunction("Click to browse example functions", [[
 return true
 ]])
 
+addExampleFunction("Check for stamina and imbues", [[
+  if stamina() < 900 or player:getSkillLevel(11) ~= 100 then CaveBot.setOff() return false else return true end
+]])
+
 addExampleFunction("buy 200 mana potion from npc Eryn", [[
 --buy 200 mana potions
 local npc = getCreatureByName("Eryn")

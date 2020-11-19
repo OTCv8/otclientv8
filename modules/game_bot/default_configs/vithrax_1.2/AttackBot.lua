@@ -71,7 +71,8 @@ local categories = {
   "Wave (exevo tera hur, exevo gran vis lux)",
   "Targeted Spell (exori ico, exori flam etc.)",
   "Targeted Rune (sudden death, heavy magic missle etc.)",
-  "Area Rune (great fireball, avalanche etc.)"
+  "Area Rune (great fireball, avalanche etc.)",
+  "Empowerment (utito tempo)"
 }
 
 local labels = {
@@ -83,6 +84,7 @@ local labels = {
   "Targeted Spell",
   "Targeted Rune",
   "Area Rune",
+  "Buff"
 }
 
 local range = {
@@ -109,7 +111,8 @@ local pattern = {
   "Small Wave (gran frigo hur)",
   "Beam (exevo vis lux)",
   "Adjacent (exori)",
-  "Area Rune (GFB, AVA)"
+  "Area Rune (GFB, AVA)",
+  "Empowerment"
 }
 
 local updateModeText = function()
@@ -290,6 +293,86 @@ if rootWidget then
     inputTypeToggle()
   end
 
+  local refreshAttacks = function()
+    if storage[attackPanelName].attackTable and #storage[attackPanelName].attackTable > 0 then
+      for i, child in pairs(attackWindow.attackList:getChildren()) do
+        child:destroy()
+      end
+      for _, entry in pairs(storage[attackPanelName].attackTable) do
+        local label = g_ui.createWidget("AttackEntry", attackWindow.attackList)
+        label.enabled:setChecked(entry.enabled)
+        label.enabled.onClick = function(widget)
+          entry.enabled = not entry.enabled
+          label.enabled:setChecked(entry.enabled)
+        end
+        label.remove.onClick = function(widget)
+          table.removevalue(storage[attackPanelName].attackTable, entry)
+          label:destroy()
+        end
+        if entry.pvp then
+          label:setText("(" .. entry.manaCost .. "% MP) " .. labels[entry.category] .. ": " .. entry.attack ..  " (Range: ".. entry.dist .. ")")
+          label:setColor("yellow")
+        else
+          label:setText("(" .. entry.manaCost .. "% MP & mob >= " .. entry.minMonsters .. ") " .. labels[entry.category] .. ": " .. entry.attack ..  " (Range: ".. entry.dist .. ")")
+          label:setColor("green")
+        end
+      end
+    end
+  end
+  refreshAttacks()
+
+  attackWindow.MoveUp.onClick = function(widget)
+    local input = attackWindow.attackList:getFocusedChild()
+    if not input then return end
+    local index = attackWindow.attackList:getChildIndex(input)
+    if index < 2 then return end
+
+    local move
+    if storage[attackPanelName].attackTable and #storage[attackPanelName].attackTable > 0 then
+      for _, entry in pairs(storage[attackPanelName].attackTable) do
+        if entry.index == index -1 then
+          move = entry
+        end
+        if entry.index == index then
+          move.index = index
+          entry.index = index -1
+        end
+      end
+    end
+    table.sort(storage[attackPanelName].attackTable, function(a,b) return a.index < b.index end)
+
+    attackWindow.attackList:moveChildToIndex(input, index - 1)
+    attackWindow.attackList:ensureChildVisible(input)
+  end
+
+  attackWindow.MoveDown.onClick = function(widget)
+    local input = attackWindow.attackList:getFocusedChild()
+    if not input then return end
+    local index = attackWindow.attackList:getChildIndex(input)
+    if index >= attackWindow.attackList:getChildCount() then return end
+
+    local move
+    local move2
+    if storage[attackPanelName].attackTable and #storage[attackPanelName].attackTable > 0 then
+      for _, entry in pairs(storage[attackPanelName].attackTable) do
+        if entry.index == index +1 then
+          move = entry
+        end
+        if entry.index == index then
+          move2 = entry
+        end
+      end
+      if move and move2 then
+        move.index = index
+        move2.index = index + 1
+      end
+    end
+    table.sort(storage[attackPanelName].attackTable, function(a,b) return a.index < b.index end)
+
+    attackWindow.attackList:moveChildToIndex(input, index + 1)
+    attackWindow.attackList:ensureChildVisible(input)
+  end
+
   attackWindow.addButton.onClick = function(widget)
     local val
     if (item and attackWindow.itemId:getItemId() <= 100) or (not item and attackWindow.spellFormula:getText():len() == 0) then
@@ -306,34 +389,9 @@ if rootWidget then
       else
         val = attackWindow.spellFormula:getText()
       end
-      local pvpText
-      table.insert(storage[attackPanelName].attackTable, {attack = val, manaCost = tonumber(attackWindow.minMana:getText()), minMonsters = tonumber(attackWindow.minMonsters:getText()), pvp = pvpDedicated, dist = j-1, model = k, category = i})
-      local label = g_ui.createWidget("AttackEntry", attackWindow.attackList)
-      if pvpDedicated then
-        label:setText("(" .. tonumber(attackWindow.minMana:getText()) .. "% MP) " .. labels[i] .. ": " .. val .. " (Range: ".. j-1 .. ")")
-        label:setColor("yellow")
-      else
-        label:setText("(" .. tonumber(attackWindow.minMana:getText()) .. "% MP & mob >= " .. tonumber(attackWindow.minMonsters:getText()) .. ") " .. labels[i] .. ": " .. val ..  " (Range: ".. j-1 .. ")")
-        label:setColor("green")
-      end
+      table.insert(storage[attackPanelName].attackTable, {index = #storage[attackPanelName].attackTable+1, attack = val, manaCost = tonumber(attackWindow.minMana:getText()), minMonsters = tonumber(attackWindow.minMonsters:getText()), pvp = pvpDedicated, dist = j-1, model = k, category = i, enabled = true})
+      refreshAttacks()
       clearValues()
-    end
-  end
-
-  if storage[attackPanelName].attackTable and #storage[attackPanelName].attackTable > 0 then
-    for _, entry in pairs(storage[attackPanelName].attackTable) do
-      local label = g_ui.createWidget("AttackEntry", attackWindow.attackList)
-      label.remove.onClick = function(widget)
-        table.removevalue(storage[attackPanelName].attackTable, entry)
-        label:destroy()
-      end
-      if entry.pvp then
-        label:setText("(" .. entry.manaCost .. "% MP) " .. labels[entry.category] .. ": " .. entry.attack ..  " (Range: ".. j-1 .. ")")
-        label:setColor("yellow")
-      else
-        label:setText("(" .. entry.manaCost .. "% MP & mob >= " .. entry.minMonsters .. ") " .. labels[entry.category] .. ": " .. entry.attack ..  " (Range: ".. j-1 .. ")")
-        label:setColor("green")
-      end
     end
   end
 end
@@ -345,6 +403,7 @@ end
 -- k = pattern - covered
 
 local patterns = {
+  "",
   "",
   [[
     0000001000000
@@ -440,6 +499,7 @@ local patterns = {
 }
 
 local safePatterns = {
+  "",
   "",
   [[
     000000010000000
@@ -571,7 +631,7 @@ local posW = [[
 
 macro(1000, function()
   if not storage[attackPanelName].enabled then return end
-  if #storage[attackPanelName].attackTable == 0 or isInPz() or not target() or modules.game_cooldown.isGroupCooldownIconActive(1) or modules.game_cooldown.isGroupCooldownIconActive(4) then return end
+  if #storage[attackPanelName].attackTable == 0 or isInPz() or not target() or modules.game_cooldown.isGroupCooldownIconActive(1) then return end
 
   local monstersN = 0
   local monstersE = 0
@@ -606,53 +666,71 @@ macro(1000, function()
   end
 
   for _, entry in pairs(storage[attackPanelName].attackTable) do
-    if (type(entry.attack) == "string" and canCast(entry.attack)) or (type(entry.attack) == "number" and findItem(entry.attack)) then
-      if manapercent() >= entry.manaCost and distanceFromPlayer(target():getPosition()) <= entry.dist then
-        if storage[attackPanelName].pvpMode then
-          if entry.pvp and target():canShoot() then
-            if type(entry.attack) == "string" then
-              say(entry.attack)
-              return
-            else
-              if not storage.isUsing then
-                useWith(entry.attack, target())
+    if entry.enabled then
+      if (type(entry.attack) == "string" and canCast(entry.attack)) or (type(entry.attack) == "number" and findItem(entry.attack)) then
+        if manapercent() >= entry.manaCost and distanceFromPlayer(target():getPosition()) <= entry.dist then
+          if storage[attackPanelName].pvpMode then
+            if entry.pvp then
+              if type(entry.attack) == "string" and target():canShoot() then
+                say(entry.attack)
                 return
-              end
-            end
-          end
-        else
-          if entry.category == 6 or entry.category == 7 then
-            if getMonsters(4) >= entry.minMonsters then
-              if type(entry.attack) == "number" then
-                if not storage.isUsing then
+              else
+                if not storage.isUsing and target():canShoot() then
                   useWith(entry.attack, target())
                   return
                 end
-              else
-                say(entry.attack)
-                return
               end
             end
           else
-            if killsToRs() > 2 then
-              local areaTile = getBestTileByPatern(patterns[4], 2, entry.dist, storage[attackPanelName].pvpSafe)
-              if entry.category == 4 and (not storage[attackPanelName].pvpSafe or isSafe(2, false)) and bestSide >= entry.minMonsters then
-                say(entry.attack)
-                return
-              elseif entry.category == 3 and (not storage[attackPanelName].pvpSafe or isSafe(2, false)) and getMonsters(1) >= entry.minMonsters then
-                say(entry.attack)
-                return
-              elseif entry.category == 5 and getCreaturesInArea(player, patterns[entry.model], 2) >= entry.minMonsters and (not storage[attackPanelName].pvpSafe or getCreaturesInArea(player, safePatterns[entry.model], 3) == 0) then
-                say(entry.attack)
-                return
-              elseif entry.category == 2 and getCreaturesInArea(pos(), patterns[entry.model], 2) >= entry.minMonsters and (not storage[attackPanelName].pvpSafe or getCreaturesInArea(pos(), safePatterns[entry.model], 3) == 0) then
-                say(entry.attack)
-                return
-              elseif entry.category == 8 and areaTile and areaTile.count >= entry.minMonsters then
-                if not storage.isUsing then
-                  useWith(entry.attack, areaTile.pos:getTopUseThing())
+            if entry.category == 6 or entry.category == 7 then
+              if getMonsters(4) >= entry.minMonsters then
+                if type(entry.attack) == "number" then
+                  if not storage.isUsing then
+                    useWith(entry.attack, target())
+                    return
+                  end
+                else
+                  say(entry.attack)
+                  return
                 end
-                return
+              end
+            else
+              if killsToRs() > 2 then
+                if entry.category == 4 and (not storage[attackPanelName].pvpSafe or isSafe(2, false)) and bestSide >= entry.minMonsters then
+                  say(entry.attack)
+                  return
+                elseif entry.category == 3 and (not storage[attackPanelName].pvpSafe or isSafe(2, false)) and getMonsters(1) >= entry.minMonsters then
+                  say(entry.attack)
+                  return
+                elseif entry.category == 5 and getCreaturesInArea(player, patterns[entry.model], 2) >= entry.minMonsters and (not storage[attackPanelName].pvpSafe or getCreaturesInArea(player, safePatterns[entry.model], 3) == 0) then
+                  say(entry.attack)
+                  return
+                elseif entry.category == 2 and getCreaturesInArea(pos(), patterns[entry.model], 2) >= entry.minMonsters and (not storage[attackPanelName].pvpSafe or getCreaturesInArea(pos(), safePatterns[entry.model], 3) == 0) then
+                  say(entry.attack)
+                  return
+                elseif entry.category == 8 and getBestTileByPatern(patterns[5], 2, entry.dist, storage[attackPanelName].pvpSafe) and getBestTileByPatern(patterns[5], 2, entry.dist, storage[attackPanelName].pvpSafe).count >= entry.minMonsters then
+                  if not storage.isUsing then
+                    useWith(entry.attack, getBestTileByPatern(patterns[5], 2, entry.dist, storage[attackPanelName].pvpSafe).pos:getTopUseThing())
+                  end
+                  return
+                elseif entry.category == 9 and not isBuffed() and getMonsters(entry.dist) >= entry.minMonsters then
+                  say(entry.attack)
+                  return
+                else
+                  if entry.category == 6 or entry.category == 7 then
+                    if getMonsters(4) >= entry.minMonsters then
+                      if type(entry.attack) == "number" then
+                        if not storage.isUsing then
+                          useWith(entry.attack, target())
+                          return
+                        end
+                      else
+                        say(entry.attack)
+                        return
+                      end
+                    end
+                  end
+                end
               else
                 if entry.category == 6 or entry.category == 7 then
                   if getMonsters(4) >= entry.minMonsters then
@@ -665,20 +743,6 @@ macro(1000, function()
                       say(entry.attack)
                       return
                     end
-                  end
-                end
-              end
-            else
-              if entry.category == 6 or entry.category == 7 then
-                if getMonsters(4) >= entry.minMonsters then
-                  if type(entry.attack) == "number" then
-                    if not storage.isUsing then
-                      useWith(entry.attack, target())
-                      return
-                    end
-                  else
-                    say(entry.attack)
-                    return
                   end
                 end
               end

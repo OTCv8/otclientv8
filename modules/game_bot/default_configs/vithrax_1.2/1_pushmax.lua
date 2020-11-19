@@ -89,14 +89,8 @@ end
 local target
 local targetTile
 local targetOldPos
-
 macro(10, function()
   if not storage[pushPanelName].enabled then return end
-  if getTarget() then
-      target = getTarget()
-  else
-      target = g_game.getFollowingCreature()
-  end
   if target and targetTile then
     if not matchPosition(target:getPosition().x, target:getPosition().y, targetTile:getPosition().x,  targetTile:getPosition().y) then
       local tile = g_map.getTile(target:getPosition())
@@ -140,19 +134,31 @@ end)
 
 local resetTimer = now
 onKeyDown(function(keys)
-  if not target or not storage[pushPanelName].enabled then return end
+  if not storage[pushPanelName].enabled then return end
   if keys == storage[pushPanelName].pushMaxKey and resetTimer == 0 then
-     local tile = getTileUnderCursor()
-     if tile and not tile:getCreatures()[1] then
-       targetTile = tile
-       tile:setText("DESTINATION")
-     end
-   end
-   resetTimer = now
+    if not target then
+      local tile = getTileUnderCursor()
+      if tile and getDistanceBetween(pos(), tile:getPosition()) <= 1 then
+        if tile:getCreatures()[1] then
+          target = tile:getCreatures()[1]
+          tile:setText("PUSH TARGET")
+        end
+      end
+    else
+      local tile = getTileUnderCursor()
+      if tile and not tile:getCreatures()[1] then
+        targetTile = tile
+        tile:setText("DESTINATION")
+      end
+    end
+    resetTimer = now
+  end
 end)
+
+
 onKeyPress(function(keys)
-  if not target or not storage[pushPanelName].enabled then return end
-  if keys == storage[pushPanelName].pushMaxKey and (resetTimer - now) < -10 then
+  if not storage[pushPanelName].enabled then return end
+  if keys == storage.pushMaxKey and (resetTimer - now) < -10 then
     for _, tile in ipairs(g_map.getTiles(posz())) do
       if getDistanceBetween(pos(), tile:getPosition()) < 3 then
         if tile:getText() ~= "" then
@@ -167,9 +173,11 @@ onKeyPress(function(keys)
     resetTimer = 0
   end
 end)
+
 onCreaturePositionChange(function(creature, newPos, oldPos)
-  if target and target:isPlayer() and storage[pushPanelName].enabled then
+  if target and storage[pushPanelName].enabled then
     if creature:getName() == target:getName() then
+      target = nil
       targetTile = nil
       for _, tile in ipairs(g_map.getTiles(posz())) do
         if getDistanceBetween(pos(), tile:getPosition()) < 3 then

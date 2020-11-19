@@ -1,11 +1,22 @@
 setDefaultTab("Cave")
 UI.Separator()
 
+function containerIsFull(c)
+  if not c then return false end
+
+  if c:getCapacity() > #c:getItems() then
+    return false
+  else
+    return true
+  end
+
+end
+
 -- config
 
 local ammoBp = "crystal backpack"
 local potionBp = "camouflage backpack"
-local runeBp = "yellow backpack"
+local runeBp = "red backpack"
 
 -- script
 
@@ -39,7 +50,7 @@ macro(500, "Supply Sorter", function()
     for i, container in pairs(getContainers()) do
       if (container:getName():lower() ~= potionBp:lower() and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) and not string.find(container:getName():lower(), "loot") then
         for j, item in pairs(container:getItems()) do
-          if table.find(potions, item:getId()) then
+          if table.find(potions, item:getId()) and not containerIsFull(potionsContainer) then
             g_game.move(item, potionsContainer:getSlotPosition(potionsContainer:getItemsCount()), item:getCount())
           end
         end
@@ -52,7 +63,7 @@ macro(500, "Supply Sorter", function()
     for i, container in pairs(getContainers()) do
       if (container:getName():lower() ~= runeBp:lower() and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) and not string.find(container:getName():lower(), "loot") then
         for j, item in pairs(container:getItems()) do
-          if table.find(runes, item:getId()) then
+          if table.find(runes, item:getId()) and not containerIsFull(runesContainer) then
             g_game.move(item, runesContainer:getSlotPosition(runesContainer:getItemsCount()), item:getCount())
           end
         end
@@ -65,7 +76,7 @@ macro(500, "Supply Sorter", function()
     for i, container in pairs(getContainers()) do
       if (container:getName():lower() ~= ammoBp:lower() and (string.find(container:getName(), "backpack") or string.find(container:getName(), "bag") or string.find(container:getName(), "chess"))) and not string.find(container:getName():lower(), "loot") then
         for j, item in pairs(container:getItems()) do
-          if table.find(ammo, item:getId()) then
+          if table.find(ammo, item:getId()) and not containerIsFull(ammoContainer) then
             g_game.move(item, ammoContainer:getSlotPosition(ammoContainer:getItemsCount()), item:getCount())
           end
         end

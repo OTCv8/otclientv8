@@ -79,7 +79,7 @@ CaveBot.Extensions.InWithdraw.setup = function()
 				local dest = g_map.getTile(tPos)
 				if not comparePosition(pos(), dest:getPosition()) then
 					if not dest:getCreatures()[1] and dest:isWalkable() then
-						if autoWalk(dest:getPosition(), {ignoreNonPathable=true}) then
+						if CaveBot.walkTo(dest:getPosition(), {ignoreNonPathable=true}) then
 							storage.stopSearch = true
 							delay(100)
 						end
@@ -150,7 +150,7 @@ CaveBot.Extensions.InWithdraw.setup = function()
 
 		local destination
 		for i, container in pairs(getContainers()) do
-			if container:getCapacity() > container:getSize() and not string.find(container:getName():lower(), "depot") and not string.find(container:getName():lower(), "loot") and not string.find(container:getName():lower(), "inbox") then
+			if container:getCapacity() > #container:getItems() and not string.find(container:getName():lower(), "depot") and not string.find(container:getName():lower(), "loot") and not string.find(container:getName():lower(), "inbox") then
 				destination = container 
 			end
 		end

@@ -49,6 +49,154 @@ if rootWidget then
   healWindow = g_ui.createWidget('HealWindow', rootWidget)
   healWindow:hide()
 
+  local refreshSpells = function()
+    if storage[healPanelName].spellTable and #storage[healPanelName].spellTable > 0 then
+      for i, child in pairs(healWindow.spells.spellList:getChildren()) do
+        child:destroy()
+      end
+      for _, entry in pairs(storage[healPanelName].spellTable) do
+        local label = g_ui.createWidget("SpellEntry", healWindow.spells.spellList)
+        label.enabled:setChecked(entry.enabled)
+        label.enabled.onClick = function(widget)
+          entry.enabled = not entry.enabled
+          label.enabled:setChecked(entry.enabled)
+        end
+        label.remove.onClick = function(widget)
+          table.removevalue(storage[healPanelName].spellTable, entry)
+          label:destroy()
+        end
+        label:setText("(MP>" .. entry.cost .. ") " .. entry.origin .. entry.sign .. entry.value .. ":" .. entry.spell)
+      end
+    end
+  end
+  refreshSpells()
+
+  local refreshItems = function()
+    if storage[healPanelName].itemTable and #storage[healPanelName].itemTable > 0 then
+      for i, child in pairs(healWindow.items.itemList:getChildren()) do
+        child:destroy()
+      end
+      for _, entry in pairs(storage[healPanelName].itemTable) do
+        local label = g_ui.createWidget("SpellEntry", healWindow.items.itemList)
+        label.enabled:setChecked(entry.enabled)
+        label.enabled.onClick = function(widget)
+          entry.enabled = not entry.enabled
+          label.enabled:setChecked(entry.enabled)
+        end
+        label.remove.onClick = function(widget)
+          table.removevalue(storage[healPanelName].itemTable, entry)
+          label:destroy()
+        end
+        label:setText(entry.origin .. entry.sign .. entry.value .. ":" .. entry.item)
+      end
+    end
+  end
+  refreshItems()
+
+  healWindow.spells.MoveUp.onClick = function(widget)
+    local input = healWindow.spells.spellList:getFocusedChild()
+    if not input then return end
+    local index = healWindow.spells.spellList:getChildIndex(input)
+    if index < 2 then return end
+
+    local move
+    if storage[healPanelName].spellTable and #storage[healPanelName].spellTable > 0 then
+      for _, entry in pairs(storage[healPanelName].spellTable) do
+        if entry.index == index -1 then
+          move = entry
+        end
+        if entry.index == index then
+          move.index = index
+          entry.index = index -1
+        end
+      end
+    end
+    table.sort(storage[healPanelName].spellTable, function(a,b) return a.index < b.index end)
+
+    healWindow.spells.spellList:moveChildToIndex(input, index - 1)
+    healWindow.spells.spellList:ensureChildVisible(input)
+  end
+
+  healWindow.spells.MoveDown.onClick = function(widget)
+    local input = healWindow.spells.spellList:getFocusedChild()
+    if not input then return end
+    local index = healWindow.spells.spellList:getChildIndex(input)
+    if index >= healWindow.spells.spellList:getChildCount() then return end
+
+    local move
+    local move2
+    if storage[healPanelName].spellTable and #storage[healPanelName].spellTable > 0 then
+      for _, entry in pairs(storage[healPanelName].spellTable) do
+        if entry.index == index +1 then
+          move = entry
+        end
+        if entry.index == index then
+          move2 = entry
+        end
+      end
+      if move and move2 then
+        move.index = index
+        move2.index = index + 1
+      end
+    end
+    table.sort(storage[healPanelName].spellTable, function(a,b) return a.index < b.index end)
+
+    healWindow.spells.spellList:moveChildToIndex(input, index + 1)
+    healWindow.spells.spellList:ensureChildVisible(input)
+  end
+
+  healWindow.items.MoveUp.onClick = function(widget)
+    local input = healWindow.items.itemList:getFocusedChild()
+    if not input then return end
+    local index = healWindow.items.itemList:getChildIndex(input)
+    if index < 2 then return end
+
+    local move
+    if storage[healPanelName].itemTable and #storage[healPanelName].itemTable > 0 then
+      for _, entry in pairs(storage[healPanelName].itemTable) do
+        if entry.index == index -1 then
+          move = entry
+        end
+        if entry.index == index then
+          move.index = index
+          entry.index = index - 1
+        end
+      end
+    end
+    table.sort(storage[healPanelName].itemTable, function(a,b) return a.index < b.index end)
+
+    healWindow.items.itemList:moveChildToIndex(input, index - 1)
+    healWindow.items.itemList:ensureChildVisible(input)
+  end
+
+  healWindow.items.MoveDown.onClick = function(widget)
+    local input = healWindow.items.itemList:getFocusedChild()
+    if not input then return end
+    local index = healWindow.items.itemList:getChildIndex(input)
+    if index >= healWindow.items.itemList:getChildCount() then return end
+
+    local move
+    local move2
+    if storage[healPanelName].itemTable and #storage[healPanelName].itemTable > 0 then
+      for _, entry in pairs(storage[healPanelName].itemTable) do
+        if entry.index == index +1 then
+          move = entry
+        end
+        if entry.index == index then
+          move2 = entry
+        end
+      end
+      if move and move2 then
+        move.index = index
+        move2.index = index + 1
+      end
+    end
+    table.sort(storage[healPanelName].itemTable, function(a,b) return a.index < b.index end)
+
+    healWindow.items.itemList:moveChildToIndex(input, index + 1)
+    healWindow.items.itemList:ensureChildVisible(input)
+  end
+
   healWindow.spells.addSpell.onClick = function(widget)
  
     local spellFormula = healWindow.spells.spellFormula:getText():trim()
@@ -93,17 +241,12 @@ if rootWidget then
     end
 
     if spellFormula:len() > 0 then
-      table.insert(storage[healPanelName].spellTable, {spell = spellFormula, sign = equasion, origin = source, cost = manaCost, value = spellTrigger})
-      local label = g_ui.createWidget("SpellEntry", healWindow.spells.spellList)
-      label.remove.onClick = function(widget)
-        table.removevalue(storage[healPanelName].spellTable, label:getText())
-        label:destroy()
-      end
-      label:setText("(MP>" .. manaCost .. ") " .. source .. equasion .. spellTrigger .. ":" .. spellFormula)
+      table.insert(storage[healPanelName].spellTable,  {index = #storage[healPanelName].spellTable+1, spell = spellFormula, sign = equasion, origin = source, cost = manaCost, value = spellTrigger, enabled = true})
       healWindow.spells.spellFormula:setText('')
       healWindow.spells.spellValue:setText('')
       healWindow.spells.manaCost:setText('')
     end
+    refreshSpells()
   end
 
   healWindow.items.addItem.onClick = function(widget)
@@ -117,11 +260,10 @@ if rootWidget then
 
     if not trigger then
       warn("HealBot: incorrect trigger value!")
-      healWindow.items.id:setItemId(0)
-      healWindow.items.trigger:setText('')
+      healWindow.items.itemId:setItemId(0)
+      healWindow.items.itemValue:setText('')
       return
     end
-
 
     if src == "Current Mana" then
       source = "MP"
@@ -142,37 +284,10 @@ if rootWidget then
     end
 
     if id > 100 then
-      table.insert(storage[healPanelName].itemTable, {item = id, sign = equasion, origin = source, value = trigger})
-      local label = g_ui.createWidget("SpellEntry", healWindow.items.itemList)
-      label.remove.onClick = function(widget)
-        table.removevalue(storage[healPanelName].itemTable, label:getText())
-        label:destroy()
-      end
-      label:setText(source .. equasion .. trigger .. ":" .. id)
-      healWindow.items.id:setItemId(0)
-      healWindow.items.trigger:setText('')
-    end
-  end
-
-  if storage[healPanelName].itemTable and #storage[healPanelName].itemTable > 0 then
-    for _, entry in pairs(storage[healPanelName].itemTable) do
-      local label = g_ui.createWidget("SpellEntry", healWindow.items.itemList)
-      label.remove.onClick = function(widget)
-        table.removevalue(storage[healPanelName].itemTable, entry)
-        label:destroy()
-      end
-      label:setText(entry.origin .. entry.sign .. entry.value .. ":" .. entry.item)
-    end
-  end
-
-  if storage[healPanelName].spellTable and #storage[healPanelName].spellTable > 0 then
-    for _, entry in pairs(storage[healPanelName].spellTable) do
-      local label = g_ui.createWidget("SpellEntry", healWindow.spells.spellList)
-      label.remove.onClick = function(widget)
-        table.removevalue(storage[healPanelName].spellTable, entry)
-        label:destroy()
-      end
-      label:setText("(MP>" .. entry.cost .. ") " .. entry.origin .. entry.sign .. entry.value .. ":" .. entry.spell)
+      table.insert(storage[healPanelName].itemTable, {index = #storage[healPanelName].itemTable+1,item = id, sign = equasion, origin = source, value = trigger, enabled = true})
+      refreshItems()
+      healWindow.items.itemId:setItemId(0)
+      healWindow.items.itemValue:setText('')
     end
   end
 
@@ -186,7 +301,7 @@ macro(100, function()
   if not storage[healPanelName].enabled or modules.game_cooldown.isGroupCooldownIconActive(2) or #storage[healPanelName].spellTable == 0 then return end
 
   for _, entry in pairs(storage[healPanelName].spellTable) do
-    if mana() >= tonumber(entry.cost) and not getSpellCoolDown(entry.spell) then
+    if mana() >= tonumber(entry.cost) and not getSpellCoolDown(entry.spell) and entry.enabled then
       if entry.origin == "HP%" then
         if entry.sign == "=" and hppercent() == entry.value then
           say(entry.spell)
@@ -242,7 +357,7 @@ macro(500, function()
 
   for _, entry in pairs(storage[healPanelName].itemTable) do
     local item = findItem(entry.item)
-    if item then
+    if item and entry.enabled then
       if entry.origin == "HP%" then
         if entry.sign == "=" and hppercent() == entry.value then
           useWith(entry.item, player)

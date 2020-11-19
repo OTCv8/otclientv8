@@ -1,13 +1,15 @@
--- lib ver 1.4
+-- lib ver 1.41
 -- Author: Vithrax
 -- contains mostly basic function shortcuts and code shorteners
 
 function isBuffed()
-    if (4*(player:getSkillLevel(2) - player:getSkillBaseLevel(2))) < player:getSkillLevel(2) then
-        return false
-    else
-        return true
+    local var = false
+    for i=1,4 do
+        if (player:getSkillLevel(i) - player:getSkillBaseLevel(i)) > 5 and (4*(player:getSkillLevel(i) - player:getSkillBaseLevel(i))) < player:getSkillLevel(i) then
+            var = true
+        end
     end
+    return var
 end
 
 function killsToRs()
@@ -17,7 +19,6 @@ end
 function canCast(spell)
     if not spell then return end
     if not getSpellData(spell) then return true end
-
     if not getSpellCoolDown(spell) and mana() >= getSpellData(spell).manaCost and level() >= getSpellData(spell).level then
         return true
     else
@@ -607,7 +608,7 @@ function reachGroundItem(id)
         end
     end
     if distanceFromPlayer(targetTile) > 1 then
-        if autoWalk(targetTile, 10, {ignoreNonPathable = true, precision=1}) then
+        if CaveBot.walkTo(targetTile, 10, {ignoreNonPathable = true, precision=1}) then
             delay(200)
         end
     else
@@ -627,7 +628,7 @@ function useGroundItem(id)
     end
     if targetTile then
         if distanceFromPlayer(targetTile) > 1 then
-            if autoWalk(targetTile, 20, {ignoreNonWalkable = true, ignoreNonPathable = true, precision=1}) then
+            if CaveBot.walkTo(targetTile, 20, {ignoreNonWalkable = true, ignoreNonPathable = true, precision=1}) then
                 delay(200)
             end
         else

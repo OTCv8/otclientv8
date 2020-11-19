@@ -30,7 +30,7 @@ CaveBot.Extensions.Travel.setup = function()
     local pos = player:getPosition()
     local npcPos = npc:getPosition()
     if math.max(math.abs(pos.x - npcPos.x), math.abs(pos.y - npcPos.y)) > 3 then
-      autoWalk(npcPos, 20, {ignoreNonPathable = true, precision=3})
+      CaveBot.walkTo(npcPos, 20, {ignoreNonPathable = true, precision=3})
       delay(300)
       return "retry"
     end

@@ -1384,7 +1384,7 @@ function Market.onMarketEnter(depotItems, offers, balance, vocation, items)
 
   for i = 1, #marketItems[MarketCategory.TibiaCoins] do
     local item = marketItems[MarketCategory.TibiaCoins][i].displayItem
-    depotItems[item:getId()] = tibiaCoins
+    information.depotItems[item:getId()] = tibiaCoins
   end
   
   -- update the items widget to match depot items
@@ -1425,9 +1425,10 @@ end
 
 function Market.onCoinBalance(coins, transferableCoins)
   tibiaCoins = coins
+  if not information or type(information.depotItems) ~= "table" then return end
   if not marketItems[MarketCategory.TibiaCoins] then return end
   for i = 1, #marketItems[MarketCategory.TibiaCoins] do
     local item = marketItems[MarketCategory.TibiaCoins][i].displayItem
-    depotItems[item:getId()] = tibiaCoins
+    information.depotItems[item:getId()] = tibiaCoins
   end  
 end

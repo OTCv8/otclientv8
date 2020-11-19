@@ -17,9 +17,18 @@ SpellConditionBox < ComboBox
 
 SpellEntry < Label
   background-color: alpha
-  text-offset: 2 0
+  text-offset: 18 0
   focusable: true
   height: 16
+
+  CheckBox
+    id: enabled
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    width: 15
+    height: 15
+    margin-top: 2
+    margin-left: 3
 
   $focus:
     background-color: #00000055
@@ -53,7 +62,7 @@ SpellHealing < Panel
   image-source: /images/ui/panel_flat
   image-border: 6
   padding: 3
-  size: 460 130
+  size: 490 130
 
   Label
     id: whenSpell
@@ -124,7 +133,7 @@ SpellHealing < Panel
     anchors.left: parent.left
     anchors.bottom: parent.bottom
     padding: 1
-    size: 240 116    
+    size: 270 116    
     margin-bottom: 3
     margin-left: 3
     vertical-scrollbar: spellListScrollBar
@@ -171,7 +180,7 @@ ItemHealing < Panel
   image-source: /images/ui/panel_flat
   image-border: 6
   padding: 3
-  size: 460 130
+  size: 490 130
 
   Label
     id: whenItem
@@ -228,7 +237,7 @@ ItemHealing < Panel
     anchors.left: parent.left
     anchors.bottom: parent.bottom
     padding: 1
-    size: 240 116  
+    size: 270 116  
     margin-top: 3
     margin-bottom: 3
     margin-left: 3
@@ -274,7 +283,7 @@ ItemHealing < Panel
 
 HealWindow < MainWindow
   !text: tr('Self Healer')
-  size: 490 350
+  size: 520 350
   @onEscape: self:hide()
 
   SpellHealing

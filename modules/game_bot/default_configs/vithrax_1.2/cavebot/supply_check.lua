@@ -13,43 +13,43 @@ CaveBot.Extensions.SupplyCheck.setup = function()
   if storage.supplyRetries > 50 then
     print("CaveBot[SupplyCheck]: Round limit reached, going back on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (storage[suppliesPanelName].imbues and player:getSkillLevel(11) ~= 100) then 
     print("CaveBot[SupplyCheck]: Imbues ran out. Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (storage[suppliesPanelName].staminaSwitch and stamina() < tonumber(storage[suppliesPanelName].staminaValue)) then 
     print("CaveBot[SupplyCheck]: Stamina ran out. Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (softCount < 1 and storage[suppliesPanelName].SoftBoots) then 
     print("CaveBot[SupplyCheck]: No soft boots left. Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (totalItem1 < tonumber(storage[suppliesPanelName].item1Min) and storage[suppliesPanelName].item1 > 100) then 
     print("CaveBot[SupplyCheck]: Not enough item: " .. storage[suppliesPanelName].item1 .. "(only " .. totalItem1 .. " left). Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (totalItem2 < tonumber(storage[suppliesPanelName].item2Min) and storage[suppliesPanelName].item2 > 100) then 
     print("CaveBot[SupplyCheck]: Not enough item: " .. storage[suppliesPanelName].item2 .. "(only " .. totalItem2 .. " left). Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (totalItem3 < tonumber(storage[suppliesPanelName].item3Min) and storage[suppliesPanelName].item3 > 100) then 
     print("CaveBot[SupplyCheck]: Not enough item: " .. storage[suppliesPanelName].item3 .. "(only " .. totalItem3 .. " left). Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (totalItem4 < tonumber(storage[suppliesPanelName].item4Min) and storage[suppliesPanelName].item4 > 100) then 
     print("CaveBot[SupplyCheck]: Not enough item: " .. storage[suppliesPanelName].item4 .. "(only " .. totalItem4 .. " left). Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (totalItem5 < tonumber(storage[suppliesPanelName].item5Min) and storage[suppliesPanelName].item5 > 100) then 
     print("CaveBot[SupplyCheck]: Not enough item: " .. storage[suppliesPanelName].item5 .. "(only " .. totalItem5 .. " left). Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   elseif (freecap() < tonumber(storage[suppliesPanelName].capValue) and storage[suppliesPanelName].capSwitch) then
     print("CaveBot[SupplyCheck]: Not enough capacity. Going on refill.")
     storage.supplyRetries = 0
-    return true
+    return false
   else
     print("CaveBot[SupplyCheck]: Enough supplies. Hunting. Round (" .. storage.supplyRetries .. "/50)")
     storage.supplyRetries = storage.supplyRetries + 1

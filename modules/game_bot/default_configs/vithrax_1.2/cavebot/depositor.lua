@@ -126,7 +126,7 @@ CaveBot.Extensions.Depositor.setup = function()
 			local dest = g_map.getTile(tPos)
 			if not (getDistanceBetween(pos(), dest:getPosition()) <= 1)  then
 				if not dest:getCreatures()[1] and dest:isWalkable() then
-					if autoWalk(dest:getPosition(), {ignoreNonPathable=true}) then
+					if CaveBot.walkTo(dest:getPosition(), {ignoreNonPathable=true}) then
 						storage.stopSearch = true
 						delay(100)
 					end

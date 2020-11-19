@@ -377,7 +377,7 @@ macro(100, function()
   if player:isWalking() then return end
   local p = toFollowPos[posz()]
   if not p then return end
-  if autoWalk(p, 20, {ignoreNonPathable=true, precision=1, ignoreStairs=false}) then
+  if CaveBot.walkTo(p, 20, {ignoreNonPathable=true, precision=1, ignoreStairs=false}) then
     delay(100)
   end
 end)
