@@ -19,15 +19,7 @@ local ServerPackets = {
 	PreyRerollPrice = 0xE9,
 	PreyData = 0xE8,
 	PreyTimeLeft = 0xE7,
-	HirelingOutfit = 0xC8,
-	GameStoreCoinBalance = 0xDF,
-	GameStoreError = 0xE0,
-	GameStoreRequestPurchaseData = 0xE1,
-	GameStoreBalanceUpdate = 0xF2,
-	GameStoreOpenStore = 0xFB,
-	GameStoreOffers = 0xFC,
-	GameStoreTransactions = 0xFD,
-	GameStoreCompletePurchase = 0xFE
+	HirelingOutfit = 0xC8
 }
 
 -- Server Types
@@ -50,18 +42,12 @@ local INACTIVE = 1
 local ACTIVE = 2
 local SELECTION = 3
 local SELECTION_CHANGE_MONSTER = 4
+local SELECTION_LIST = 5
 local SELECTION_WITH_WILDCARD = 6
 
 -- Hirelings
 local HIRELINGS_BUTTON = 1
 local HIRELINGS_DRESS = 4
-
--- GameStore
-local GAMESTORE_SHOWNONE = 0
-local GAMESTORE_SHOWMOUNT = 1
-local GAMESTORE_SHOWOUTFIT = 2
-local GAMESTORE_SHOWITEM = 3
-local GAMESTORE_SHOWHIRELING = 4
 
 function init()
   connect(g_game, { onEnterGame = registerProtocol,
@@ -145,7 +131,6 @@ function registerProtocol()
 		msg:getU16()
 		msg:getU16()
 	end
-	sendBestiaryCharmsData(msg)
   end)
   
   registerOpcode(ServerPackets.BestiaryOverview, function(protocol, msg)
@@ -153,7 +138,10 @@ function registerProtocol()
 	local size = msg:getU16()
     for i = 1, size do
 		msg:getU16()
-		msg:getU16()
+		local progress = msg:getU8()
+		if progress > 0 and g_game.getClientVersion() >= 1180 then
+			msg:getU8()
+		end
 	end
   end)
   
@@ -168,14 +156,18 @@ function registerProtocol()
 	msg:getU16()
 	msg:getU16()
 	
-	msg:getU8()
-	msg:getU8()
+	local diff = msg:getU8()
+	if g_game.getClientVersion() >= 1180 then
+		msg:getU8()
+	end
 	
 	local lootsize = msg:getU8()
     for i = 1, lootsize do
-		msg:getItemId()
+		msg:getU16()
 		msg:getU8()
-		msg:getU8()
+		if g_game.getClientVersion() >= 1180 then
+			msg:getU8()
+		end
 		
 		if progresslevel > 1 then
 			msg:getString()
@@ -183,36 +175,62 @@ function registerProtocol()
 		end
 	end
 	
-	if progresslevel > 1 then
-		msg:getU16()
+	if g_game.getClientVersion() >= 1180 then
+		if progresslevel > 1 then
+			msg:getU32()
+			msg:getU32()
+			msg:getU32()
+			msg:getU16()
+			msg:getU16()
+			if progresslevel > 2 then
+				local elements = msg:getU8()
+				for i = 1, elements do
+					msg:getU8()
+					msg:getU16()
+				end
 		
-		msg:getU8()
-		msg:getU8()
-		msg:getU32()
-		msg:getU32()
-		msg:getU16()
-		msg:getU16()
-	end
-	
-	if progresslevel > 2 then
-		local elements = msg:getU8()
-		for i = 1, elements do
-			msg:getU8()
+				local locations = msg:getU16()
+				for i = 1, locations do
+					msg:getString()
+				end
+				if progresslevel > 3 then
+					local hascharm = msg:getU8()
+					if hascharm > 0 then
+						msg:getU8()
+						msg:getU32()
+					else
+						msg:getU8()
+					end
+				end
+			end
+		end
+	else
+
+		if diff == 3 or (diff == 2 and progresslevel > 1) then
+			msg:getU32()
+			msg:getU32()
+			msg:getU32()
+			msg:getU16()
 			msg:getU16()
 		end
-		
-		msg:getU16()
-		msg:getString()
-	end
-	
-	if progresslevel > 3 then
-		msg:getU8()
-		local charmtype = msg:getU8()
-		if charmtype > 0
-			msg:getU32()
-		else
-			msg:getU8()
+
+		if (diff == 3 and progresslevel > 2) or (diff == 2 and progresslevel > 2) then
+			local stats = msg:getU8()
+			for i = 1, elements do
+				msg:getU8()
+				msg:getU16()
+			end
+
+			local loc = msg:getU16()
+			for i = 1, elements do
+				msg:getString()
+			end
+
+			if (diff == 3 and progresslevel ~= 3) or (diff == 2 and progresslevel > 1) then
+				msg:getU16()
+			end
 		end
+		
 	end
   end)
   
@@ -222,6 +240,9 @@ function registerProtocol()
   
   registerOpcode(ServerPackets.BestiaryTracker, function(protocol, msg)
 	msg:getU16()
+	if g_game.getClientVersion() >= 1159 and g_game.getClientVersion() <= 1190 then
+		msg:getU8()
+	end
   end)
 
   registerOpcode(ServerPackets.BestiaryTrackerTab, function(protocol, msg)
@@ -241,7 +262,9 @@ function registerProtocol()
     for i = 1, size do
 		msg:getU16()
 		msg:getU8()
-		msg:getU8()
+		if g_game.getClientVersion() >= 1220 then
+			msg:getU8()
+		end
 	end
 	
 	msg:getU8()
@@ -274,12 +297,16 @@ function registerProtocol()
   
   registerOpcode(ServerPackets.PreyRerollPrice, function(protocol, msg)
 	msg:getU32()
-	msg:getU8()
-	msg:getU8()	
-	msg:getU32()
-	msg:getU32()
-	msg:getU8()
-	msg:getU8()
+	if g_game.getClientVersion() >= 1190 then
+		msg:getU8()
+		msg:getU8()	
+		if g_game.getClientVersion() >= 1230 then
+			msg:getU32()
+			msg:getU32()
+			msg:getU8()
+			msg:getU8()
+		end
+	end
   end)
   
   registerOpcode(ServerPackets.PreyData, function(protocol, msg)
@@ -300,6 +327,11 @@ function registerProtocol()
 			msg:getU8()
 			msg:getU8()
 		end
+	elseif state == SELECTION_LIST then
+		local sizelist = msg:getU16()
+		for i = 1, sizelist do
+			msg:getU16()
+		end
 	elseif state == SELECTION then
 		local list = msg:getU8()
 		for i = 1, list do
@@ -311,7 +343,7 @@ function registerProtocol()
 			msg:getU8()
 			msg:getU8()
 		end
-	elseif state = ACTIVE then
+	elseif state == ACTIVE then
 		msg:getString()
 		msg:getU16()
 		msg:getU8()
@@ -323,11 +355,11 @@ function registerProtocol()
 		msg:getU16()
 		msg:getU8()
 		msg:getU16()
-	elseif state = INACTIVE then
+	elseif state == INACTIVE then
 		
-	elseif state = LOCKED then
+	elseif state == LOCKED then
 		msg:getU8()
-	elseif state = SELECTION_WITH_WILDCARD then
+	elseif state == SELECTION_WITH_WILDCARD then
 		msg:getU8()
 		msg:getU16()
 		msg:getU8()
@@ -336,9 +368,16 @@ function registerProtocol()
 			msg:getU16()
 		end
 	end
-	
-	msg:getU32()
-	msg:getU8()
+
+	if g_game.getClientVersion() >= 1251 then
+		msg:getU32()
+	else
+		msg:getU16()
+	end
+
+	if g_game.getClientVersion() >= 1160 then
+		msg:getU8()
+	end
   end)
  
   registerOpcode(ServerPackets.PreyTimeLeft, function(protocol, msg)
@@ -355,27 +394,40 @@ function registerProtocol()
 	msg:getU8()
 	msg:getU16()
 	
-	local outfitsize = msg:getU16()
-    for i = 1, size do
+	local outfitsize = 0
+	if g_game.getClientVersion() >= 1175 then
+		outfitsize = msg:getU16()
+	else
+		outfitsize = msg:getU8()
+	end
+    for i = 1, outfitsize do
 		msg:getU16()
 		msg:getString()
 		msg:getU8()
 		
+		if g_game.getClientVersion() >= 1175 then
 		local buttontype_o = msg:getU8()
-		if buttontype_o == HIRELINGS_BUTTON then
-			msg:getU32()
+			if buttontype_o == HIRELINGS_BUTTON then
+				msg:getU32()
+			end
 		end
 	end
 
-	local mountsize = msg:getU16()
-    for i = 1, size do
+	local mountsize = 0
+	if g_game.getClientVersion() >= 1175 then
+		mountsize = msg:getU16()
+	else
+		mountsize = msg:getU8()
+	end
+    for i = 1, mountsize do
 		msg:getU16()
 		msg:getString()
-		local buttontype_m = msg:getU8()
-		if buttontype_m == HIRELINGS_BUTTON then
-			msg:getU32()
+		if g_game.getClientVersion() >= 1175 then
+			local buttontype_m = msg:getU8()
+			if buttontype_m == HIRELINGS_BUTTON then
+				msg:getU32()
+			end
 		end
-		
 	end
 	
 	local htype = msg:getU16()
@@ -389,130 +441,6 @@ function registerProtocol()
 	
   end)
 
-  registerOpcode(ServerPackets.GameStoreCoinBalance, function(protocol, msg)
-	msg:getU8()
-	msg:getU32()
-	msg:getU32()
-	msg:getU32()
-	msg:getU32()
-  end)
-  
-  registerOpcode(ServerPackets.GameStoreError, function(protocol, msg)
-	msg:getU8()
-	msg:getString()
-  end)
-
-  registerOpcode(ServerPackets.GameStoreRequestPurchaseData, function(protocol, msg)
-	msg:getU32()
-	msg:getU8()	
-  end)
-  
-  registerOpcode(ServerPackets.GameStoreBalanceUpdate, function(protocol, msg)
-	msg:getU8()	
-  end)
-
-  registerOpcode(ServerPackets.GameStoreOpenStore, function(protocol, msg)
-	local list = msg:getU16()
-    for i = 1, list do
-		msg:getString()
-		msg:getU8()
-		local icons = msg:getU8()
-		for i = 1, icons do
-			msg:getString()
-		end
-		msg:getString()
-	end
-  end)
-  
-  registerOpcode(ServerPackets.GameStoreOffers, function(protocol, msg)
-	msg:getString()
-	msg:getU32()
-	msg:getU8()
-	
-	local capacity = msg:getU8()
-	for i = 1, capacity do
-		msg:getString()
-	end
-	
-	msg:getString()
-	local capacity2 = msg:getU16()
-	for i = 1, capacity2 do
-		msg:getString()
-		
-		local details = msg:getU8()
-		for i = 1, details do
-			msg:getU32()
-			msg:getU16()
-			msg:getU32()
-			
-			msg:getU8()
-			
-			local disable = msg:getU8()
-			if disable > 0 then
-				local reasons = msg:getU8()
-				for i = 1, reasons do
-					msg:getString()
-				end
-			end
-			
-			local highlight = msg:getU8()
-			if highlight > 0 then
-				msg:getU32()
-				msg:getU32()
-			end
-			
-		end
-
-			local display = msg:getU8()
-			if display = GAMESTORE_SHOWNONE then
-				msg:getString()
-			elseif display = GAMESTORE_SHOWMOUNT then
-				msg:getU16()
-			elseif display = GAMESTORE_SHOWITEM then
-				msg:getU16()
-			elseif display = GAMESTORE_SHOWOUTFIT then
-				msg:getU16()
-				msg:getU8()
-				msg:getU8()
-				msg:getU8()
-				msg:getU8()
-			elseif display = GAMESTORE_SHOWHIRELING then
-				msg:getU8()
-				msg:getU16()
-				msg:getU16()
-				msg:getU8()
-				msg:getU8()
-				msg:getU8()
-				msg:getU8()
-			end
-			msg:getU8()
-			msg:getU16()
-			msg:getU16()
-			msg:getU32()
-			msg:getU8()
-			msg:getU16()
-	end
-  end)
-  
-  registerOpcode(ServerPackets.GameStoreTransactions, function(protocol, msg)
-	msg:getU32()
-	msg:getU32()
-	local entries = msg:getU8()
-	for i = 1, entries do
-		msg:getU32()
-		msg:getU32()
-		msg:getU8()
-		msg:getU32()
-		msg:getU8()
-		msg:getString()
-		msg:getU8()
-	end
-  end)
-  
-  registerOpcode(ServerPackets.GameStoreCompletePurchase, function(protocol, msg)
-	msg:getU8()
-	msg:getString()
-  end)
 end
 
 function unregisterProtocol()
@@ -570,8 +498,6 @@ function sendBestiaryCharmsData(msg)
 		if activated > 0 then
 			msg:getU16()
 			msg:getU32()
-		else
-			msg:getU8()
 		end
 	end
 	
