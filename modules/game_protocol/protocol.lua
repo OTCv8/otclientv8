@@ -85,8 +85,18 @@ function registerProtocol()
     if taken > 0 then
       msg:getString()
     end
-    msg:getU32()
-    msg:getU16()
+    if g_game.getClientVersion() >= 1260 then
+        local token = msg:getU8()
+        if token == 1 then
+            msg:getU16()
+        elseif token == 2 then
+            msg:getU32()
+            msg:getU16()
+        end
+    else
+        msg:getU32()
+        msg:getU16()
+    end
     msg:getU16()
   end)
 
