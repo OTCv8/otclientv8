@@ -182,6 +182,7 @@ GameForceLight = 97
 GameNoDebug = 98
 GameBotProtection = 99
 
+GameCreatureDirectionPassable = 100
 GameFasterAnimations = 101
 GameCenteredOutfits = 102
 GameSendIdentifiers = 103
@@ -195,7 +196,7 @@ GameDrawAuraOnTop = 109
 GamePacketSizeU32 = 110
 GamePacketCompression = 111
 
-LastGameFeature = 120
+LastGameFeature = 130
         
 TextColors = {
   red       = '#f55e5e', --'#c83200'

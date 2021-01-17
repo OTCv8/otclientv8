@@ -139,7 +139,12 @@ function UIMiniWindow:setup()
 
   local oldParent = self:getParent()
 
-  local settings = g_settings.getNode('MiniWindows')
+
+  local settings = {}
+  if g_settings.getNodeSize('MiniWindows') < 100 then
+    settings = g_settings.getNode('MiniWindows')
+  end
+
   if settings then
     local selfSettings = settings[self:getId()]
     if selfSettings then
@@ -184,7 +189,7 @@ function UIMiniWindow:setup()
   self.miniLoaded = true
 
   if self.save then
-    if oldParent and oldParent:getClassName() == 'UIMiniWindowContainer' then
+    if oldParent and oldParent:getClassName() == 'UIMiniWindowContainer' and not self.containerWindow then
       addEvent(function() oldParent:order() end)
     end
     if newParent and newParent:getClassName() == 'UIMiniWindowContainer' and newParent ~= oldParent then

@@ -1,0 +1,366 @@
+SuppliesWindow < MainWindow
+  !text: tr('Supplies')
+  size: 430 310
+  @onEscape: self:hide()
+
+  VerticalSeparator
+    id: sep
+    anchors.top: parent.top
+    anchors.left: item1Max.right
+    anchors.bottom: parent.bottom
+    margin-top: 3
+    margin-bottom: 3
+    margin-left: 10
+
+  Label
+    anchors.left: sep.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-left: 10
+    margin-top: 3
+    text-align: center
+    text: Additional Conditions:
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: 3
+
+  BotSwitch
+    id: SoftBoots
+    anchors.top: prev.bottom
+    anchors.left: sep.right
+    anchors.right: parent.right
+    margin-top: 10
+    margin-left: 10
+    text: No Soft     
+
+  BotSwitch
+    id: capSwitch
+    height: 20
+    anchors.left: SoftBoots.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    margin-right: 50
+    text-align: center
+    text: Cap Below:
+
+  TextEdit
+    id: capValue
+    size: 40 20
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    margin-left: 5
+
+  BotSwitch
+    id: staminaSwitch
+    height: 20
+    anchors.left: SoftBoots.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    margin-right: 50
+    text-align: center
+    text: Stamina:
+
+  TextEdit
+    id: staminaValue
+    size: 40 20
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    margin-left: 5
+
+  BotSwitch
+    id: imbues
+    anchors.top: prev.bottom
+    anchors.left: sep.right
+    anchors.right: parent.right
+    margin-top: 5
+    margin-left: 10
+    text: No Imbues
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: 5
+
+  BotSwitch
+    id: SortSupplies
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: 5
+    text: Sort Supplies
+
+  BotItem
+    id: PotionBp
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 3
+
+  Label
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 5
+    text: Potions
+
+  BotItem
+    id: RuneBp
+    anchors.top: PotionBp.bottom
+    anchors.left: PotionBp.left
+    margin-top: 3
+
+  Label
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 5
+    text: Runes
+
+  BotItem
+    id: AmmoBp
+    anchors.top: RuneBp.bottom
+    anchors.left: RuneBp.left
+    margin-top: 3
+
+  Label
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 5
+    text: Ammo  
+
+  BotItem
+    id: item1
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-top: 3 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item1Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item1Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item2
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item2Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item2Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item3
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item3Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item3Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item4
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item4Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item4Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item5
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item5Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item5Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item6
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  TextEdit
+    id: item6Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  TextEdit
+    id: item6Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center         
+
+  Button
+    id: close
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5    

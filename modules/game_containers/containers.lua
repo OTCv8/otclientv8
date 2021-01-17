@@ -106,7 +106,7 @@ function onContainerOpen(container, previousContainer)
     containerWindow = g_ui.createWidget('ContainerWindow', modules.game_interface.getContainerPanel())
   end
   
-  containerWindow:setId('container' .. container:getId() .. '_' .. container:getName())
+  containerWindow:setId('container' .. container:getId())
   if gameStart + 1000 < g_clock.millis() then
     containerWindow:clearSettings()
   end
@@ -167,8 +167,7 @@ function onContainerOpen(container, previousContainer)
   containerWindow:setContentMinimumHeight(cellSize.height)
   containerWindow:setContentMaximumHeight(cellSize.height*layout:getNumLines())
 
-  local hasHeightInSettings = containerWindow:getSettings("height")
-  if not previousContainer and not hasHeightInSettings then
+  if not previousContainer then
     local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)
     containerWindow:setContentHeight(filledLines*cellSize.height)
   end

@@ -3494,7 +3494,7 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
             }
         }
 
-        if (g_game.getClientVersion() >= 953) {
+        if (g_game.getClientVersion() >= 953 || g_game.getFeature(Otc::GameCreatureDirectionPassable)) {
             bool unpass = msg->getU8();
 
             if (creature)
