@@ -283,7 +283,7 @@ function checkCreatures()
   for i=#creatures + 1,maxCreatures do
     if battleButtons[i]:isHidden() then break end
     battleButtons[i]:hide()
-    battleButtons[i]:setOn(false)
+    battleButton:setOn(false)
   end
 
   battlePanel:getLayout():enableUpdates()

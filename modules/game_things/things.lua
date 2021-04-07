@@ -14,32 +14,16 @@ function load()
   local things = g_settings.getNode('things')
   
   local datPath, sprPath
-  if things["data"] ~= nil and things["sprites"] ~= nil then
+  if things and things["data"] ~= nil and things["sprites"] ~= nil then
     datPath = '/things/' .. things["data"]
-    if G.hdSprites and things["sprites_hd"] then
-      sprPath = '/things/' .. things["sprites_hd"]    
-    else
-      sprPath = '/things/' .. things["sprites"]
-    end
+    sprPath = '/things/' .. things["sprites"]
   else  
     if filename then
       datPath = resolvepath('/things/' .. filename)
       sprPath = resolvepath('/things/' .. filename)
-      if G.hdSprites then
-        local hdsprPath = resolvepath('/things/' .. filename .. '_hd')      
-        if g_resources.fileExists(hdsprPath) then
-          sprPath = hdsprPath
-        end
-      end
     else
       datPath = resolvepath('/things/' .. version .. '/Tibia')
       sprPath = resolvepath('/things/' .. version .. '/Tibia')
-      if G.hdSprites then
-        local hdsprPath = resolvepath('/things/' .. version .. '/Tibia_hd')      
-        if g_resources.fileExists(hdsprPath) then
-          sprPath = hdsprPath
-        end
-      end
     end
   end
 
@@ -54,7 +38,7 @@ function load()
       errorMessage = errorMessage .. tr("Unable to load dat file, please place a valid dat in '%s'", datPath) .. '\n'
     end
   end
-  if not g_sprites.loadSpr(sprPath, G.hdSprites or false) then
+  if not g_sprites.loadSpr(sprPath, false) then
     errorMessage = errorMessage .. tr("Unable to load spr file, please place a valid spr in '%s'", sprPath)
   end
 

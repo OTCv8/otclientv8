@@ -62,7 +62,9 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onCloseChannel = {},
     onChannelEvent = {},
     onTurn = {},
-    onWalk = {}
+    onWalk = {},
+    onImbuementWindow = {},
+    onModalDialog = {}
   }
   
   -- basic functions & classes
@@ -233,6 +235,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
           callback(name, level, mode, text, channelId, pos)
         end
       end,
+      onImbuementWindow = function(itemId, slots, activeSlots, imbuements, needItems)
+        for i, callback in ipairs(context._callbacks.onImbuementWindow) do
+          callback(itemId, slots, activeSlots, imbuements, needItems)
+        end
+      end,
       onTextMessage = function(mode, text)
         for i, callback in ipairs(context._callbacks.onTextMessage) do
           callback(mode, text)
@@ -342,7 +349,12 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
         for i, callback in ipairs(context._callbacks.onWalk) do
           callback(creature, oldPos, newPos)
         end      
-      end,      
+      end,
+      onModalDialog = function(id, title, message, buttons, enterButton, escapeButton, choices, priority)
+        for i, callback in ipairs(context._callbacks.onModalDialog) do
+          callback(id, title, message, buttons, enterButton, escapeButton, choices, priority)
+        end
+      end,
     }    
   }
 end

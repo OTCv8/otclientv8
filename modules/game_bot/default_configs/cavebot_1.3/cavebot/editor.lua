@@ -104,7 +104,7 @@ CaveBot.Editor.setup = function()
     title="Go to position",
     description="Go to position (x,y,z)",
     multiline=false,
-    validation="^\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+),?\\s*([0-9]?)$"
+    validation="^\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)$"
   })
   registerAction("use", {
     value=function() return posx() .. "," .. posy() .. "," .. posz() end,

@@ -194,12 +194,20 @@ function UIMiniWindowContainer:order()
     if not children[i].miniLoaded then return end
   end
 
+  table.sort(children, function(a, b)
+    local indexA = a.miniIndex or a.autoOpen or 999
+    local indexB = b.miniIndex or b.autoOpen or 999
+    return indexA < indexB
+  end)
+
+  self:reorderChildren(children)
+  local ignoreIndex = 0
   for i=1,#children do
-    if children[i].miniIndex then
-      self:swapInsert(children[i], children[i].miniIndex)
-    elseif children[i].autoOpen then
-      self:swapInsert(children[i], children[i].autoOpen)    
-    end
+    if children[i].save then
+      children[i].miniIndex = i - ignoreIndex
+    else
+      ignoreIndex = ignoreIndex + 1
+    end      
   end
 end
 

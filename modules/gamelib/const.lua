@@ -196,6 +196,8 @@ GameDrawAuraOnTop = 109
 GamePacketSizeU32 = 110
 GamePacketCompression = 111
 
+GameOldInformationBar = 112
+
 LastGameFeature = 130
         
 TextColors = {

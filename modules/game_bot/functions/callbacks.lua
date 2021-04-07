@@ -175,6 +175,16 @@ context.onWalk = function(callback)
   return context.callback("onWalk", callback)
 end
 
+-- onImbuementWindow -- callback = function(itemId, slots, activeSlots, imbuements, needItems)
+context.onImbuementWindow = function(callback)
+  return context.callback("onImbuementWindow", callback)
+end
+
+-- onModalDialog -- callback = function(id, title, message, buttons, enterButton, escapeButton, choices, priority) -- priority is unused, ignore it
+context.onModalDialog = function(callback)
+  return context.callback("onModalDialog", callback)
+end
+
 -- CUSTOM CALLBACKS
 
 -- listen(name, callback) -- callback = function(text, channelId, pos)

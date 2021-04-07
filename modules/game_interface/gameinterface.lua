@@ -161,6 +161,7 @@ function hide()
     countWindow = nil
   end
   gameRootPanel:hide()
+  gameMapPanel:setShader("")
   modules.client_background.show()
 end
 
