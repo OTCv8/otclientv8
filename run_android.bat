@@ -1,1 +1,0 @@
-adb uninstall com.otclientv8 && adb install otclientv8.apk && adb logcat -c && adb shell am start -n com.otclientv8/com.otclientv8.OTClientV8 && adb logcat | findstr /i otclient
