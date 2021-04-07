@@ -2,21 +2,15 @@
 
 OTClientV8 is highly optimized, cross-platform tile based 2d game engine built with c++17, lua, physfs, OpenGL ES 2.0 and OpenAL.
 It has been created as alternative client for game called [Tibia](https://tibia.com/), but now it's much more functional and powerful.
-It works well even on 12 years old computers. In June 2020 it reached 100k unique installations.
+It works well even on 12 years old computers. In April 2021 it reached 290k unique installations, including 80k android installations.
 
 Supported platforms:
 - Windows (min. Windows 7)
-- Linux
 - Android (min. 5.0)
 
-Planned support:
-- Mac OS
-- iOS
-- WebAssembly
-
-On this GitHub you can find free version of OTClientV8. It comes without all c++ sources, there are prebuilt executables instead.
-In many cases, you won't need access to sources, you can add a lot of custom features in lua.
-If you're interested in buying access to sources, contact otclient@otclient.ovh or kondrah#7945 on discord.
+On this repository, you can find clean, always up-to-date, ready to use version of OTClientv8. Most commits from version 3.0 are automatic.
+If you want to help with development, please visit development repository - https://github.com/OTCv8/otcv8-dev
+All acceptect changes from otcv8-dev will be released here.
 
 ## DISCORD: https://discord.gg/feySup6
 ## Forum: http://otclient.net
@@ -50,7 +44,6 @@ If you're interested in buying access to sources, contact otclient@otclient.ovh 
 - New login server (with ingame account and character creation)
 - Support for proxies to lower latency and protect against DDoS (extra paid option)
 - Bot protection (extra paid option)
-- [Soon] Mobile application for quick authorization
 
 ### And hundreds of smaller features, optimizations and bug fixes!
 ### Check out directory `tutorials` to see how activate and use new features
