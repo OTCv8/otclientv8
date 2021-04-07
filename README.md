@@ -8,14 +8,17 @@ Supported platforms:
 - Windows (min. Windows 7)
 - Android (min. 5.0)
 
-On this repository, you can find clean, always up-to-date, ready to use version of OTClientv8. Most commits from version 3.0 are automatic.
-If you want to help with development, please visit development repository - https://github.com/OTCv8/otcv8-dev
-All acceptect changes from otcv8-dev will be released here.
+On Windows you may need to install https://aka.ms/vs/16/release/vc_redist.x86.exe to make it work.
 
-## DISCORD: https://discord.gg/feySup6
-## Forum: http://otclient.net
+### Forum: http://otclient.net
+### Discord: https://discord.gg/feySup6
+### Website: http://otclient.ovh
 
-# FEATURES
+## Version for developers
+
+In this repository, you can find clean, always up-to-date, ready to use version of OTClientv8. Most commits from version 3.0 are automatic using GitHub Actions. If you want to help with development, please visit repository for developers - https://github.com/OTCv8/otcv8-dev
+
+## FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
 - Better DirectX9 and DirectX11 support
 - Adaptive rendering (automated graphics optimizations)
@@ -50,11 +53,11 @@ All acceptect changes from otcv8-dev will be released here.
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
 
-# Quick Start for players
+## Quick Start for players
 
 Download whole repository and run one of binary file. 
 
-# Quick Start for server owners
+## Quick Start for server owners
 
 Open `init.lua` and edit:
 
@@ -89,6 +92,6 @@ Also remember to add your sprite and data file to data/things
 
 That's it, you're ready to use OTClientV8.
 
-DirectX version requires 3 dlls: libEGL.dll libGLESv2.dll d3dcompiler_46.dll
+DirectX version requires 3 dlls: libEGL.dll libGLESv2.dll d3dcompiler_47.dll
 
 If it can't start (missing dlls) then user need to install visual studio 2019 redistributable x86: https://aka.ms/vs/16/release/vc_redist.x86.exe
