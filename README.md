@@ -53,7 +53,7 @@ In this repository, you can find clean, always up-to-date, ready to use version 
 ### Check out [Wiki page](https://github.com/OTCv8/otclientv8/wiki) to see how activate and use new features
 
 ### Old tools, like updater and tutorials has been moved to: [OTCv8/otcv8-tools](https://github.com/OTCv8/otcv8-tools)
-### There's github repo of tfs 1.3 with otclientv8 features: [OTCv8/otclientv8-tfs](https://github.com/OTCv8/otclientv8-tfs)
+### There's github repo of tfs 1.3 with otclientv8 features: [OTCv8/otclientv8-tfs](https://github.com/OTCv8/forgottenserver)
 
 ## Quick Start for players
 
