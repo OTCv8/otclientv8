@@ -1,0 +1,10 @@
+Module
+  name: game_healthbars
+  description: Load health and mana bars
+  author: Oen44
+  website: http://otclient.ovh
+  scripts: [ healthbars ]
+  autoload: false
+  sandboxed: true
+  @onLoad: init()
+  @onUnload: terminate()

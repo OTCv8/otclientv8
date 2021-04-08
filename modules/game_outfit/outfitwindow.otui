@@ -44,6 +44,43 @@ OutfitSelectorPanel < Panel
     image-border: 2    
     text: -
 
+BarSelectorPanel < Panel
+  size: 125 120
+  
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+
+  UIWidget
+    id: bar
+    anchors.centerIn: parent
+  
+  PreviousButton  
+    id: prevButton
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    
+  NextButton
+    id: nextButton
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+  
+  Label
+    id: label
+    text: -
+    text-align: center
+    anchors.left: prevButton.right
+    anchors.right: nextButton.left
+    anchors.top: prevButton.top
+    anchors.bottom: parent.bottom
+    margin-left: 2
+    margin-right: 2
+    image-source: /images/ui/panel_flat
+    image-border: 2    
+
 MainWindow
   !text: tr('Select Outfit')
   size: 560 330

@@ -197,6 +197,7 @@ GamePacketSizeU32 = 110
 GamePacketCompression = 111
 
 GameOldInformationBar = 112
+GameHealthInfoBackground = 113
 
 LastGameFeature = 130
         

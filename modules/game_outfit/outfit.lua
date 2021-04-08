@@ -1,11 +1,11 @@
 ADDON_SETS = {
-  [1] = { 1 },
-  [2] = { 2 },
-  [3] = { 1, 2 },
-  [4] = { 3 },
-  [5] = { 1, 3 },
-  [6] = { 2, 3 },
-  [7] = { 1, 2, 3 }
+  [1] = {1},
+  [2] = {2},
+  [3] = {1, 2},
+  [4] = {3},
+  [5] = {1, 3},
+  [6] = {2, 3},
+  [7] = {1, 2, 3}
 }
 
 outfitWindow = nil
@@ -26,17 +26,23 @@ currentMount = 1
 ignoreNextOutfitWindow = 0
 
 function init()
-  connect(g_game, {
-    onOpenOutfitWindow = create,
-    onGameEnd = destroy
-  })
+  connect(
+    g_game,
+    {
+      onOpenOutfitWindow = create,
+      onGameEnd = destroy
+    }
+  )
 end
 
 function terminate()
-  disconnect(g_game, {
-    onOpenOutfitWindow = create,
-    onGameEnd = destroy
-  })
+  disconnect(
+    g_game,
+    {
+      onOpenOutfitWindow = create,
+      onGameEnd = destroy
+    }
+  )
   destroy()
 end
 
@@ -44,7 +50,7 @@ function updateMount()
   if table.empty(mounts) or not mount then
     return
   end
-  local nameMountWidget = outfitWindow:getChildById('mountName')
+  local nameMountWidget = outfitWindow:getChildById("mountName")
   nameMountWidget:setText(mounts[currentMount][2])
 
   mount.type = mounts[currentMount][1]
@@ -53,11 +59,16 @@ end
 
 function setupSelector(widget, id, outfit, list)
   widget:setId(id)
-  widget.title:setText(id:gsub("^%l", string.upper))
-  if id ~= "type" or #list == 0 then
+  if id == "healthBar" or id == "manaBar" then
+    widget.title:setText(id == "healthBar" and "Health Bar" or "Mana Bar")
     table.insert(list, 1, {0, "-"})
+  else
+    widget.title:setText(id:gsub("^%l", string.upper))
+    if id ~= "type" or #list == 0 then
+      table.insert(list, 1, {0, "-"})
+    end
   end
-  
+
   local pos = 1
   for i, o in pairs(list) do
     if (id == "shader" and outfit[id] == o[2]) or outfit[id] == o[1] then
@@ -67,54 +78,110 @@ function setupSelector(widget, id, outfit, list)
   if list[pos] then
     widget.outfit = list[pos]
     if id == "shader" then
-      widget.creature:setOutfit({
-        shader = list[pos][2]
-      })
+      widget.creature:setOutfit(
+        {
+          shader = list[pos][2]
+        }
+      )
+    elseif id == "healthBar" then
+      if pos ~= 1 then
+        widget.bar:setImageSource(g_healthBars.getHealthBarPath(pos - 1))
+      else
+        widget.bar:setImageSource("")
+      end
+      widget.bar.selected = pos - 1
+    elseif id == "manaBar" then
+      if pos ~= 1 then
+        widget.bar:setImageSource(g_healthBars.getManaBarPath(pos - 1))
+      else
+        widget.bar:setImageSource("")
+      end
+      widget.bar.selected = pos - 1
     else
-      widget.creature:setOutfit({
-        type = list[pos][1]
-      })    
+      widget.creature:setOutfit(
+        {
+          type = list[pos][1]
+        }
+      )
     end
     widget.label:setText(list[pos][2])
   end
+
   widget.prevButton.onClick = function()
     if pos == 1 then
       pos = #list
     else
       pos = pos - 1
     end
-    local outfit = widget.creature:getOutfit()
-    if id == "shader" then
-      outfit.shader = list[pos][2]
+    if id == "healthBar" or id == "manaBar" then
+      if id == "healthBar" then
+        if pos ~= 1 then
+          widget.bar:setImageSource(g_healthBars.getHealthBarPath(pos - 1))
+        else
+          widget.bar:setImageSource("")
+        end
+      elseif id == "manaBar" then
+        if pos ~= 1 then
+          widget.bar:setImageSource(g_healthBars.getManaBarPath(pos - 1))
+        else
+          widget.bar:setImageSource("")
+        end
+      end
+      widget.bar.selected = pos - 1
+      widget.label:setText(list[pos][2])
     else
-      outfit.type = list[pos][1]    
+      local outfit = widget.creature:getOutfit()
+      if id == "shader" then
+        outfit.shader = list[pos][2]
+      else
+        outfit.type = list[pos][1]
+      end
+      widget.outfit = list[pos]
+      widget.creature:setOutfit(outfit)
+      widget.label:setText(list[pos][2])
+      updateOutfit()
     end
-    widget.outfit = list[pos]
-    widget.creature:setOutfit(outfit)
-    widget.label:setText(list[pos][2])    
-    updateOutfit()
   end
+
   widget.nextButton.onClick = function()
     if pos == #list then
       pos = 1
     else
       pos = pos + 1
     end
-    local outfit = widget.creature:getOutfit()
-    if id == "shader" then
-      outfit.shader = list[pos][2]
+    if id == "healthBar" or id == "manaBar" then
+      if id == "healthBar" then
+        if pos ~= 1 then
+          widget.bar:setImageSource(g_healthBars.getHealthBarPath(pos - 1))
+        else
+          widget.bar:setImageSource("")
+        end
+      elseif id == "manaBar" then
+        if pos ~= 1 then
+          widget.bar:setImageSource(g_healthBars.getManaBarPath(pos - 1))
+        else
+          widget.bar:setImageSource("")
+        end
+      end
+      widget.bar.selected = pos - 1
+      widget.label:setText(list[pos][2])
     else
-      outfit.type = list[pos][1]    
+      local outfit = widget.creature:getOutfit()
+      if id == "shader" then
+        outfit.shader = list[pos][2]
+      else
+        outfit.type = list[pos][1]
+      end
+      widget.outfit = list[pos]
+      widget.creature:setOutfit(outfit)
+      widget.label:setText(list[pos][2])
+      updateOutfit()
     end
-    widget.outfit = list[pos]
-    widget.creature:setOutfit(outfit)
-    widget.label:setText(list[pos][2])   
-    updateOutfit()    
-  end  
+  end
   return widget
 end
 
-function create(currentOutfit, outfitList, mountList, wingList, auraList, shaderList)
+function create(currentOutfit, outfitList, mountList, wingList, auraList, shaderList, hpBarList, manaBarList)
   if ignoreNextOutfitWindow and g_clock.millis() < ignoreNextOutfitWindow + 1000 then
     return
   end
@@ -124,58 +191,65 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
 
   destroy()
 
-  outfitWindow = g_ui.displayUI('outfitwindow')
-  
+  outfitWindow = g_ui.displayUI("outfitwindow")
+
   setupSelector(outfitWindow.type, "type", currentOutfit, outfitList)
-  
+
   local outfit = outfitWindow.type.creature:getOutfit()
   outfit.head = currentOutfit.head
   outfit.body = currentOutfit.body
   outfit.legs = currentOutfit.legs
   outfit.feet = currentOutfit.feet
   outfitWindow.type.creature:setOutfit(outfit)
-  
+
   if g_game.getFeature(GamePlayerMounts) then
-    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "mount", currentOutfit, mountList)
+    setupSelector(g_ui.createWidget("OutfitSelectorPanel", outfitWindow.extensions), "mount", currentOutfit, mountList)
   end
   if g_game.getFeature(GameWingsAndAura) then
-    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "wings", currentOutfit, wingList)
-    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "aura", currentOutfit, auraList)
+    setupSelector(g_ui.createWidget("OutfitSelectorPanel", outfitWindow.extensions), "wings", currentOutfit, wingList)
+    setupSelector(g_ui.createWidget("OutfitSelectorPanel", outfitWindow.extensions), "aura", currentOutfit, auraList)
   end
   if g_game.getFeature(GameOutfitShaders) then
-    setupSelector(g_ui.createWidget('OutfitSelectorPanel', outfitWindow.extensions), "shader", currentOutfit, shaderList)  
+    setupSelector(g_ui.createWidget("OutfitSelectorPanel", outfitWindow.extensions), "shader", currentOutfit, shaderList)
   end
-  
+
+  if g_game.getFeature(GameHealthInfoBackground) then
+    setupSelector(g_ui.createWidget("BarSelectorPanel", outfitWindow.extensions), "healthBar", currentOutfit, hpBarList)
+    setupSelector(g_ui.createWidget("BarSelectorPanel", outfitWindow.extensions), "manaBar", currentOutfit, manaBarList)
+  end
+
   if not outfitWindow.extensions:getFirstChild() then
     outfitWindow:setHeight(outfitWindow:getHeight() - 128)
   end
-  
-  for j=0,6 do
-    for i=0,18 do
-      local colorBox = g_ui.createWidget('ColorBox', outfitWindow.colorBoxPanel)
-      local outfitColor = getOutfitColor(j*19 + i)
-      colorBox:setImageColor(outfitColor)
-      colorBox:setId('colorBox' .. j*19+i)
-      colorBox.colorId = j*19 + i
 
-      if j*19 + i == currentOutfit.head then
+  for j = 0, 6 do
+    for i = 0, 18 do
+      local colorBox = g_ui.createWidget("ColorBox", outfitWindow.colorBoxPanel)
+      local outfitColor = getOutfitColor(j * 19 + i)
+      colorBox:setImageColor(outfitColor)
+      colorBox:setId("colorBox" .. j * 19 + i)
+      colorBox.colorId = j * 19 + i
+
+      if j * 19 + i == currentOutfit.head then
         currentColorBox = colorBox
         colorBox:setChecked(true)
       end
       colorBox.onCheckChange = onColorCheckChange
-      colorBoxes[#colorBoxes+1] = colorBox
+      colorBoxes[#colorBoxes + 1] = colorBox
     end
   end
-  
+
   -- set addons
   addons = {
-    [1] = {widget = outfitWindow:getChildById('addon1'), value = 1},
-    [2] = {widget = outfitWindow:getChildById('addon2'), value = 2},
-    [3] = {widget = outfitWindow:getChildById('addon3'), value = 4}
+    [1] = {widget = outfitWindow:getChildById("addon1"), value = 1},
+    [2] = {widget = outfitWindow:getChildById("addon2"), value = 2},
+    [3] = {widget = outfitWindow:getChildById("addon3"), value = 4}
   }
 
   for _, addon in pairs(addons) do
-    addon.widget.onCheckChange = function(self) onAddonCheckChange(self, addon.value) end
+    addon.widget.onCheckChange = function(self)
+      onAddonCheckChange(self, addon.value)
+    end
   end
 
   if currentOutfit.addons and currentOutfit.addons > 0 then
@@ -190,7 +264,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
   outfitWindow.primary.onCheckChange = onClotheCheckChange
   outfitWindow.secondary.onCheckChange = onClotheCheckChange
   outfitWindow.detail.onCheckChange = onClotheCheckChange
-  
+
   updateOutfit()
 end
 
@@ -224,11 +298,15 @@ end
 function accept()
   local outfit = outfitWindow.type.creature:getOutfit()
   for i, child in pairs(outfitWindow.extensions:getChildren()) do
-    if child.creature:getCreature() then
-      if child:getId() == "shader" then
-        outfit[child:getId()] = child.creature:getOutfit().shader
-      else
-        outfit[child:getId()] = child.creature:getOutfit().type
+    if child:getId() == "healthBar" or child:getId() == "manaBar" then
+      outfit[child:getId()] = child.bar.selected
+    else
+      if child.creature:getCreature() then
+        if child:getId() == "shader" then
+          outfit[child:getId()] = child.creature:getOutfit().shader
+        else
+          outfit[child:getId()] = child.creature:getOutfit().type
+        end
       end
     end
   end
@@ -259,16 +337,16 @@ function onColorCheckChange(colorBox)
       currentColorBox:setChecked(false)
       currentColorBox.onCheckChange = onColorCheckChange
     end
-    
+
     currentColorBox = colorBox
 
-    if currentClotheButtonBox:getId() == 'head' then
+    if currentClotheButtonBox:getId() == "head" then
       outfit.head = currentColorBox.colorId
-    elseif currentClotheButtonBox:getId() == 'primary' then
+    elseif currentClotheButtonBox:getId() == "primary" then
       outfit.body = currentColorBox.colorId
-    elseif currentClotheButtonBox:getId() == 'secondary' then
+    elseif currentClotheButtonBox:getId() == "secondary" then
       outfit.legs = currentColorBox.colorId
-    elseif currentClotheButtonBox:getId() == 'detail' then
+    elseif currentClotheButtonBox:getId() == "detail" then
       outfit.feet = currentColorBox.colorId
     end
     outfitWindow.type.creature:setOutfit(outfit)
@@ -289,22 +367,24 @@ function onClotheCheckChange(clotheButtonBox)
     currentClotheButtonBox = clotheButtonBox
 
     local colorId = 0
-    if currentClotheButtonBox:getId() == 'head' then
+    if currentClotheButtonBox:getId() == "head" then
       colorId = outfit.head
-    elseif currentClotheButtonBox:getId() == 'primary' then
+    elseif currentClotheButtonBox:getId() == "primary" then
       colorId = outfit.body
-    elseif currentClotheButtonBox:getId() == 'secondary' then
+    elseif currentClotheButtonBox:getId() == "secondary" then
       colorId = outfit.legs
-    elseif currentClotheButtonBox:getId() == 'detail' then
+    elseif currentClotheButtonBox:getId() == "detail" then
       colorId = outfit.feet
     end
-    outfitWindow:recursiveGetChildById('colorBox' .. colorId):setChecked(true)
+    outfitWindow:recursiveGetChildById("colorBox" .. colorId):setChecked(true)
   end
 end
 
 function updateOutfit()
   local currentSelection = outfitWindow.type.outfit
-  if not currentSelection then return end
+  if not currentSelection then
+    return
+  end
   local outfit = outfitWindow.type.creature:getOutfit()
 
   local availableAddons = currentSelection[3]
@@ -333,4 +413,3 @@ function updateOutfit()
     end
   end
 end
-
