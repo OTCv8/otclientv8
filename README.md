@@ -13,6 +13,7 @@ On Windows you may need to install https://aka.ms/vs/16/release/vc_redist.x86.ex
 ### Forum: http://otclient.net
 ### Discord: https://discord.gg/feySup6
 ### Website: http://otclient.ovh
+### Wiki: https://github.com/OTCv8/otclientv8/wiki
 
 ## Version for developers
 
@@ -52,6 +53,7 @@ In this repository, you can find clean, always up-to-date, ready to use version 
 ### Check out directory `tutorials` to see how activate and use new features
 
 ### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
+### Old tools, like updater and tutorials has been moved to: https://github.com/OTCv8/otcv8-tools
 
 ## Quick Start for players
 
