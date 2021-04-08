@@ -50,10 +50,10 @@ In this repository, you can find clean, always up-to-date, ready to use version 
 - Bot protection (extra paid option)
 
 ### And hundreds of smaller features, optimizations and bug fixes!
-### Check out directory `tutorials` to see how activate and use new features
+### Check out [Wiki page](https://github.com/OTCv8/otclientv8/wiki) to see how activate and use new features
 
-### There's github repo of tfs 1.3 with otclientv8 features: https://github.com/OTCv8/otclientv8-tfs
-### Old tools, like updater and tutorials has been moved to: https://github.com/OTCv8/otcv8-tools
+### Old tools, like updater and tutorials has been moved to: [OTCv8/otcv8-tools](https://github.com/OTCv8/otcv8-tools)
+### There's github repo of tfs 1.3 with otclientv8 features: [OTCv8/otclientv8-tfs](https://github.com/OTCv8/otclientv8-tfs)
 
 ## Quick Start for players
 
