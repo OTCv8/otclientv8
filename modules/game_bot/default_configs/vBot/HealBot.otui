@@ -1,0 +1,406 @@
+SpellSourceBoxPopupMenu < ComboBoxPopupMenu
+SpellSourceBoxPopupMenuButton < ComboBoxPopupMenuButton
+SpellSourceBox < ComboBox
+  @onSetup: |
+    self:addOption("Current Mana")
+    self:addOption("Current Health")
+    self:addOption("Mana Percent")
+    self:addOption("Health Percent")
+    self:addOption("Burst Damage")
+
+SpellConditionBoxPopupMenu < ComboBoxPopupMenu
+SpellConditionBoxPopupMenuButton < ComboBoxPopupMenuButton
+SpellConditionBox < ComboBox
+  @onSetup: |
+    self:addOption("Below")
+    self:addOption("Above")
+    self:addOption("Equal To")
+
+SpellEntry < Label
+  background-color: alpha
+  text-offset: 18 0
+  focusable: true
+  height: 16
+
+  CheckBox
+    id: enabled
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    width: 15
+    height: 15
+    margin-top: 2
+    margin-left: 3
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('x')
+    anchors.right: parent.right
+    margin-right: 15
+    width: 15
+    height: 15
+
+ItemEntry < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+  height: 16
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('x')
+    anchors.right: parent.right
+    margin-right: 15
+    width: 15
+    height: 15                       
+
+SpellHealing < Panel
+  image-source: /images/ui/panel_flat
+  image-border: 6
+  padding: 3
+  size: 490 130
+
+  Label
+    id: whenSpell
+    anchors.left: spellList.right
+    anchors.top: parent.top
+    text: When
+    margin-top: 10
+    margin-left: 7
+
+  SpellSourceBox
+    id: spellSource
+    anchors.top: parent.top
+    anchors.left: whenSpell.right
+    margin-top: 5
+    margin-left: 35
+    width: 128
+
+  Label
+    id: isSpell
+    anchors.left: spellList.right
+    anchors.top: whenSpell.bottom
+    text: Is
+    margin-top: 9
+    margin-left: 7 
+
+  SpellConditionBox
+    id: spellCondition
+    anchors.left: spellSource.left
+    anchors.top: spellSource.bottom   
+    marin-top: 15
+    width: 80
+
+  TextEdit
+    id: spellValue
+    anchors.left: spellCondition.right
+    anchors.top: spellCondition.top
+    anchors.bottom: spellCondition.bottom
+    width: 49
+
+  Label
+    id: castSpell
+    anchors.left: isSpell.left
+    anchors.top: isSpell.bottom
+    text: Cast  
+    margin-top: 9
+
+  TextEdit
+    id: spellFormula
+    anchors.left: spellCondition.left
+    anchors.top: spellCondition.bottom
+    anchors.right: spellValue.right
+
+  Label
+    id: manaSpell
+    anchors.left: castSpell.left
+    anchors.top: castSpell.bottom
+    text: Mana Cost:
+    margin-top: 8
+
+  TextEdit
+    id: manaCost
+    anchors.left: spellFormula.left
+    anchors.top: spellFormula.bottom
+    width: 40 
+
+  TextList
+    id: spellList
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    padding: 1
+    size: 270 116    
+    margin-bottom: 3
+    margin-left: 3
+    vertical-scrollbar: spellListScrollBar
+
+  VerticalScrollBar
+    id: spellListScrollBar
+    anchors.top: spellList.top
+    anchors.bottom: spellList.bottom
+    anchors.right: spellList.right
+    step: 14
+    pixels-scroll: true
+
+  Button
+    id: addSpell
+    anchors.right: spellFormula.right
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 10
+    text: Add
+    size: 40 17
+    font: cipsoftFont
+
+  Button
+    id: MoveUp
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 5
+    text: Move Up
+    size: 55 17
+    font: cipsoftFont
+
+  Button
+    id: MoveDown
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 5
+    text: Move Down
+    size: 55 17
+    font: cipsoftFont  
+
+ItemHealing < Panel
+  image-source: /images/ui/panel_flat
+  image-border: 6
+  padding: 3
+  size: 490 130
+
+  Label
+    id: whenItem
+    anchors.left: itemList.right
+    anchors.top: parent.top
+    text: When
+    margin-top: 10
+    margin-left: 7
+
+  SpellSourceBox
+    id: itemSource
+    anchors.top: parent.top
+    anchors.left: whenItem.right
+    margin-top: 5
+    margin-left: 35
+    width: 128
+
+  Label
+    id: isItem
+    anchors.left: itemList.right
+    anchors.top: whenItem.bottom
+    text: Is
+    margin-top: 9
+    margin-left: 7 
+
+  SpellConditionBox
+    id: itemCondition
+    anchors.left: itemSource.left
+    anchors.top: itemSource.bottom   
+    marin-top: 15
+    width: 80
+
+  TextEdit
+    id: itemValue
+    anchors.left: itemCondition.right
+    anchors.top: itemCondition.top
+    anchors.bottom: itemCondition.bottom
+    width: 49
+
+  Label
+    id: useItem
+    anchors.left: isItem.left
+    anchors.top: isItem.bottom
+    text: Use  
+    margin-top: 15
+
+  BotItem
+    id: itemId
+    anchors.left: itemCondition.left
+    anchors.top: itemCondition.bottom
+
+  TextList
+    id: itemList
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    padding: 1
+    size: 270 116  
+    margin-top: 3
+    margin-bottom: 3
+    margin-left: 3
+    vertical-scrollbar: itemListScrollBar
+
+  VerticalScrollBar
+    id: itemListScrollBar
+    anchors.top: itemList.top
+    anchors.bottom: itemList.bottom
+    anchors.right: itemList.right
+    step: 14
+    pixels-scroll: true
+
+  Button
+    id: addItem
+    anchors.right: itemValue.right
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 10
+    text: Add
+    size: 40 17
+    font: cipsoftFont
+
+  Button
+    id: MoveUp
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 5
+    text: Move Up
+    size: 55 17
+    font: cipsoftFont
+
+  Button
+    id: MoveDown
+    anchors.right: prev.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-right: 5
+    text: Move Down
+    size: 55 17
+    font: cipsoftFont 
+
+HealWindow < MainWindow
+  !text: tr('Self Healer')
+  size: 800 350
+  @onEscape: self:hide()
+
+  SpellHealing
+    id: spells
+    anchors.top: parent.top
+    anchors.left: parent.left
+
+  ItemHealing
+    id: items
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 10
+
+  VerticalSeparator
+    id: sep
+    anchors.top: parent.top
+    anchors.left: prev.right
+    anchors.bottom: separator.top
+    margin-left: 10
+    margin-bottom: 5
+
+  Label
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-align: center
+    text: Additional Options
+
+  HorizontalSeparator
+    anchors.left: prev.left
+    anchors.top: prev.bottom  
+    anchors.right: prev.right
+    margin-top: 5
+    margin-left: 10
+
+  CheckBox 
+    id: Cooldown
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 10
+    margin-left: 5
+    width: 200
+    text: Check spell cooldowns
+
+  CheckBox 
+    id: Visible
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Items must be visible (recommended)
+
+  CheckBox 
+    id: Delay
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Don't use items when interacting
+
+  CheckBox 
+    id: Interval
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Additional delay when looting corpses
+
+  CheckBox 
+    id: Conditions
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Also check conditions from RL Tibia
+
+  CheckBox 
+    id: MessageDelay
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 250
+    text: Cooldown based on "Aaaah..." message
+
+  Label
+    anchors.left: Visible.left
+    anchors.bottom: separator.top
+    margin-bottom: 8
+    text: Profile:
+
+  TextEdit
+    id: Name
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    margin-left: 5
+
+  Button
+    id: ResetSettings
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.right: parent.right
+    text: Reset Settings
+    margin-top: 1
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5

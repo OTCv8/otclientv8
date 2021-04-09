@@ -1,0 +1,203 @@
+PlayerName < Label
+  background-color: alpha
+  text-offset: 2 0
+  focusable: true
+  height: 16
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('x')
+    anchors.right: parent.right
+    margin-right: 15
+    width: 15
+    height: 15
+
+PlayerListsWindow < MainWindow
+  !text: tr('Player Lists')
+  size: 570 350
+  @onEscape: self:hide()
+
+  Label
+    anchors.left: FriendList.left
+    anchors.top: parent.top
+    anchors.right: FriendList.right
+    text-align: center
+    text: Friends List
+    margin-right: 3 
+
+  TextList
+    id: FriendList
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 15
+    margin-bottom: 5
+    margin-right: 3
+    padding: 1
+    width: 180
+    height: 180
+    vertical-scrollbar: FriendListScrollBar
+
+  VerticalScrollBar
+    id: FriendListScrollBar
+    anchors.top: FriendList.top
+    anchors.bottom: FriendList.bottom
+    anchors.right: FriendList.right
+    step: 14
+    pixels-scroll: true
+
+  TextEdit
+    id: FriendName
+    anchors.right: FriendList.right
+    anchors.left: FriendList.left
+    anchors.top: FriendList.bottom
+    margin-right: 3    
+    margin-top: 5
+
+  Button
+    id: AddFriend
+    !text: tr('Add Friend')
+    anchors.right: FriendList.right
+    anchors.left: FriendList.left
+    anchors.top: prev.bottom
+    margin-right: 3    
+    margin-top: 3
+
+  Label
+    anchors.right: EnemyList.right
+    anchors.top: parent.top
+    anchors.left: EnemyList.left
+    text-align: center
+    text: Enemy List
+    margin-left: 3     
+
+  TextList
+    id: EnemyList
+    anchors.top: parent.top
+    anchors.left: FriendList.right
+    margin-top: 15
+    margin-bottom: 5
+    margin-left: 3
+    padding: 1
+    width: 180
+    height: 180
+    vertical-scrollbar: EnemyListScrollBar
+
+  VerticalScrollBar
+    id: EnemyListScrollBar
+    anchors.top: EnemyList.top
+    anchors.bottom: EnemyList.bottom
+    anchors.right: EnemyList.right
+    step: 14
+    pixels-scroll: true
+
+  TextEdit
+    id: EnemyName
+    anchors.left: EnemyList.left
+    anchors.right: EnemyList.right
+    anchors.top: EnemyList.bottom
+    margin-left: 3    
+    margin-top: 5
+
+  Button
+    id: AddEnemy
+    !text: tr('Add Enemy')
+    anchors.left: EnemyList.left
+    anchors.right: EnemyList.right
+    anchors.top: prev.bottom
+    margin-left: 3    
+    margin-top: 3
+
+  Label
+    anchors.right: BlackList.right
+    anchors.top: parent.top
+    anchors.left: BlackList.left
+    text-align: center
+    text: Anty RS List
+    margin-left: 3   
+
+  TextList
+    id: BlackList
+    anchors.top: parent.top
+    anchors.left: EnemyList.right
+    margin-top: 15
+    margin-bottom: 5
+    margin-left: 3
+    padding: 1
+    width: 180
+    height: 180
+    vertical-scrollbar: BlackListScrollBar
+
+  VerticalScrollBar
+    id: BlackListScrollBar
+    anchors.top: BlackList.top
+    anchors.bottom: BlackList.bottom
+    anchors.right: BlackList.right
+    step: 14
+    pixels-scroll: true
+
+  TextEdit
+    id: BlackName
+    anchors.left: BlackList.left
+    anchors.right: BlackList.right
+    anchors.top: BlackList.bottom
+    margin-left: 3    
+    margin-top: 5
+
+  Button
+    id: AddBlack
+    !text: tr('Add Anty-RS')
+    anchors.left: BlackList.left
+    anchors.right: BlackList.right
+    anchors.top: prev.bottom
+    margin-left: 3    
+    margin-top: 3
+
+  BotSwitch
+    id: Members
+    anchors.left: FriendList.left
+    anchors.right: FriendList.right
+    anchors.top: AddEnemy.bottom
+    margin-top: 10
+    width: 114
+    text-align: center
+    text: Group Members  
+
+  BotSwitch
+    id: Outfit
+    anchors.left: EnemyList.left
+    anchors.right: EnemyList.right
+    anchors.top: AddEnemy.bottom
+    margin-top: 10
+    width: 114
+    text-align: center
+    text: Color Outfits
+
+  BotSwitch
+    id: Marks
+    anchors.left: BlackList.left
+    anchors.right: BlackList.right
+    anchors.top: AddEnemy.bottom
+    margin-top: 10
+    width: 114
+    text-align: center
+    text: Not Ally = Enemy         
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5    
