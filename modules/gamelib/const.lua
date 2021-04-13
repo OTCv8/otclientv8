@@ -198,6 +198,7 @@ GamePacketCompression = 111
 
 GameOldInformationBar = 112
 GameHealthInfoBackground = 113
+GameWingOffset = 114
 
 LastGameFeature = 130
         
