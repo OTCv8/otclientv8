@@ -7,7 +7,7 @@ end
 context.hasCondition = function(condition) return bit.band(context.player:getStates(), condition) > 0 end
 
 context.isPoisioned = function() return context.hasCondition(PlayerStates.Poison) end
-context.isBurnining = function() return context.hasCondition(PlayerStates.Burn) end
+context.isBurning = function() return context.hasCondition(PlayerStates.Burn) end
 context.isEnergized = function() return context.hasCondition(PlayerStates.Energy) end
 context.isDrunk = function() return context.hasCondition(PlayerStates.Drunk) end
 context.hasManaShield = function() return context.hasCondition(PlayerStates.ManaShield) end
