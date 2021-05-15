@@ -124,7 +124,7 @@ context.usewith = function(thing, target, subtype)
   if type(thing) == 'number' then  
     return g_game.useInventoryItemWith(thing, target, subtype)
   else
-    return g_game.useWith(item, target, subtype)
+    return g_game.useWith(thing, target, subtype)
   end
 end
 context.useWith = context.usewith

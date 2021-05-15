@@ -477,6 +477,7 @@ function initCallbacks()
     onChannelEvent = botChannelEvent,
     onImbuementWindow = botOnImbuementWindow,
     onModalDialog = botOnModalDialog,
+    onAttackingCreatureChange = botOnAttackingCreatureChange
   })
   
   connect(Tile, {
@@ -532,6 +533,7 @@ function terminateCallbacks()
     onChannelEvent = botChannelEvent,
     onImbuementWindow = botOnImbuementWindow,
     onModalDialog = botOnModalDialog,
+    onAttackingCreatureChange = botOnAttackingCreatureChange
   })
   
   disconnect(Tile, {
@@ -716,4 +718,9 @@ end
 function botOnModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority) end)
+end
+
+function botOnAttackingCreatureChange(creature, oldCreature)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onAttackingCreatureChange(creature,oldCreature) end)
 end

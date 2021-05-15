@@ -64,7 +64,8 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onTurn = {},
     onWalk = {},
     onImbuementWindow = {},
-    onModalDialog = {}
+    onModalDialog = {},
+    onAttackingCreatureChange = {}
   }
   
   -- basic functions & classes
@@ -353,6 +354,11 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
       onModalDialog = function(id, title, message, buttons, enterButton, escapeButton, choices, priority)
         for i, callback in ipairs(context._callbacks.onModalDialog) do
           callback(id, title, message, buttons, enterButton, escapeButton, choices, priority)
+        end
+      end,
+      onAttackingCreatureChange = function(creature, oldCreature)
+        for i, callback in ipairs(context._callbacks.onAttackingCreatureChange) do
+          callback(creature, oldCreature)
         end
       end,
     }    

@@ -228,6 +228,15 @@ MainWindow
     @onClick: modules.game_shop.showHistory()
 
   Button
+    id: transferOpen
+    !text: tr('Transfer Coins')
+    width: 128
+    anchors.left: prev. right
+    margin-left: 10
+    anchors.verticalCenter: prev.verticalCenter
+    @onClick: modules.game_shop.showTransfer()
+
+  Button
     id: buttonCancel
     !text: tr('Close')
     width: 64

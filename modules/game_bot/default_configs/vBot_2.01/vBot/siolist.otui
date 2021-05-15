@@ -1,0 +1,107 @@
+SioListWindow < MainWindow
+  !text: tr('Healer Options')
+  size: 200 310
+  @onEscape: self:hide()
+
+  BotSwitch
+    id: spell
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text: Spell Healing
+    text-align: center
+
+  BotTextEdit
+    id: spellName
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: spell.bottom
+    margin-top: 3
+
+  BotItem
+    id: itemId
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    margin-top: 10
+
+  BotSwitch
+    id: item
+    anchors.top: prev.top
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.bottom: prev.verticalCenter
+    text-align: center
+    text: Item Healing  
+    margin-left: 2
+
+  BotLabel
+    id: distText
+    anchors.top: itemId.verticalCenter
+    anchors.left: itemId.right
+    anchors.right: parent.right
+    anchors.bottom: itemId.bottom
+    text-align: center
+    text: Max Distance
+
+  HorizontalScrollBar
+    id: Distance
+    anchors.left: parent.left
+    anchors.top: itemId.bottom
+    anchors.right: parent.right
+    margin-top: 3
+    minimum: 1
+    maximum: 10
+    step: 1  
+
+  BotLabel
+    id: manaInfo
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: Distance.bottom
+    text-align: center
+    margin-top: 15
+
+  HorizontalScrollBar
+    id: minMana
+    anchors.left: spellName.left
+    anchors.right: spellName.right
+    anchors.top: manaInfo.bottom
+    margin-top: 2
+    minimum: 1
+    maximum: 100
+    step: 1
+
+  BotLabel
+    id: friendHp
+    anchors.left: spellName.left
+    anchors.right: spellName.right
+    anchors.top: prev.bottom
+    text-align: center
+    margin-top: 10
+
+  HorizontalScrollBar
+    id: minFriendHp
+    anchors.left: spellName.left
+    anchors.right: spellName.right
+    anchors.top: friendHp.bottom
+    margin-top: 2
+    minimum: 1
+    maximum: 100
+    step: 1   
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5    

@@ -2,10 +2,12 @@
 local SHOP_EXTENTED_OPCODE = 201
 
 shop = nil
+transferWindow = nil
 local otcv8shop = false
 local shopButton = nil
 local msgWindow = nil
 local browsingHistory = false
+local transferValue = 0
 
 -- for classic store
 local storeUrl = ""
@@ -51,6 +53,8 @@ function init()
   if g_game.isOnline() then
     check()
   end
+  createShop()
+  createTransferWindow()
 end
 
 function terminate()
@@ -107,6 +111,29 @@ function show()
   shop:focus()
 end
 
+function softHide()
+  if not transferWindow then return end
+
+  transferWindow:hide()
+  shop:show()
+end
+
+function showTransfer()
+  if not shop or not transferWindow then return end
+
+  hide()
+  transferWindow:show()
+  transferWindow:raise()
+  transferWindow:focus()
+end
+
+function hideTransfer()
+  if not shop or not transferWindow then return end
+
+  transferWindow:hide()
+  show()
+end
+
 function toggle()
   if not shop then
     return
@@ -126,6 +153,11 @@ function createShop()
   connect(shop.categories, { onChildFocusChange = changeCategory })
 end
 
+function createTransferWindow()
+  if transferWindow then return end
+  transferWindow = g_ui.displayUI('transfer')
+  transferWindow:hide()
+end
 
 function onStoreInit(url, coins)
   if otcv8shop then return end
@@ -141,6 +173,7 @@ function onStoreInit(url, coins)
   end
   coinsPacketSize = coins
   createShop()
+  createTransferWindow()
 end
 
 function onStoreCategories(categories)
@@ -228,23 +261,46 @@ end
 
 function onStorePurchase(message)
   if not shop or otcv8shop then return end
-  processMessage({title="Successful shop purchase", msg=message})
+  if not transferWindow:isVisible() then
+    processMessage({title="Successful shop purchase", msg=message})
+  else
+    processMessage({title="Successfuly gifted coins", msg=message})
+    softHide()
+  end
 end
 
 function onStoreError(errorType, message)
   if not shop or otcv8shop then return end
-  processMessage({title="Shop error", msg=message})
+  if not transferWindow:isVisible() then
+    processMessage({title="Shop Error", msg=message})
+  else
+    processMessage({title="Gift coins error", msg=message})
+  end
 end
 
 function onCoinBalance(coins, transferableCoins)
   if not shop or otcv8shop then return end
   shop.infoPanel.points:setText(tr("Points:") .. " " .. coins)
+  transferWindow.coinsBalance:setText(tr('Transferable Tibia Coins: ') .. coins)
+  transferWindow.coinsAmount:setMaximum(coins)
   shop.infoPanel.buy:hide()
   shop.infoPanel:setHeight(20)
 end
 
+function transferCoins()
+  if not transferWindow then return end
+  local amount = 0
+  amount = transferWindow.coinsAmount:getValue()
+  local recipient = transferWindow.recipient:getText()
+
+  g_game.transferCoins(recipient, amount)
+  transferWindow.recipient:setText('')
+  transferWindow.coinsAmount:setValue(0)
+end
+
 function onExtendedJSONOpcode(protocol, code, json_data)
   createShop()
+  createTransferWindow()
 
   local action = json_data['action']
   local data = json_data['data']
