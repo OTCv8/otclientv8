@@ -136,6 +136,10 @@ function UIMiniWindow:setup()
         self:minimize()
       end
     end
+  self:getChildById('bottomResizeBorder').onDoubleClick = function()
+    local resizeBorder = self:getChildById('bottomResizeBorder')
+    self:setHeight(resizeBorder:getMinimum())
+  end
 
   local oldParent = self:getParent()
 

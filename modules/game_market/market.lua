@@ -1428,6 +1428,6 @@ function Market.onCoinBalance(coins, transferableCoins)
   if not marketItems[MarketCategory.TibiaCoins] then return end
   for i = 1, #marketItems[MarketCategory.TibiaCoins] do
     local item = marketItems[MarketCategory.TibiaCoins][i].displayItem
-    depotItems[item:getId()] = tibiaCoins
+    information.depotItems[item:getId()] = tibiaCoins
   end  
 end
