@@ -5,10 +5,10 @@ It has been created as alternative client for game called [Tibia](https://tibia.
 It works well even on 12 years old computers. In April 2021 it reached 290k unique installations, including 80k android installations.
 
 Supported platforms:
-- Windows (min. Windows 7)
+- Windows (min. Windows 7, requires https://aka.ms/vs/16/release/vc_redist.x86.exe)
 - Android (min. 5.0)
-
-On Windows you may need to install https://aka.ms/vs/16/release/vc_redist.x86.exe to make it work.
+- Linux
+- Mac Os (requires https://www.xquartz.org/)
 
 ### Forum: http://otclient.net
 ### Discord: https://discord.gg/feySup6
