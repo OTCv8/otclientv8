@@ -29,16 +29,16 @@ function init()
   bottomPanel:moveChildToIndex(actionPanel1, 1)
   actionPanel2 = g_ui.loadUI('actionbar', bottomPanel)
   bottomPanel:moveChildToIndex(actionPanel2, 1)
-  
+
   actionConfig = g_configs.create("/actionbar.otml")
-    
+
   connect(g_game, {
     onGameStart = online,
     onGameEnd = offline,
     onSpellGroupCooldown = onSpellGroupCooldown,
     onSpellCooldown = onSpellCooldown
   })
-  
+
   if g_game.isOnline() then
     online()
   end
@@ -156,7 +156,27 @@ function setupAction(action)
     if type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
       local gameRootPanel = modules.game_interface.getRootPanel()
       g_keyboard.bindKeyPress(config.hotkey, action.callback, gameRootPanel)
-      action.hotkeyLabel:setText(config.hotkey)
+      local text = config.hotkey
+      -- formatting similar to cip Tibia 12
+      local values = {
+        {"Shift", "S"},
+        {"Ctrl", "C"},
+        {"+", ""},
+        {"PageUp", "PgUp"},
+        {"PageDown", "PgDown"},
+        {"Enter", "Return"},
+        {"Insert", "Ins"},
+        {"Delete", "Del"},
+        {"Escape", "Esc"}
+      }
+      for i, v in pairs(values) do
+        text = text:gsub(v[1], v[2])
+      end
+      if text:len() > 6 then
+        text = text:sub(text:len()-3,text:len())
+        text = "..."..text
+      end
+      action.hotkeyLabel:setText(text)
     else
       action.hotkeyLabel:setText("")
     end
@@ -283,7 +303,8 @@ function actionOnMouseRelease(action, mousePosition, mouseButton)
         end
       end
       assignWindow.addButton.onClick = function()
-        updateAction(action, {hotkey=tostring(assignWindow.comboPreview.keyCombo)})
+        local text = tostring(assignWindow.comboPreview.keyCombo)
+        updateAction(action, {hotkey=text})
         assignWindow:destroy()
       end
       hotkeyAssignWindow = assignWindow
@@ -319,7 +340,7 @@ function onSpellGroupCooldown(groupId, duration)
   for index, panel in ipairs({actionPanel1, actionPanel2}) do
     for i, child in ipairs(panel.tabBar:getChildren()) do
       if child.spell and child.spell.group then
-        for group, duration in pairs(child.spell.group) do
+        for group, dur in pairs(child.spell.group) do
           if groupId == group then
             startCooldown(child, duration)
           end
@@ -343,10 +364,20 @@ function updateCooldown(action)
   local timeleft = action.cooldownTill - g_clock.millis()
   if timeleft <= 30 then
     action.cooldown:setPercent(100)
-    action.cooldownEvent = nil    
+    action.cooldownEvent = nil
+    action.cooldown:setText("")
     return
   end
   local duration = action.cooldownTill - action.cooldownStart
+  local formattedText
+  if timeleft > 60000 then
+    formattedText = math.floor(timeleft / 60000) .. "m"
+  else
+    formattedText = timeleft/1000
+    formattedText = math.floor(formattedText * 10) / 10
+    formattedText = math.floor(formattedText) .. "." .. math.floor(formattedText * 10) % 10
+  end
+  action.cooldown:setText(formattedText) 
   action.cooldown:setPercent(100 - math.floor(100 * timeleft / duration))
   action.cooldownEvent = scheduleEvent(function() updateCooldown(action) end, 30)
 end

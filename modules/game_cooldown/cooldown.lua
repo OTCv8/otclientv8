@@ -185,6 +185,7 @@ function onSpellCooldown(iconId, duration)
   else
     progressRect:setPercent(0)
   end
+  local spell, profile, spellName = Spells.getSpellByIcon(iconId)
   progressRect:setTooltip(spellName)
 
   local updateFunc = function()

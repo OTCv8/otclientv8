@@ -37,13 +37,14 @@ ActionButton < Panel
   Label
     id: hotkeyLabel
     anchors.top: parent.top
-    anchors.left: parent.left
+    anchors.right: parent.right
     margin: 2 3 3 3
     text-auto-resize: true
     text-wrap: false
     phantom: true
-    font: small-9px
-    color: yellow
+    font: cipsoftFont
+    color: white
+    background: #292A2A
 
   UIProgressRect
     id: cooldown
@@ -53,6 +54,8 @@ ActionButton < Panel
     phantom: true
     anchors.fill: parent
     margin: 1 1 1 1
+    font: verdana-11px-rounded
+    color: white
     
 Panel
   id: actionBar

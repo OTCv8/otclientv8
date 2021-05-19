@@ -167,6 +167,13 @@ function onContainerOpen(container, previousContainer)
   containerWindow:setContentMinimumHeight(cellSize.height)
   containerWindow:setContentMaximumHeight(cellSize.height*layout:getNumLines())
 
+  if container:hasPages() then
+    local height = containerWindow.miniwindowScrollBar:getMarginTop() + containerWindow.pagePanel:getHeight()+17
+    if containerWindow:getHeight() < height then
+      containerWindow:setHeight(height)
+    end
+  end
+
   if not previousContainer then
     local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)
     containerWindow:setContentHeight(filledLines*cellSize.height)

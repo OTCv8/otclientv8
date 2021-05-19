@@ -140,7 +140,22 @@ SpellInfo = {
     ['Avalanche'] =                {id = 115, words = 'adori mas frigo',       exhaustion = 2000,  premium = false, type = 'Conjure', icon = 'avalanche',              mana = 530,    level = 30, soul = 3, group = {[3] = 2000},               vocations = {2, 6}},
     ['Stone Shower'] =             {id = 116, words = 'adori mas tera',        exhaustion = 2000,  premium = false, type = 'Conjure', icon = 'stoneshower',            mana = 430,    level = 28, soul = 3, group = {[3] = 2000},               vocations = {2, 6}},
     ['Thunderstorm'] =             {id = 117, words = 'adori mas vis',         exhaustion = 2000,  premium = false, type = 'Conjure', icon = 'thunderstorm',           mana = 430,    level = 28, soul = 3, group = {[3] = 2000},               vocations = {1, 5}},
-    ['Holy Missile'] =             {id = 130, words = 'adori san',             exhaustion = 2000,  premium = false, type = 'Conjure', icon = 'holymissile',            mana = 350,    level = 27, soul = 3, group = {[3] = 2000},               vocations = {3, 7}}
+    ['Holy Missile'] =             {id = 130, words = 'adori san',             exhaustion = 2000,  premium = false, type = 'Conjure', icon = 'holymissile',            mana = 350,    level = 27, soul = 3, group = {[3] = 2000},               vocations = {3, 7}},
+    -- newest tibia spells
+    ['Summon Paladin Familiar'] =  {id = 171, words = 'utevo gran res sac',    exhaustion = 1800000,premium = true, type = 'Instant', icon = 'summonpaladinfamiliar',  mana = 2000,   level = 200,soul = 0, group = {[3] = 2000},               vocations = {3, 7}},
+    ['Summon Knight Familiar'] =   {id = 170, words = 'utevo gran res eq',     exhaustion = 1800000,premium = true, type = 'Instant', icon = 'summonknightfamiliar',   mana = 1000,   level = 200,soul = 0, group = {[3] = 2000},               vocations = {3, 7}},
+    ['Summon Druid Familiar'] =    {id = 172, words = 'utevo gran res dru',    exhaustion = 1800000,premium = true, type = 'Instant', icon = 'summondruidfamiliar',    mana = 3000,   level = 200,soul = 0, group = {[3] = 2000},              vocations = {3, 7}},
+    ['Summon Sorcerer Familiar'] = {id = 173, words = 'utevo gran res eq',     exhaustion = 1800000,premium = true, type = 'Instant', icon = 'summonsorcererfamiliar', mana = 3000,   level = 200,soul = 0, group = {[3] = 2000},                vocations = {3, 7}},
+    ['Chivalrous Challenge'] =     {id = 101, words = "exeta amp res",         exhaustion = 2000,  premium = true,  type = 'Instant', icon = 'chivalrouschallange',    mana = 80,     level = 150,soul = 0, group = {[3] = 2000},               vocations = {8}},
+    ['Fair Wound Cleansing'] =     {id = 102, words = 'exura med ico',         exhaustion = 1000,  premium = true,  type = 'Instant', icon = 'fairwoundcleansing',     mana = 90,     level = 300,soul = 0, group = {[2] = 1000},               vocations = {8}},
+    ['Conjure Wand of Darkness'] = {id = 92, words = 'exevo gran mort',        exhaustion = 1800000,premium = true, type = 'Conjure', icon = 'conjurewandofdarkness',  mana = 250,    level = 41, soul = 0, group = {[3] = 2000},               vocations = {1, 5}},
+    ['Expose Weakness'] =          {id = 106, words = 'exori moe',             exhaustion = 12000, premium = true,  type = 'Instant', icon = 'exposeweakness',        mana = 400,    level = 275,soul = 0, group = {[5] = 12000, [3] = 2000},  vocations = {1, 5}},
+    ['Sap Strenght'] =             {id = 105, words = 'exori kor',             exhaustion = 12000, premium = true,  type = 'Instant', icon = 'sapstrenght',           mana = 300,    level = 175,soul = 0, group = {[5] = 12000, [3] = 2000},  vocations = {1, 5}},
+    ['Great Fire Wave'] =          {id = 100, words = 'exevo gran flam hur',   exhaustion = 4000,  premium = true,  type = 'Instant', icon = 'greatfirewave',         mana = 120,    level = 38, soul = 0, group = {[1] = 2000},               vocations = {1, 5}},
+    ['Restoration'] =              {id = 103, words = "exura max vita",        exhaustion = 6000,  premium = true,  type = 'Instant', icon = 'restoration',            mana = 260,    level = 300,soul = 0, group = {[2] = 1000},               vocations = {1, 2, 5, 6}},
+    ["Nature's Embrace"] =         {id = 101, words = 'exura gran sio',        exhaustion = 60000, premium = true,  type = 'Instant', icon = 'naturesembrace',         mana = 400,    level = 300,soul = 0, group = {[2] = 1000},               vocations = {2, 6}},
+    ['Divine Dazzle'] =            {id = 101, words = 'exana amp res',         exhaustion = 16000, premium = true,  type = 'Instant', icon = 'divinedazzle',           mana = 80,     level = 250,soul = 0, group = {[3] = 2000},               vocations = {3, 7}},
+
   }--[[,
 
   ['Sample'] = {
@@ -153,8 +168,23 @@ SpellInfo = {
 }
 
 -- ['const_name'] =       {client_id, TFS_id}
--- Conversion from TFS icon id to the id used by client (icons.png order)
+-- Conversion from TFS icon id to the id used by client (icons.png order)  
 SpellIcons = {
+  -- new tibia spells, server owners - you will probably need to adjust TFS_id
+  ['summonsorcererfamiliar']    = {130, 173},
+  ['summondruidfamiliar']       = {129, 172},
+  ['summonpaladinfamiliar']     = {127, 171},
+  ['summonknightfamiliar']      = {128, 170},
+  ['exposeweakness']            = {134, 106},
+  ['sapstrenght']               = {135, 105},
+  ['restoration']               = {137, 103},
+  ['fairwoundcleansing']        = {132, 102},
+  ['chivalrouschallange']       = {131, 101},
+  ["naturesembrace"]            = {138, 101},
+  ['divinedazzle']              = {139, 101},
+  ['greatfirewave']             = {136, 100},
+  ['conjurewandofdarkness']     = {133, 92},
+  -- old spells
   ['intenserecovery']           = {16, 160},
   ['recovery']                  = {15, 159},
   ['intensewoundcleansing']     = {4, 158},
@@ -291,7 +321,7 @@ SpellIcons = {
   ['intensehealingrune']        = {74, 4},
   ['ultimatehealing']           = {1, 3},
   ['intensehealing']            = {7, 2},
-  ['lighthealing']              = {6, 1}
+  ['lighthealing']              = {6, 1},
 }
 
 VocationNames = {
@@ -309,7 +339,8 @@ SpellGroups = {
   [1] = 'Attack',
   [2] = 'Healing',
   [3] = 'Support',
-  [4] = 'Special'
+  [4] = 'Special',
+  [5] = 'Cripple'
 }
 
 Spells = {}
