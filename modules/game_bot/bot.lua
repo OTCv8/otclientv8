@@ -475,9 +475,9 @@ function initCallbacks()
     onOpenChannel = botOpenChannel,
     onCloseChannel = botCloseChannel,
     onChannelEvent = botChannelEvent,
-    onImbuementWindow = botOnImbuementWindow,
-    onModalDialog = botOnModalDialog,
-    onAttackingCreatureChange = botOnAttackingCreatureChange
+    onImbuementWindow = botImbuementWindow,
+    onModalDialog = botModalDialog,
+    onAttackingCreatureChange = botAttackingCreatureChange,
   })
   
   connect(Tile, {
@@ -499,12 +499,15 @@ function initCallbacks()
     onHealthPercentChange = botCraetureHealthPercentChange,
     onTurn = botCreatureTurn,
     onWalk = botCreatureWalk,
+    onManaChange = botManaChange,
+    onStatesChange = botStatesChange
   })
   
   connect(Container, {
     onOpen = botContainerOpen,
     onClose = botContainerClose,
-    onUpdateItem = botContainerUpdateItem 
+    onUpdateItem = botContainerUpdateItem,
+    onAddItem = botContainerAddItem,
   })
   
   connect(g_map, { 
@@ -531,9 +534,9 @@ function terminateCallbacks()
     onOpenChannel = botOpenChannel,
     onCloseChannel = botCloseChannel,
     onChannelEvent = botChannelEvent,
-    onImbuementWindow = botOnImbuementWindow,
-    onModalDialog = botOnModalDialog,
-    onAttackingCreatureChange = botOnAttackingCreatureChange
+    onImbuementWindow = botImbuementWindow,
+    onModalDialog = botModalDialog,
+    onAttackingCreatureChange = botAttackingCreatureChange
   })
   
   disconnect(Tile, {
@@ -555,12 +558,15 @@ function terminateCallbacks()
     onHealthPercentChange = botCraetureHealthPercentChange,
     onTurn = botCreatureTurn,
     onWalk = botCreatureWalk,
+    onManaChange = botManaChange,
+    onStatesChange = botStatesChange
   })
   
   disconnect(Container, {
     onOpen = botContainerOpen,
     onClose = botContainerClose,
-    onUpdateItem = botContainerUpdateItem 
+    onUpdateItem = botContainerUpdateItem,
+    onAddItem = botContainerAddItem, 
   })
   
   disconnect(g_map, { 
@@ -660,9 +666,9 @@ function botContainerClose(container)
   safeBotCall(function() botExecutor.callbacks.onContainerClose(container) end)
 end
 
-function botContainerUpdateItem(container, slot, item)
+function botContainerUpdateItem(container, slot, item, oldItem)
   if botExecutor == nil then return false end
-  safeBotCall(function() botExecutor.callbacks.onContainerUpdateItem(container, slot, item) end)
+  safeBotCall(function() botExecutor.callbacks.onContainerUpdateItem(container, slot, item, oldItem) end)
 end
 
 function botOnMissle(missle)
@@ -710,17 +716,32 @@ function botCreatureWalk(creature, oldPos, newPos)
   safeBotCall(function() botExecutor.callbacks.onWalk(creature, oldPos, newPos) end)
 end
 
-function botOnImbuementWindow(itemId, slots, activeSlots, imbuements, needItems)
+function botImbuementWindow(itemId, slots, activeSlots, imbuements, needItems)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onImbuementWindow(itemId, slots, activeSlots, imbuements, needItems) end)
 end
 
-function botOnModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority)
+function botModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority) end)
 end
 
-function botOnAttackingCreatureChange(creature, oldCreature)
+function botAttackingCreatureChange(creature, oldCreature)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onAttackingCreatureChange(creature,oldCreature) end)
+end
+
+function botManaChange(player, mana, maxMana, oldMana, oldMaxMana)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onManaChange(player, mana, maxMana, oldMana, oldMaxMana) end)
+end
+
+function botStatesChange(states, oldStates)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onStatesChange(states, oldStates) end)
+end
+
+function botContainerAddItem(container, slot, item)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onAddItem(container, slot, item) end)
 end

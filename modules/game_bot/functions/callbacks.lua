@@ -125,7 +125,7 @@ context.onContainerClose = function(callback)
   return context.callback("onContainerClose", callback)
 end
 
--- onContainerUpdateItem -- callback = function(container, slot, item)
+-- onContainerUpdateItem -- callback = function(container, slot, item, oldItem)
 context.onContainerUpdateItem = function(callback)
   return context.callback("onContainerUpdateItem", callback)
 end
@@ -188,6 +188,21 @@ end
 -- onAttackingCreatureChange -- callback = function(creature, oldCreature)
 context.onAttackingCreatureChange = function(callback)
   return context.callback("onAttackingCreatureChange", callback)
+end
+
+-- onManaChange -- callback = function(player, mana, maxMana, oldMana, oldMaxMana)
+context.onManaChange = function(callback)
+  return context.callback("onManaChange", callback)
+end
+
+-- onAddItem - callback = function(container, slot, item)
+context.onAddItem = function(callback)
+  return context.callback("onAddItem", callback)
+end
+
+-- onStatesChange - callback = function(states, oldStates)
+context.onStatesChange = function(callback)
+  return context.callback("onStatesChange", callback)
 end
 
 -- CUSTOM CALLBACKS

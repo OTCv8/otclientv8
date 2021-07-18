@@ -33,8 +33,11 @@ NPCItemBox < UICheckBox
 MainWindow
   id: npcWindow
   !text: tr('NPC Trade')
-  size: 550 340
+  size: 550 460
   @onEscape: modules.game_npctrade.closeNpcTrade()
+
+  $mobile:
+    size: 550 360
 
   TabButton
     id: buyTab
@@ -56,11 +59,14 @@ MainWindow
     anchors.top: parent.top
 
   FlatPanel
-    height: 150
+    height: 250
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
     margin-top: 5
+
+    $mobile:
+      height: 150
 
     VerticalScrollBar
       id: itemsPanelListScrollBar

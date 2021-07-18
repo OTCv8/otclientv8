@@ -65,7 +65,10 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
     onWalk = {},
     onImbuementWindow = {},
     onModalDialog = {},
-    onAttackingCreatureChange = {}
+    onAttackingCreatureChange = {},
+    onManaChange = {},
+    onStatesChange = {},
+    onAddItem = {}
   }
   
   -- basic functions & classes
@@ -75,6 +78,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.tostring = tostring
   context.math = math
   context.table = table
+  context.setmetatable = setmetatable
   context.string = string
   context.tonumber = tonumber
   context.type = type
@@ -301,9 +305,9 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
           callback(container)
         end
       end,
-      onContainerUpdateItem = function(container, slot, item)
+      onContainerUpdateItem = function(container, slot, item, oldItem)
         for i, callback in ipairs(context._callbacks.onContainerUpdateItem) do
-          callback(container, slot, item)
+          callback(container, slot, item, oldItem)
         end
       end,
       onMissle = function(missle)
@@ -361,6 +365,21 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
           callback(creature, oldCreature)
         end
       end,
+      onManaChange = function(player, mana, maxMana, oldMana, oldMaxMana)
+        for i, callback in ipairs(context._callbacks.onManaChange) do
+          callback(player, mana, maxMana, oldMana, oldMaxMana)
+        end
+      end,
+      onAddItem = function(container, slot, item)
+        for i, callback in ipairs(context._callbacks.onAddItem) do
+          callback(container, slot, item)
+        end
+      end,
+      onStatesChange = function(states, oldStates)
+        for i, callback in ipairs(context._callbacks.onStatesChange) do
+          callback(states, oldStates)
+        end
+      end
     }    
   }
 end
