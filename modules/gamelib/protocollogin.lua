@@ -110,7 +110,7 @@ function ProtocolLogin:sendLoginPacket()
     msg:addU8(1) --unknown
     msg:addU8(1) --unknown
 
-    if g_game.getClientVersion() >= 1072 then
+    if g_game.getProtocolVersion() >= 1072 then
       msg:addString(string.format('%s %s', g_graphics.getVendor(), g_graphics.getRenderer()))
     else
       msg:addString(g_graphics.getRenderer())
@@ -221,7 +221,7 @@ end
 function ProtocolLogin:parseCharacterList(msg)
   local characters = {}
 
-  if g_game.getClientVersion() > 1010 then
+  if g_game.getProtocolVersion() > 1010 then
     local worlds = {}
 
     local worldsCount = msg:getU8()

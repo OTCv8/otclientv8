@@ -124,7 +124,7 @@ function registerProtocol()
 
   registerOpcode(ServerPackets.Inspection, function(protocol, msg)
 	local bool = msg:getU8() -- IsPlayer
-	if g_game.getClientVersion() >= 1230 then
+	if g_game.getProtocolVersion() >= 1230 then
 		msg:getU8()
 	end
 	local size = msg:getU8() -- List
@@ -209,7 +209,7 @@ function registerProtocol()
 
   registerOpcode(ServerPackets.CyclopediaCharacterInfo, function(protocol, msg)
 	local type = msg:getU8()
-	if g_game.getClientVersion() >= 1215 then
+	if g_game.getProtocolVersion() >= 1215 then
 		local error = msg:getU8()
 		if error > 0 then
 			-- [1] 'No data available at the moment.'
@@ -232,7 +232,7 @@ function registerProtocol()
 			msg:getU16() -- lookTypeEx
 		end
 		msg:getU8() -- Hide stamina
-		if g_game.getClientVersion() >= 1220 then
+		if g_game.getProtocolVersion() >= 1220 then
 			msg:getU8() -- Personal habs
 			msg:getString() -- Title
 		end
@@ -268,7 +268,7 @@ function registerProtocol()
 			msg:getU16() -- Base skill
 			msg:getU16() -- Skill percent
 		end
-		if g_game.getClientVersion() < 1215 then
+		if g_game.getProtocolVersion() < 1215 then
 			msg:getU16()
 			msg:getString() -- Player name
 			msg:getString() -- Vocation
@@ -369,7 +369,7 @@ function registerProtocol()
 			msg:getU8() -- Category 0 = Standard, 1 = Quest, 2 = Store
 			msg:getU32() -- Is current ? then 1000 or 0
 		end
-		if g_game.getClientVersion() >= 1260 then
+		if g_game.getProtocolVersion() >= 1260 then
 			msg:getU8() -- Mount lookHead
 			msg:getU8() -- Mount lookBody
 			msg:getU8() -- Mount lookLegs
@@ -532,7 +532,7 @@ function registerProtocol()
 	msg:getU8() -- Is updating
 	msg:getU32() -- Normal coin
 	msg:getU32() -- Transferable coin
-	if g_game.getClientVersion() >= 1220 then
+	if g_game.getProtocolVersion() >= 1220 then
 		msg:getU32() -- Reserved auction coin
 		msg:getU32() -- Tournament coin
 	end
@@ -652,17 +652,17 @@ end
 function readAddItem(msg)
 	msg:getU16() -- Item client ID
  
-	if g_game.getClientVersion() < 1150 then
+	if g_game.getProtocolVersion() < 1150 then
 		msg:getU8() -- Unmarked
 	end
 
 	local var = msg:getU8()
-	if g_game.getClientVersion() > 1150 then
+	if g_game.getProtocolVersion() > 1150 then
 		if var == 1 then
 			msg:getU32() -- Loot flag
 		end
 
-		if g_game.getClientVersion() >= 1260 then
+		if g_game.getProtocolVersion() >= 1260 then
 			local isQuiver = msg:getU8()
 			if isQuiver == 1 then
 				msg:getU32() -- Quiver count

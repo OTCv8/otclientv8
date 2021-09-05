@@ -56,8 +56,8 @@ local function parseMarketEnter(protocol, msg)
   end
   
   local balance = 0
-  if g_game.getClientVersion() <= 1250 or not g_game.getFeature(GameTibia12Protocol) then
-    if g_game.getClientVersion() >= 981 or g_game.getClientVersion() < 944 then
+  if g_game.getProtocolVersion() <= 1250 or not g_game.getFeature(GameTibia12Protocol) then
+    if g_game.getProtocolVersion() >= 981 or g_game.getProtocolVersion() < 944 then
       balance = msg:getU64()
     else
       balance = msg:getU32()
@@ -65,7 +65,7 @@ local function parseMarketEnter(protocol, msg)
   end
   
   local vocation = -1
-  if g_game.getClientVersion() >= 944 and g_game.getClientVersion() < 950 then
+  if g_game.getProtocolVersion() >= 944 and g_game.getProtocolVersion() < 950 then
     vocation = msg:getU8() -- get vocation id
   end
   local offers = msg:getU8()
@@ -100,7 +100,7 @@ local function parseMarketDetail(protocol, msg)
     end
   end
 
-  if g_game.getClientVersion() >= 1100 then -- imbuements
+  if g_game.getProtocolVersion() >= 1100 then -- imbuements
     if msg:peekU16() ~= 0x00 then
       table.insert(descriptions, {MarketItemDescription.Last + 1, msg:getString()})
     else

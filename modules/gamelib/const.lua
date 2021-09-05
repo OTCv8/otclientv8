@@ -206,6 +206,8 @@ GameMapIgnoreCorpseCorrection = 117
 GameDontCacheFiles = 118 -- doesn't work with encryption and compression
 GameBigAurasCenter = 119 -- Automatic negative offset for aura bigger than 32x32
 GameNewUpdateWalk = 120 -- Walk update rate dependant on FPS
+GameNewCreatureStacking = 121 -- Ignore MAX_THINGS limit while adding to tile
+GameCreaturesMana = 122 -- get mana from server for creatures other than Player
 
 LastGameFeature = 130
         
