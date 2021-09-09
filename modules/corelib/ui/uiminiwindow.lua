@@ -145,7 +145,7 @@ function UIMiniWindow:setup()
 
 
   local settings = {}
-  if g_settings.getNodeSize('MiniWindows') < 100 then
+  if g_settings.getNodeSize('MiniWindows') < 50 then
     settings = g_settings.getNode('MiniWindows')
   end
 
