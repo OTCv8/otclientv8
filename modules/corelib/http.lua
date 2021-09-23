@@ -44,7 +44,7 @@ function HTTP.postJSON(url, data, callback)
   if type(data) == "table" then
     data = json.encode(data)
   end
-  local operation = g_http.post(url, data, HTTP.timeout)
+  local operation = g_http.post(url, data, HTTP.timeout, true)
   HTTP.operations[operation] = {type="post", json=true, url=url, callback=callback}
   return operation
 end
@@ -122,6 +122,9 @@ function HTTP.onGet(operationId, url, err, data)
     err = nil
   end
   if not err and operation.json then
+    if data:len() == 0 then
+      data = "null"
+    end
     local status, result = pcall(function() return json.decode(data) end)
     if not status then
       err = "JSON ERROR: " .. result
@@ -153,6 +156,9 @@ function HTTP.onPost(operationId, url, err, data)
     err = nil
   end
   if not err and operation.json then
+    if data:len() == 0 then
+      data = "null"
+    end
     local status, result = pcall(function() return json.decode(data) end)
     if not status then
       err = "JSON ERROR: " .. result
@@ -221,6 +227,9 @@ function HTTP.onWsMessage(operationId, message)
   end
   if operation.callbacks.onMessage then
     if operation.json then
+      if message:len() == 0 then
+        message = "null"
+      end
       local status, result = pcall(function() return json.decode(message) end)
       local err = nil
       if not status then

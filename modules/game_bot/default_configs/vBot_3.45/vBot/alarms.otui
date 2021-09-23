@@ -1,0 +1,105 @@
+AlarmsWindow < MainWindow
+  !text: tr('Alarms')
+  size: 270 200
+  @onEscape: self:hide()
+
+  BotSwitch
+    id: playerAttack
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    text-align: center
+    text: Player Attack
+
+  BotSwitch
+    id: playerDetected
+    anchors.left: parent.left
+    anchors.right: parent.horizontalCenter
+    anchors.top: prev.bottom
+    margin-top: 4
+    text-align: center
+    text: Player Detected
+
+  CheckBox
+    id: playerDetectedLogout
+    anchors.top: playerDetected.top
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    margin-top: 3
+    margin-left: 4
+    text: Logout
+
+  BotSwitch
+    id: creatureDetected
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: playerDetected.bottom
+    margin-top: 4
+    text-align: center
+    text: Creature Detected
+
+  BotSwitch
+    id: healthBelow
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    anchors.right: parent.horizontalCenter
+    text-align: center
+    margin-top: 4
+    text: Health < 50%
+
+  HorizontalScrollBar
+    id: healthValue
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: healthBelow.top
+    margin-left: 3
+    margin-top: 2
+    minimum: 1
+    maximum: 100
+    step: 1
+
+  BotSwitch
+    id: manaBelow
+    anchors.left: parent.left
+    anchors.top: healthBelow.bottom
+    anchors.right: parent.horizontalCenter
+    text-align: center
+    margin-top: 4
+    text: Mana < 50%
+
+  HorizontalScrollBar
+    id: manaValue
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: manaBelow.top
+    margin-left: 3
+    margin-top: 2
+    minimum: 1
+    maximum: 100
+    step: 1
+
+  BotSwitch
+    id: privateMessage
+    anchors.left: parent.left
+    anchors.top: manaBelow.bottom
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 4
+    text: Private Message
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15
+    margin-right: 5

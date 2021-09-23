@@ -208,6 +208,7 @@ GameBigAurasCenter = 119 -- Automatic negative offset for aura bigger than 32x32
 GameNewUpdateWalk = 120 -- Walk update rate dependant on FPS
 GameNewCreatureStacking = 121 -- Ignore MAX_THINGS limit while adding to tile
 GameCreaturesMana = 122 -- get mana from server for creatures other than Player
+GameQuickLootFlags = 123 -- enables quick loot feature for all protocols
 
 LastGameFeature = 130
         

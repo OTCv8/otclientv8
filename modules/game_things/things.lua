@@ -15,9 +15,9 @@ function load()
   
   local datPath, sprPath
   if things and things["data"] ~= nil and things["sprites"] ~= nil then
-    datPath = '/things/' .. things["data"]
-    sprPath = '/things/' .. things["sprites"]
-  else  
+    datPath = resolvepath('/things/' .. things["data"])
+    sprPath = resolvepath('/things/' .. things["sprites"])
+  else
     if filename then
       datPath = resolvepath('/things/' .. filename)
       sprPath = resolvepath('/things/' .. filename)
@@ -38,7 +38,7 @@ function load()
       errorMessage = errorMessage .. tr("Unable to load dat file, please place a valid dat in '%s'", datPath) .. '\n'
     end
   end
-  if not g_sprites.loadSpr(sprPath, false) then
+  if not g_sprites.loadSpr(sprPath) then
     errorMessage = errorMessage .. tr("Unable to load spr file, please place a valid spr in '%s'", sprPath)
   end
 

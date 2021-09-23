@@ -4,6 +4,7 @@ EnterGame = { }
 local loadBox
 local enterGame
 local enterGameButton
+local logpass
 local clientBox
 local protocolLogin
 local server = nil
@@ -106,9 +107,8 @@ local function validateThings(things)
     g_settings.setNode("things", {})
   end
   if missingFiles then
-  
     incorrectThings = incorrectThings .. "\nYou should open data/things and create directory " .. versionForMissingFiles .. 
-    ".\nIn this directory (data/things/" .. versionForMissingFiles .. ") you should put missing\nfiles (Tibia.dat and Tibia.spr) " ..
+    ".\nIn this directory (data/things/" .. versionForMissingFiles .. ") you should put missing\nfiles (Tibia.dat and Tibia.spr/Tibia.cwm) " ..
     "from correct Tibia version."
   end
   return incorrectThings
@@ -134,10 +134,18 @@ local function onTibia12HTTPResult(session, playdata)
     
   local things = {
     data = {G.clientVersion .. "/Tibia.dat", ""},
-    sprites = {G.clientVersion .. "/Tibia.spr", ""},
+    sprites = {G.clientVersion .. "/Tibia.cwm", ""},
   }
-  
+
   local incorrectThings = validateThings(things)
+  if #incorrectThings > 0 then
+    things = {
+      data = {G.clientVersion .. "/Tibia.dat", ""},
+      sprites = {G.clientVersion .. "/Tibia.spr", ""},
+    }  
+    incorrectThings = validateThings(things)
+  end
+  
   if #incorrectThings > 0 then
     g_logger.error(incorrectThings)
     if Updater and not checkedByUpdater[G.clientVersion] then
@@ -290,6 +298,9 @@ end
 function EnterGame.init()
   if USE_NEW_ENERGAME then return end
   enterGame = g_ui.displayUI('entergame')
+  if LOGPASS ~= nil then
+    logpass = g_ui.loadUI('logpass', enterGame:getParent())
+  end
   
   serverSelectorPanel = enterGame:getChildById('serverSelectorPanel')
   customServerSelectorPanel = enterGame:getChildById('customServerSelectorPanel')
@@ -351,6 +362,11 @@ end
 function EnterGame.terminate()
   if not enterGame then return end
   g_keyboard.unbindKeyDown('Ctrl+G')
+
+  if logpass then
+    logpass:destroy()
+    logpass = nil
+  end
   
   enterGame:destroy()
   if loadBox then
@@ -370,11 +386,22 @@ function EnterGame.show()
   enterGame:raise()
   enterGame:focus()
   enterGame:getChildById('accountNameTextEdit'):focus()
+  if logpass then
+    logpass:show()
+    logpass:raise()
+    logpass:focus()
+  end
 end
 
 function EnterGame.hide()
   if not enterGame then return end
   enterGame:hide()
+  if logpass then
+    logpass:hide()
+    if modules.logpass then
+      modules.logpass:hide()
+    end
+  end
 end
 
 function EnterGame.openWindow()
@@ -415,19 +442,19 @@ function EnterGame.onServerChange()
   end
 end
 
-function EnterGame.doLogin()
+function EnterGame.doLogin(account, password, token, host)
   if g_game.isOnline() then
     local errorBox = displayErrorBox(tr('Login Error'), tr('Cannot login while already in game.'))
     connect(errorBox, { onOk = EnterGame.show })
     return
   end
   
-  G.account = enterGame:getChildById('accountNameTextEdit'):getText()
-  G.password = enterGame:getChildById('accountPasswordTextEdit'):getText()
-  G.authenticatorToken = enterGame:getChildById('accountTokenTextEdit'):getText()
+  G.account = account or enterGame:getChildById('accountNameTextEdit'):getText()
+  G.password = password or enterGame:getChildById('accountPasswordTextEdit'):getText()
+  G.authenticatorToken = token or enterGame:getChildById('accountTokenTextEdit'):getText()
   G.stayLogged = true
   G.server = serverSelector:getText():trim()
-  G.host = serverHostTextEdit:getText()
+  G.host = host or serverHostTextEdit:getText()
   G.clientVersion = tonumber(clientVersionSelector:getText())  
  
   if not rememberPasswordBox:isChecked() then
@@ -467,10 +494,17 @@ function EnterGame.doLogin()
   
   local things = {
     data = {G.clientVersion .. "/Tibia.dat", ""},
-    sprites = {G.clientVersion .. "/Tibia.spr", ""},
+    sprites = {G.clientVersion .. "/Tibia.cwm", ""},
   }
   
   local incorrectThings = validateThings(things)
+  if #incorrectThings > 0 then
+    things = {
+      data = {G.clientVersion .. "/Tibia.dat", ""},
+      sprites = {G.clientVersion .. "/Tibia.spr", ""},
+    }  
+    incorrectThings = validateThings(things)
+  end
   if #incorrectThings > 0 then
     g_logger.error(incorrectThings)
     if Updater and not checkedByUpdater[G.clientVersion] then
