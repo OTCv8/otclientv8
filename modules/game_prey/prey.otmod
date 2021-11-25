@@ -1,7 +1,7 @@
 Module
   name: game_prey
-  description: Preys, sponsored by kivera-global.com
-  author: otclient.ovh & kivera-global.com
+  description: Preys, sponsored by kivera-global.com, remade by Vithrax#5814
+  author: otclient.ovh & kivera-global.com & Vithrax#5814
   website: http://otclient.ovh
   sandboxed: true
   scripts: [ prey ]

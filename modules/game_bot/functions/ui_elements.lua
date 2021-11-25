@@ -271,3 +271,131 @@ UI.TwoItemsAndSlotPanel = function(params, callback, parent)
   
   return widget
 end
+
+UI.DualLabel = function(left, right, params, parent)
+  --[[ params:
+    height - int,
+    maxWidth - number
+  ]]
+
+  left = left or ""
+  right = right or ""
+  params = params or {}
+  if not type(params) == "table" then
+    parent = params
+    params = {}
+  end
+  params.height = params.height or 20
+  params.maxWidth = params.maxWidth or 88
+
+  local widget = UI.createWidget('DualLabelPanel', parent)
+
+  widget.left:setText(left)
+  widget.right:setText(right)
+  widget:setHeight(params.height)
+  if widget.left:getWidth() > params.maxWidth then
+      widget.left:setWidth(params.maxWidth)
+  end
+  return widget
+end
+
+UI.LabelAndTextEdit = function(params, callback, parent)
+  --[[ params:
+    left - str,
+    right - str,
+    height - int,
+    maxWidth - int,
+  ]]
+
+  params = params or {}
+  params.left = params.left or ""
+  params.right = params.right or ""
+  params.height = params.height or 20
+  params.maxWidth = params.maxWidth or 88
+
+  local widget = UI.createWidget('LabelAndTextEditPanel', parent)
+
+  widget.left:setText(params.left)
+  widget.right:setText(params.right)
+  widget:setHeight(params.height)
+  if widget.left:getWidth() > params.maxWidth then
+    widget.left:setWidth(params.maxWidth)
+  end
+
+  widget.right.onTextChange = function(widget, text)
+    params.right = text
+    if callback then
+        callback(widget, params)
+    end
+  end
+
+  --[[example:
+
+      storage.testParams = storage.testParams or {left = "hotkey", right = "F5"}
+      UI.LabelAndTextEdit(storage.testParams, function(widget, newParams) 
+          storage.testParams = newParams
+      end)
+
+  ]]
+  return widget
+end
+
+
+UI.SwitchAndButton = function(params, callbackSwitch, callbackButton, callback, parent)
+  --[[ params:
+    on - bool,
+    left - str,
+    right - str,
+    height - int,
+    maxWidth - int,
+  ]]
+
+  params = params or {}
+  params.on = params.on or false
+  params.left = params.left or ""
+  params.right = params.right or ""
+  params.height = params.height or 20
+  params.maxWidth = params.maxWidth or 88
+
+  local widget = UI.createWidget('SwitchAndButtonPanel', parent)
+
+  widget.left:setOn(params.on)
+  widget.left:setText(params.left)
+  widget.right:setText(params.right)
+  widget:setHeight(params.height)
+  if widget.right:getWidth() > params.maxWidth then
+    widget.right:setWidth(params.maxWidth)
+  end
+
+  widget.left.onClick = function()
+    params.on = not params.on
+    widget.left:setOn(params.on)
+    if callback then
+        callback(widget, params)
+    end
+    if callbackSwitch then
+        callbackSwitch()
+    else
+        warn("callback not set!")
+    end
+  end
+
+  widget.right.onClick = function()
+    if callbackButton then
+        callbackButton()
+    else
+        warn("callback not set!")
+    end
+  end
+
+  --[[ params:
+    if type(storage.test1) ~= "table" then
+        storage.test1 = storage.test1 or {on = false, left = "new script", right = "config"}
+    end
+    
+    UI.SwitchAndButton(storage.test1, test, test, function(widget, newParams)
+        storage.test1 = newParams 
+    end)
+  ]]
+  return widget
+end

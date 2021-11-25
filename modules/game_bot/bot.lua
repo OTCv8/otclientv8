@@ -103,6 +103,13 @@ function clear()
       widget:destroy()
     end
   end
+  for _, widget in pairs({modules.game_interface.getRightPanel(), modules.game_interface.getLeftPanel()}) do
+    for i, child in pairs(widget:getChildren()) do
+      if child.botWidget then
+        child:destroy()
+      end
+    end
+  end
   
   local gameMapPanel = modules.game_interface.getMapPanel()
   if gameMapPanel then
@@ -478,6 +485,11 @@ function initCallbacks()
     onImbuementWindow = botImbuementWindow,
     onModalDialog = botModalDialog,
     onAttackingCreatureChange = botAttackingCreatureChange,
+    onAddItem = botContainerAddItem,
+    onRemoveItem = botContainerRemoveItem,
+    onGameEditText = botGameEditText,
+    onSpellCooldown = botSpellCooldown,
+    onSpellGroupCooldown = botGroupSpellCooldown
   })
   
   connect(Tile, {
@@ -508,6 +520,7 @@ function initCallbacks()
     onClose = botContainerClose,
     onUpdateItem = botContainerUpdateItem,
     onAddItem = botContainerAddItem,
+    onRemoveItem = botContainerRemoveItem,
   })
   
   connect(g_map, { 
@@ -536,7 +549,10 @@ function terminateCallbacks()
     onChannelEvent = botChannelEvent,
     onImbuementWindow = botImbuementWindow,
     onModalDialog = botModalDialog,
-    onAttackingCreatureChange = botAttackingCreatureChange
+    onAttackingCreatureChange = botAttackingCreatureChange,
+    onGameEditText = botGameEditText,
+    onSpellCooldown = botSpellCooldown,
+    onSpellGroupCooldown = botGroupSpellCooldown
   })
   
   disconnect(Tile, {
@@ -567,6 +583,7 @@ function terminateCallbacks()
     onClose = botContainerClose,
     onUpdateItem = botContainerUpdateItem,
     onAddItem = botContainerAddItem, 
+    onRemoveItem = botContainerRemoveItem
   })
   
   disconnect(g_map, { 
@@ -726,6 +743,11 @@ function botModalDialog(id, title, message, buttons, enterButton, escapeButton, 
   safeBotCall(function() botExecutor.callbacks.onModalDialog(id, title, message, buttons, enterButton, escapeButton, choices, priority) end)
 end
 
+function botGameEditText(id, itemId, maxLength, text, writer, time)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onGameEditText(id, itemId, maxLength, text, writer, time) end)
+end
+
 function botAttackingCreatureChange(creature, oldCreature)
   if botExecutor == nil then return false end
   safeBotCall(function() botExecutor.callbacks.onAttackingCreatureChange(creature,oldCreature) end)
@@ -741,7 +763,22 @@ function botStatesChange(states, oldStates)
   safeBotCall(function() botExecutor.callbacks.onStatesChange(states, oldStates) end)
 end
 
-function botContainerAddItem(container, slot, item)
+function botContainerAddItem(container, slot, item, oldItem)
   if botExecutor == nil then return false end
-  safeBotCall(function() botExecutor.callbacks.onAddItem(container, slot, item) end)
+  safeBotCall(function() botExecutor.callbacks.onAddItem(container, slot, item, oldItem) end)
+end
+
+function botContainerRemoveItem(container, slot, item)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onRemoveItem(container, slot, item) end)
+end
+
+function botSpellCooldown(iconId, duration)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onSpellCooldown(iconId, duration) end)
+end
+
+function botGroupSpellCooldown(iconId, duration)
+  if botExecutor == nil then return false end
+  safeBotCall(function() botExecutor.callbacks.onGroupSpellCooldown(iconId, duration) end)
 end

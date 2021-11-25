@@ -13,6 +13,16 @@ UI.createWidget = function(name, parent)
   return widget
 end
 
+UI.createMiniWindow = function(name, parent)
+  if parent == nil then      
+    parent = modules.game_interface.getRightPanel()
+  end
+  local widget = g_ui.createWidget(name, parent)
+  widget:setup()
+  widget.botWidget = true
+  return widget
+end
+
 UI.createWindow = function(name)
   local widget = g_ui.createWidget(name, g_ui.getRootWidget())
   widget.botWidget = true  
@@ -21,4 +31,3 @@ UI.createWindow = function(name)
   widget:focus()
   return widget
 end
-

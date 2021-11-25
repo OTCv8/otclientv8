@@ -237,4 +237,74 @@ TwoItemsAndSlotPanel < Panel
     margin-top: 2
     height: 20
     &disableScroll: true
-  
+
+DualLabelPanel < Panel
+  height: 20
+  padding: 1
+
+  Label
+    id: left
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    text-align: left
+    text-wrap: true
+    text-auto-resize: true
+    margin-left: 3
+    font: verdana-11px-rounded
+
+  Label
+    id: right
+    anchors.right: parent.right
+    anchors.left: prev.right
+    margin-left: 2
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    text-align: right
+    text-auto-resize: true
+    margin-right: 3
+    font: verdana-11px-rounded
+
+LabelAndTextEditPanel < Panel
+  height: 20
+  padding: 1
+
+  Label
+    id: left
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.horizontalCenter
+    text-align: center
+    text-wrap: true
+    margin-right: 2
+
+  BotTextEdit
+    id: right
+    anchors.left: prev.right
+    margin-left: 3
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+SwitchAndButtonPanel < Panel
+  height: 20
+  padding: 1
+
+  Button
+    id: right
+    anchors.top: parent.top
+    margin-top: 2
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    text-auto-resize: true
+    text-align: center
+
+  BotSwitch
+    id: left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: prev.left
+    margin-right: 3
+    text-align: center
