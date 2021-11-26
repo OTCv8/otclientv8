@@ -24,6 +24,8 @@ local PREY_ACTION_REQUEST_ALL_MONSTERS = 3
 local PREY_ACTION_CHANGE_FROM_ALL = 4
 local PREY_ACTION_LOCK_PREY = 5
 
+local preyDescription = {}
+
 
 function bonusDescription(bonusType, bonusValue, bonusGrade)
   if bonusType == PREY_BONUS_DAMAGE_BOOST then
@@ -202,8 +204,8 @@ end
 
 function onPreyFreeRolls(slot, timeleft)
   local prey = preyWindow["slot" .. (slot + 1)]
-  local percent = (timeleft / 2 * 60 * 60) * 100
-  local desc = timeleftTranslation(timeleft * 60)
+  local percent = (timeleft / (20 * 60)) * 100
+  local desc = timeleftTranslation(timeleft * 60, true)
   if not prey then return end
   for i, panel in pairs({prey.active, prey.inactive}) do
     local progressBar = panel.reroll.button.time
@@ -216,19 +218,16 @@ function onPreyFreeRolls(slot, timeleft)
   end
 end
 
-local regex = [[Duration: ([^m]+)]]
-function onPreyTimeLeft(slot, timeleft)
+function onPreyTimeLeft(slot, timeLeft)
+  -- description
+  preyDescription[slot] = preyDescription[slot] or {one = "", two = ""}
+  local text = preyDescription[slot].one .. timeleftTranslation(timeLeft, true) .. preyDescription[slot].two
   -- tracker
-  local percent = (timeleft / (2 * 60 * 60)) * 100
+  local percent = (timeLeft / (2 * 60 * 60)) * 100
   slot = "slot" .. (slot + 1)
   local tracker = preyTracker.contentsPanel[slot]
   tracker.time:setPercent(percent)
-  local text = tracker.time:getTooltip()
-  local re = regexMatch(text, regex)
-  local oldTime = re[1][2]
-  local newTime = timeleftTranslation(timeleft, true)
-  newTime = newTime:sub(1,newTime:len()-1)
-  text = text:gsub(oldTime, newTime)
+  tracker.time:setTooltip(text)
   for i, element in pairs({tracker.creatureName, tracker.creature, tracker.preyType, tracker.time}) do
     element:setTooltip(text)
     element.onClick = function()
@@ -239,7 +238,7 @@ function onPreyTimeLeft(slot, timeleft)
   local prey = preyWindow[slot]
   if not prey then return end
   local progressbar = prey.active.creatureAndBonus.timeLeft
-  local desc = timeleftTranslation(timeleft, true)
+  local desc = timeleftTranslation(timeLeft, true)
   progressbar:setPercent(percent)
   progressbar:setText(desc)
 end
@@ -433,8 +432,11 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
     tracker.creature:setOutfit(currentHolderOutfit)
     tracker.preyType:setImageSource(getSmallIconPath(bonusType))
     tracker.time:setPercent(percent)
+    preyDescription[slot] = preyDescription[slot] or {}
+    preyDescription[slot].one = "Creature: "..currentHolderName .. "\nDuration: "
+    preyDescription[slot].two = "\nValue: " ..bonusGrade.."/10".."\nType: " .. getBonusDescription(bonusType) ..  "\n"..getTooltipBonusDescription(bonusType,bonusValue).."\n\nClick in this window to open the prey dialog."
     for i, element in pairs({tracker.creatureName, tracker.creature, tracker.preyType, tracker.time}) do
-      element:setTooltip("Creature: "..currentHolderName .. "\nDuration: ".. timeleftTranslation(timeLeft, true) .."\nValue: " ..bonusGrade.."/10".."\nType: " .. getBonusDescription(bonusType) ..  "\n"..getTooltipBonusDescription(bonusType,bonusValue).."\n\nClick in this window to open the prey dialog.")
+      element:setTooltip(preyDescription[slot].one .. timeleftTranslation(timeLeft, true) .. preyDescription[slot].two)
       element.onClick = function()
         show()
       end
@@ -500,9 +502,6 @@ function onPreySelection(slot, bonusType, bonusValue, bonusGrade, names, outfits
     name = capitalFormatStr(name)
     box:setTooltip(name)
     box.creature:setOutfit(outfits[i])
-    box.onHoverChange = function(widget, hovered)
-      onHover("preyCandidate")
-    end
   end
   prey.inactive.choose.choosePreyButton.onClick = function()
     for i, child in pairs(list:getChildren()) do
