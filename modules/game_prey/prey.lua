@@ -106,8 +106,6 @@ function onHover(widget)
     local desc = descriptionTable[id]
     if desc then
       preyWindow.description:setText(desc)
-    else
-      print(id)
     end
   end
 end
@@ -209,7 +207,7 @@ function onPreyFreeRolls(slot, timeleft)
   if not prey then return end
   for i, panel in pairs({prey.active, prey.inactive}) do
     local progressBar = panel.reroll.button.time
-    local price = panel.reroll.button.price.text
+    local price = panel.reroll.price.text
     progressBar:setPercent(percent)
     progressBar:setText(desc)
     if timeleft == 0 then
@@ -221,7 +219,7 @@ end
 local regex = [[Duration: ([^m]+)]]
 function onPreyTimeLeft(slot, timeleft)
   -- tracker
-  local percent = (timeleft / 2 * 60 * 60) * 100
+  local percent = (timeleft / (2 * 60 * 60)) * 100
   slot = "slot" .. (slot + 1)
   local tracker = preyTracker.contentsPanel[slot]
   tracker.time:setPercent(percent)
@@ -240,8 +238,8 @@ function onPreyTimeLeft(slot, timeleft)
   -- main window
   local prey = preyWindow[slot]
   if not prey then return end
-  local progressbar = prey.active.creatureAndBonus.creature.timeLeft
-  local desc = timeleftTranslation(timeleft * 60)
+  local progressbar = prey.active.creatureAndBonus.timeLeft
+  local desc = timeleftTranslation(timeleft, true)
   progressbar:setPercent(percent)
   progressbar:setText(desc)
 end
@@ -427,7 +425,7 @@ end
 function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll)
   local tracker = preyTracker.contentsPanel["slot"..(slot + 1)]
   currentHolderName = capitalFormatStr(currentHolderName)
-  local percent = (timeLeft / 2 * 60 * 60)*100
+  local percent = (timeLeft / (2 * 60 * 60)) * 100
   if tracker then
     tracker.creature:show()
     tracker.noCreature:hide()
@@ -457,7 +455,7 @@ function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, b
   end
   setBonusGradeStars(slot, bonusGrade)
   creatureAndBonus.timeLeft:setPercent(percent)
-  creatureAndBonus.timeLeft:setText(timeleftTranslation(timeLeft, true))
+  creatureAndBonus.timeLeft:setText(timeleftTranslation(timeLeft))
   -- bonus reroll
   prey.active.choose.selectPrey.onClick = function()
     g_game.preyAction(slot, PREY_ACTION_BONUSREROLL, 0)
