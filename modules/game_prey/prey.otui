@@ -435,7 +435,6 @@ RerollButton < FlatPanel
       $pressed:
         image-clip: 0 46 60 47
 
-
   GoldLabel
     id: price
     anchors.top: prev.bottom

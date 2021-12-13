@@ -140,6 +140,7 @@ function terminate()
   end
 end
 
+local n = 0
 function setUnsupportedSettings()
   local t = {"slot1", "slot2", "slot3"}
   for i, slot in pairs(t) do
@@ -192,7 +193,7 @@ function show()
   preyWindow:show()
   preyWindow:raise()
   preyWindow:focus()
-  --g_game.preyRequest() -- update preys, it's for tibia 12
+  g_game.preyRequest() -- update preys, it's for tibia 12
 end
 
 function toggle()
@@ -205,7 +206,7 @@ end
 function onPreyFreeRolls(slot, timeleft)
   local prey = preyWindow["slot" .. (slot + 1)]
   local percent = (timeleft / (20 * 60)) * 100
-  local desc = timeleftTranslation(timeleft * 60, true)
+  local desc = timeleftTranslation(timeleft * 60)
   if not prey then return end
   for i, panel in pairs({prey.active, prey.inactive}) do
     local progressBar = panel.reroll.button.time
@@ -213,7 +214,7 @@ function onPreyFreeRolls(slot, timeleft)
     progressBar:setPercent(percent)
     progressBar:setText(desc)
     if timeleft == 0 then
-      price:setText("Free")
+      price:setText("0")
     end
   end
 end
@@ -421,7 +422,7 @@ function onItemBoxChecked(widget)
   widget:setChecked(true)
 end
 
-function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll)
+function onPreyActive(slot, currentHolderName, currentHolderOutfit, bonusType, bonusValue, bonusGrade, timeLeft, timeUntilFreeReroll, lockType) -- locktype always 0 for protocols <12
   local tracker = preyTracker.contentsPanel["slot"..(slot + 1)]
   currentHolderName = capitalFormatStr(currentHolderName)
   local percent = (timeLeft / (2 * 60 * 60)) * 100
@@ -493,8 +494,9 @@ function onPreySelection(slot, bonusType, bonusValue, bonusGrade, names, outfits
   prey.inactive:show()
   prey.title:setText(tr("Select monster"))
   local rerollButton = prey.inactive.reroll.button.rerollButton
-  rerollButton:setImageSource("/images/game/prey/prey_reroll_blocked")
-  rerollButton:disable()
+  rerollButton.onClick = function()
+    g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
+  end
   local list = prey.inactive.list
   list:destroyChildren()
   for i, name in ipairs(names) do
