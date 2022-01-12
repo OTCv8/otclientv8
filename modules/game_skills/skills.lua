@@ -299,7 +299,7 @@ end
 function onLevelChange(localPlayer, value, percent)
   setSkillValue('level', value)
   local text = tr('You have %s percent to go', 100 - percent) .. '\n' ..
-               tr('%s of experience left', comma_value(expToAdvance(localPlayer:getLevel(), localPlayer:getExperience())))
+               comma_value(expToAdvance(localPlayer:getLevel(), localPlayer:getExperience())) .. tr(' of experience left')
 
   if localPlayer.expSpeed ~= nil then
      local expPerHour = math.floor(localPlayer.expSpeed * 3600)
@@ -308,7 +308,7 @@ function onLevelChange(localPlayer, value, percent)
         local hoursLeft = (nextLevelExp - localPlayer:getExperience()) / expPerHour
         local minutesLeft = math.floor((hoursLeft - math.floor(hoursLeft))*60)
         hoursLeft = math.floor(hoursLeft)
-        text = text .. '\n' .. tr('%d of experience per hour', comma_value(expPerHour))
+        text = text .. '\n' .. comma_value(expPerHour) .. ' of experience per hour'
         text = text .. '\n' .. tr('Next level in %d hours and %d minutes', hoursLeft, minutesLeft)
      end
   end

@@ -505,6 +505,14 @@ SettingsPanel < Panel
     text: PVP safe
 
   CheckBox
+    id: Training
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 8
+    width: 245
+    text: Stop when attacking trainers
+
+  CheckBox
     id: BlackListSafe
     anchors.top: prev.bottom
     anchors.left: prev.left
@@ -523,7 +531,7 @@ SettingsPanel < Panel
     minimum: 1
     maximum: 10
     focusable: true 
-    margin-left: 5    
+    margin-left: 5
 
 AttackBotWindow < MainWindow
   size: 535 300

@@ -189,6 +189,149 @@ CaveBot.getCurrentProfile = function()
   return storage._configs.cavebot_configs.selected
 end
 
+CaveBot.lastReachedLabel = function()
+  return vBot.lastLabel
+end
+
+CaveBot.gotoNextWaypointInRange = function()
+  local currentAction = ui.list:getFocusedChild()
+  local index = ui.list:getChildIndex(currentAction)
+  local actions = ui.list:getChildren()
+
+  -- start searching from current index
+  for i, child in ipairs(actions) do
+    if i > index then
+      local text = child:getText()
+      if string.starts(text, "goto:") then
+        local re = regexMatch(text, [[(?:goto:)([^,]+),([^,]+),([^,]+)]])
+        local pos = {x = tonumber(re[1][2]), y = tonumber(re[1][3]), z = tonumber(re[1][4])}
+        
+        if posz() == pos.z then
+          if distanceFromPlayer(pos) <= storage.extras.gotoMaxDistance/2 then
+            return ui.list:focusChild(child)
+          end
+        end
+      end
+    end
+  end
+
+  -- if not found then damn go from start
+  for i, child in ipairs(actions) do
+    if i <= index then
+      local text = child:getText()
+      if string.starts(text, "goto:") then
+        local re = regexMatch(text, [[(?:goto:)([^,]+),([^,]+),([^,]+)]])
+        local pos = {x = tonumber(re[1][2]), y = tonumber(re[1][3]), z = tonumber(re[1][4])}
+
+        if posz() == pos.z then
+          if distanceFromPlayer(pos) <= storage.extras.gotoMaxDistance/2 then
+            return ui.list:focusChild(child)
+          end
+        end
+      end
+    end
+  end
+
+  -- not found
+  return false
+end
+
+CaveBot.getFirstWaypointBeforeLabel = function(label)
+  label = "label:"..label
+  label = label:lower()
+  local actions = ui.list:getChildren()
+  local index
+
+  -- find index of label
+  for i, child in pairs(actions) do
+    local name = child:getText():lower()
+    if name == label then
+      index = i
+      break
+    end
+  end
+
+  -- if there's no index then label was not found
+  if not index then return false end
+
+  for i=1,#actions do
+    if index - 1 < 1 then
+      -- did not found any waypoint in range before label 
+      return false
+    end
+
+    local child = ui.list:getChildByIndex(index-i)
+    if child then
+      local text = child:getText()
+      if string.starts(text, "goto:") then
+        local re = regexMatch(text, [[(?:goto:)([^,]+),([^,]+),([^,]+)]])
+        local pos = {x = tonumber(re[1][2]), y = tonumber(re[1][3]), z = tonumber(re[1][4])}
+
+        if posz() == pos.z then
+          if distanceFromPlayer(pos) <= storage.extras.gotoMaxDistance/2 then
+            return ui.list:focusChild(child)
+          end
+        end
+      end
+    end
+  end
+end
+
+CaveBot.getPreviousLabel = function()
+  local actions = ui.list:getChildren()
+  -- check if config is empty
+  if #actions == 0 then return false end
+
+  local currentAction = ui.list:getFocusedChild()
+  --check we made any progress in waypoints, if no focused or first then no point checking
+  if not currentAction or currentAction == ui.list:getFirstChild() then return false end
+
+  local index = ui.list:getChildIndex(currentAction)
+
+  -- if not index then something went wrong and there's no selected child
+  if not index then return false end
+
+  for i=1,#actions do
+    if index - i < 1 then
+      -- did not found any waypoint in range before label 
+      return false
+    end
+
+    local child = ui.list:getChildByIndex(index-i)
+    if child then
+      if child.action == "label" then
+        return child.value
+      end
+    end
+  end
+end
+
+CaveBot.getNextLabel = function()
+  local actions = ui.list:getChildren()
+  -- check if config is empty
+  if #actions == 0 then return false end
+
+  local currentAction = ui.list:getFocusedChild() or ui.list:getFirstChild()
+  local index = ui.list:getChildIndex(currentAction)
+
+  -- if not index then something went wrong
+  if not index then return false end
+
+  for i=1,#actions do
+    if index + i > #actions then
+      -- did not found any waypoint in range before label 
+      return false
+    end
+
+    local child = ui.list:getChildByIndex(index+i)
+    if child then
+      if child.action == "label" then
+        return child.value
+      end
+    end
+  end
+end
+
 local botConfigName = modules.game_bot.contentsPanel.config:getCurrentOption().text
 CaveBot.setCurrentProfile = function(name)
   if not g_resources.fileExists("/bot/"..botConfigName.."/cavebot_configs/"..name..".cfg") then

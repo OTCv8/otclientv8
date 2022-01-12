@@ -86,13 +86,6 @@ end
 
 
 -- variables for config
-
-local config = config
-local pushDelay = tonumber(config.pushDelay)
-local rune = tonumber(config.pushMaxRuneId)
-local customMwall = config.mwallBlockId
-local key = config.pushMaxKey
-local enabled = config.enabled
 local fieldTable = {2118, 105, 2122}
 local cleanTile = nil
 
@@ -142,8 +135,8 @@ end
 -- to mark
 local hold = 0
 onKeyDown(function(keys)
-  if not enabled then return end
-  if keys ~= key then return end
+  if not config.enabled then return end
+  if keys ~= config.pushMaxKey then return end
   hold = now
   local tile = getTileUnderCursor()
   if not tile then return end
@@ -171,8 +164,8 @@ end)
 
 -- mark tile to throw anything from it
 onKeyPress(function(keys)
-  if not enabled then return end
-  if keys ~= key then return end
+  if not config.enabled then return end
+  if keys ~= config.pushMaxKey then return end
   local tile = getTileUnderCursor()
   if not tile then return end
 
@@ -188,7 +181,7 @@ onKeyPress(function(keys)
 end)
 
 onCreaturePositionChange(function(creature, newPos, oldPos)
-  if not enabled then return end
+  if not config.enabled then return end
   if creature == player then
     resetData()
   end
@@ -199,7 +192,11 @@ onCreaturePositionChange(function(creature, newPos, oldPos)
 end)
 
 macro(50, function()
-  if not enabled then return end
+  if not config.enabled then return end
+
+  local pushDelay = tonumber(config.pushDelay)
+  local rune = tonumber(config.pushMaxRuneId)
+  local customMwall = config.mwallBlockId
 
   if cleanTile then
     local tilePos = cleanTile:getPosition()

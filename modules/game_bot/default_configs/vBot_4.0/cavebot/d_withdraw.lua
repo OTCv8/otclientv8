@@ -6,7 +6,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		local data = string.split(value, ",")
 		if retries > 600 then
 			print("CaveBot[DepotWithdraw]: actions limit reached, proceeding") 
-			return true
+			return false
 		end
 		local destContainer
 		local depotContainer
@@ -32,7 +32,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 				end
 			end
 			print("CaveBot[DepotWithdraw]: cap limit reached, proceeding") 
-			return true 
+			return false 
 		end
 
 		-- containers
@@ -74,7 +74,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 				end
 			end
 			print("CaveBot[DepotWithdraw]: loot containers full!")
-			return true
+			return false
 		end
 
 		if not CaveBot.OpenDepotBox(indexDp) then

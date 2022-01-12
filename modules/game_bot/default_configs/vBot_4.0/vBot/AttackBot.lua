@@ -890,6 +890,10 @@ if rootWidget then
     currentSettings.PvpSafe = not currentSettings.PvpSafe
     settingsUI.PvpSafe:setChecked(currentSettings.PvpSafe)
   end
+  settingsUI.Training.onClick = function(widget)
+    currentSettings.Training = not currentSettings.Training
+    settingsUI.Training:setChecked(currentSettings.Training)
+  end
   settingsUI.BlackListSafe.onClick = function(widget)
     currentSettings.BlackListSafe = not currentSettings.BlackListSafe
     settingsUI.BlackListSafe:setChecked(currentSettings.BlackListSafe)
@@ -950,7 +954,7 @@ if rootWidget then
     settingsUI.Rotate:setChecked(currentSettings.Rotate)
     settingsUI.Kills:setChecked(currentSettings.Kills)
     settingsUI.KillsAmount:setValue(currentSettings.KillsAmount)
-
+    settingsUI.Training:setChecked(currentSettings.Training)
   end
   loadSettings()
 
@@ -1038,7 +1042,7 @@ function getMonstersInArea(category, posOrCreature, pattern, minHp, maxHp, safeP
 
   if safePattern then
     for i, spec in pairs(getSpectators(posOrCreature, safePattern)) do
-      if spec ~= player and spec:isPlayer() then
+      if spec ~= player and (spec:isPlayer() and not spec:isPartyMember()) then
         return 0
       end
     end
@@ -1099,6 +1103,8 @@ end
 macro(100, function()
   if not currentSettings.enabled then return end
   if #currentSettings.attackTable == 0 or isInPz() or not target() or modules.game_cooldown.isGroupCooldownIconActive(1) then return end
+
+  if currentSettings.Training and target() and target():getName():lower():find("training") then return end
 
   if g_game.getClientVersion() < 960 or not currentSettings.Cooldown then
     delay(400)

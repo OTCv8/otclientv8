@@ -11,7 +11,6 @@
   br, Vithrax
 ]]
 
-local rightPanelButtons = modules.game_buttons.buttonsWindow.contentsPanel.buttons
 local analyzerButton
 
 --destroy old windows
@@ -75,7 +74,8 @@ local toggleAnalyzer = function(window)
 end
 
 -- create analyzers button
-analyzerButton = rightPanelButtons.botAnalyzersButton
+analyzerButton = modules.game_buttons.buttonsWindow.contentsPanel and modules.game_buttons.buttonsWindow.contentsPanel.buttons.botAnalyzersButton
+analyzerButton = analyzerButton or modules.client_topmenu.getButton("botAnalyzersButton")
 if analyzerButton then
     analyzerButton:destroy()
 end
@@ -85,7 +85,6 @@ analyzerButton = modules.client_topmenu.addRightGameToggleButton('botAnalyzersBu
 analyzerButton:setOn(false)
 
 --toggles window
-local button = mainWindow.contentsPanel
 mainWindow.contentsPanel.HuntingAnalyzer.onClick = function()
     toggleAnalyzer(huntingWindow)
 end
@@ -901,6 +900,7 @@ onTextMessage(function(mode, text)
 end)
 
 function hourVal(v)
+  v = v or 0
   return (v/uptime)*3600
 end
 

@@ -32,6 +32,7 @@ dofile("/cavebot/lure.lua")
 dofile("/cavebot/bank.lua")
 dofile("/cavebot/clear_tile.lua")
 dofile("/cavebot/tasker.lua")
+dofile("/cavebot/imbuing.lua")
 -- main cavebot file, must be last
 dofile("/cavebot/cavebot.lua")
 
