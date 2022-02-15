@@ -1,0 +1,127 @@
+OptionPanel
+  Label
+    text: Client user features profile
+
+  ComboBox
+    id: profile
+    margin-top: 3
+    @onOptionChange: modules.client_options.setOption(self:getId(), self.currentIndex)
+    @onSetup: |
+      self:addOption("1")
+      self:addOption("2")
+      self:addOption("3")
+      self:addOption("4")
+      self:addOption("5")
+      self:addOption("6")
+      self:addOption("7")
+      self:addOption("8")
+      self:addOption("9")
+      self:addOption("10")
+
+  Label
+
+  OptionCheckBox
+    id: topBar
+    !text: tr('Show customizable top status bar')
+
+  OptionCheckBox
+    id: topHealtManaBar
+    !text: tr('Show player top health and mana bar')
+
+  OptionCheckBox
+    id: showHealthManaCircle
+    !text: tr('Show health and mana circle')
+    $mobile:
+      visible: false
+
+  Label
+    margin-top: 5
+    text: Show Bottom Action Bars:
+
+  Panel
+    margin-top: 2
+    height: 16
+    layout:
+      type: horizontalBox
+
+    OptionCheckBox
+      id: actionbarBottom1
+      !text: tr('Bar 1')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarBottom2
+      !text: tr('Bar 2')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarBottom3
+      !text: tr('Bar 3')
+      width: 60
+
+  Label
+    text: Show Left Action Bars:
+    $mobile:
+      visible: false
+
+  Panel
+    margin-top: 2
+    height: 16
+
+    $mobile:
+      visible: false
+
+    layout:
+      type: horizontalBox
+
+    OptionCheckBox
+      id: actionbarLeft1
+      !text: tr('Bar 1')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarLeft2
+      !text: tr('Bar 2')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarLeft3
+      !text: tr('Bar 3')
+      width: 60
+
+  Label
+    text: Show Right Action Bars:
+    $mobile:
+      visible: false
+
+  Panel
+    margin-top: 2
+    height: 16
+    layout:
+      type: horizontalBox
+
+    $mobile:
+      visible: false
+
+    OptionCheckBox
+      id: actionbarRight1
+      !text: tr('Bar 1')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarRight2
+      !text: tr('Bar 2')
+      width: 60
+
+    OptionCheckBox
+      id: actionbarRight3
+      !text: tr('Bar 3')
+      width: 60
+
+  Label
+
+  OptionCheckBox
+    id: actionbarLock
+    !text: tr('Disable action bar hotkeys when chat mode is on')
+    $mobile:
+      visible: false

@@ -1402,7 +1402,7 @@ function Market.onMarketEnter(depotItems, offers, balance, vocation, items)
   end
 
   if g_game.isOnline() then
-    marketWindow:lock()
+  --  marketWindow:lock()
     marketWindow:show()
   end
 end

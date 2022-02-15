@@ -35,6 +35,7 @@ Module
     - game_shop
     - game_itemselector
     - client_textedit
+    - client_profiles
     - game_actionbar
     - game_prey
     - game_imbuing

@@ -1,0 +1,11 @@
+Module
+  name: client_profiles
+  description: Provides option to save client customizations into separate profiles
+  author: Vithrax
+  discord: Vithrax#5814
+  autoload: true
+  reloadable: false
+  scripts: [ profiles ]
+  sandboxed: true
+  @onLoad: init()
+  @onUnload: terminate()

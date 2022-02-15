@@ -5,6 +5,7 @@ ActionButton < Panel
   width: 40
   padding: 1 1 1 1
   margin-left: 1
+  draggable: true
   
   $first:
     anchors.left: parent.left
@@ -100,7 +101,6 @@ Panel
     margin-right: 1
     margin-top: 1
     margin-bottom: 2
-
 
 ActionAssignWindow < MainWindow
   id: assignWindow

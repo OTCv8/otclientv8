@@ -195,7 +195,7 @@ context.onManaChange = function(callback)
   return context.callback("onManaChange", callback)
 end
 
--- onAddItem - callback = function(container, slot, item)
+-- onAddItem - callback = function(container, slot, item, oldItem)
 context.onAddItem = function(callback)
   return context.callback("onAddItem", callback)
 end

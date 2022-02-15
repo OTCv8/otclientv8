@@ -1,0 +1,121 @@
+StatsPanel < Panel
+  height: 19
+
+  ProgressBar
+    id: health
+    anchors.left: parent.left
+    anchors.right: states.left
+    anchors.top: states.top
+    anchors.bottom: states.bottom   
+    margin-right: 7
+
+  ProgressBar
+    id: mana
+    anchors.left: states.right
+    anchors.right: parent.right
+    anchors.top: states.top
+    anchors.bottom: states.bottom
+    margin-left: 7
+    background-color: #0060d5
+
+  FlatPanel
+    id: states
+    padding: 1
+    size: 150 18
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+
+    Panel
+      id: box
+      image-source: /images/ui/dark_background
+      anchors.fill: parent
+      layout:
+        type: horizontalBox
+
+SkillPanel < Panel
+  height: 19
+
+  UIWidget
+    id: level
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    text: 999
+    font: verdana-11px-rounded
+    text-align: center
+    margin-left: 7
+
+  UIWidget
+    id: icon
+    anchors.left: prev.right
+    anchors.verticalCenter: parent.verticalCenter
+    image-source: /images/game/topbar/icons
+    size: 9 9
+    image-clip: 0 0 9 9
+    margin-left: 7
+
+  ProgressBar
+    id: progress
+    anchors.left: prev.right
+    margin-left: 7
+    anchors.right: next.left
+    margin-right: 7
+    anchors.verticalCenter: parent.verticalCenter
+    background-color: #c00000
+    height: 6
+    border: 1 black
+
+  UIWidget
+    id: shop
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter    
+    image-source: /images/game/topbar/boost
+    size: 76 14
+    @onClick: modules.game_shop.show()
+    image-clip: 0 0 76 14
+
+    $pressed:
+      image-clip: 0 14 76 14
+  
+  VerticalSeparator
+    id: left
+    anchors.top: progress.top
+    margin-top: -2
+    anchors.bottom: progress.bottom
+    margin-bottom: -2
+    anchors.right: progress.horizontalCenter
+
+  VerticalSeparator
+    id: middle
+    anchors.top: progress.top
+    margin-top: -2
+    anchors.bottom: progress.bottom
+    margin-bottom: -2
+    anchors.right: progress.horizontalCenter  
+
+  VerticalSeparator
+    id: right
+    anchors.top: progress.top
+    margin-top: -2
+    anchors.bottom: progress.bottom
+    margin-bottom: -2
+    anchors.right: progress.right  
+
+TopBar < Panel
+  id: topbar
+  focusable: false
+  padding-top: 4
+  padding-left: 7
+  padding-right: 7
+  layout:
+    type: verticalBox
+    fit-children: true
+
+  StatsPanel
+    id: stats
+
+  Panel
+    id: skills
+    layout:
+      type: grid
+      num-columns: 2
+      fit-children: true
