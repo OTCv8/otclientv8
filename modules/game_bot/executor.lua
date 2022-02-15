@@ -89,6 +89,7 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.pcall = pcall
   context.os = {
     time = os.time,
+    date = os.date,
     difftime = os.difftime,
     date = os.date,
     clock = os.clock
@@ -117,7 +118,6 @@ function executeBot(config, storage, tabs, msgCallback, saveConfigCallback, relo
   context.g_window = g_window
   context.g_mouse = g_mouse
   context.g_things = g_things
-  context.g_settings = g_settings
   context.g_platform = {
     openUrl = g_platform.openUrl,
     openDir = g_platform.openDir,

@@ -49,24 +49,9 @@ local defaultOptions = {
   walkStairsDelay = 50,
   walkTeleportDelay = 200,
   walkCtrlTurnDelay = 150,
-
-  topBar = true,
-
-  actionbarBottom1 = true,
-  actionbarBottom2 = false,
-  actionbarBottom3 = false,
-
-  actionbarLeft1 = false,
-  actionbarLeft2 = false,
-  actionbarLeft3 = false,
-
-  actionbarRight1 = false,
-  actionbarRight2 = false,
-  actionbarRight3 = false,
-
-  actionbarLock = true,
-
-  profile = 1
+  
+  actionBar1 = true,
+  actionBar2 = false
 }
 
 local optionsWindow
@@ -78,8 +63,7 @@ local generalPanel
 local interfacePanel
 local consolePanel
 local graphicsPanel
-local audioPanel
-local customPanel
+local soundPanel
 local extrasPanel
 local audioButton
 
@@ -117,7 +101,6 @@ function init()
   audioPanel = g_ui.loadUI('audio')
   optionsTabBar:addTab(tr('Audio'), audioPanel, '/images/optionstab/audio')
 
-
   extrasPanel = g_ui.createWidget('OptionPanel')
   for _, v in ipairs(g_extras.getAll()) do
     local extrasButton = g_ui.createWidget('OptionCheckBox')
@@ -128,9 +111,6 @@ function init()
   if not g_game.getFeature(GameNoDebug) and not g_app.isMobile() then
     optionsTabBar:addTab(tr('Extras'), extrasPanel, '/images/optionstab/extras')
   end
-
-  customPanel = g_ui.loadUI('custom')
-  optionsTabBar:addTab(tr('Custom'), customPanel, '/images/optionstab/features')
 
   optionsButton = modules.client_topmenu.addLeftButton('optionsButton', tr('Options'), '/images/topbuttons/options', toggle)
   audioButton = modules.client_topmenu.addLeftButton('audioButton', tr('Audio'), '/images/topbuttons/audio', function() toggleOption('enableAudio') end)
@@ -376,19 +356,11 @@ function setOption(key, value, force)
   
   g_settings.set(key, value)
   options[key] = value
-
-  if key == "profile" then
-    modules.client_profiles.onProfileChange()
-  end
   
   if key == 'classicView' or key == 'rightPanels' or key == 'leftPanels' or key == 'cacheMap' then
     modules.game_interface.refreshViewMode()    
-  elseif key:find("actionbar") then
+  elseif key == 'actionBar1' or key == 'actionBar2' then
     modules.game_actionbar.show()
-  end
-
-  if key == 'topBar' then
-    modules.game_topbar.show()
   end
 end
 

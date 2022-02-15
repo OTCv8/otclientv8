@@ -190,13 +190,7 @@ function refresh()
 
   -- storage
   botStorage = {}
-  
-  local path = "/bot/" .. configName .. "/storage/"
-  if not g_resources.directoryExists(path) then
-    g_resources.makeDir(path)
-  end
-
-  botStorageFile = path.."profile_" .. g_settings.getNumber('profile') .. ".json"
+  botStorageFile = "/bot/" .. configName .. "/storage.json"
   if g_resources.fileExists(botStorageFile) then
     local status, result = pcall(function() 
       return json.decode(g_resources.readFileContents(botStorageFile)) 
@@ -261,9 +255,7 @@ end
 
 function online()
   botButton:show()
-  if not modules.client_profiles.ChangedProfile then
-    scheduleEvent(refresh, 20)
-  end
+  scheduleEvent(refresh, 20)
 end
 
 function offline()

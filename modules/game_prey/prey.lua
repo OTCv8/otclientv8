@@ -1,8 +1,9 @@
 -- sponsored by kivera-global.com
 -- remade by Vithrax#5814
 
-preyWindow = nil
-preyButton = nil
+local preyWindow
+local preyButton
+local preyTracker
 local preyTrackerButton
 local msgWindow
 local bankGold = 0

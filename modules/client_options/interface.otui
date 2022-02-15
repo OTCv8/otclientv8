@@ -36,6 +36,14 @@ OptionPanel
 
     $mobile:
       visible: false
+
+  OptionCheckBox
+    id: actionBar1
+    !text: tr("Show first action bar")
+
+  OptionCheckBox
+    id: actionBar2
+    !text: tr("Show second action bar")
     
   OptionCheckBox
     id: showPing
@@ -63,6 +71,16 @@ OptionPanel
   OptionCheckBox
     id: displayMana
     !text: tr('Show player mana bar')
+    $mobile:
+      visible: false
+
+  OptionCheckBox
+    id: topHealtManaBar
+    !text: tr('Show player top health and mana bar')
+
+  OptionCheckBox
+    id: showHealthManaCircle
+    !text: tr('Show health and mana circle')
     $mobile:
       visible: false
 
