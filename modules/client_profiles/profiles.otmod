@@ -1,6 +1,6 @@
 Module
   name: client_profiles
-  description: Provides option to save client customizations into separate profiles
+  description: Client profiles
   author: Vithrax
   discord: Vithrax#5814
   autoload: true

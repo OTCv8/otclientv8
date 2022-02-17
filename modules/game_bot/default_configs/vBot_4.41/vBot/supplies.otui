@@ -1,0 +1,361 @@
+ProfileLabel < UIWidget
+  background-color: alpha
+  text-offset: 3 1
+  focusable: true
+  height: 16
+  font: verdana-11px-rounded
+  text-align: left
+
+  $focus:
+    background-color: #00000055
+
+  Button
+    id: remove
+    !text: tr('X')
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    width: 14
+    height: 14
+    margin-right: 3
+    text-align: center
+    text-offset: 0 1
+    tooltip: Remove profile from the list.
+
+SuppliesWindow < MainWindow
+  !text: tr('Supplies')
+  size: 430 310
+  @onEscape: self:hide()
+
+  VerticalSeparator
+    id: sep
+    anchors.top: parent.top
+    anchors.left: item1Max.right
+    anchors.bottom: parent.bottom
+    margin-top: 3
+    margin-bottom: 3
+    margin-left: 10
+
+  Label
+    anchors.left: sep.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-left: 10
+    margin-top: 3
+    text-align: center
+    text: Additional Conditions:
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: 3
+
+  BotSwitch
+    id: SoftBoots
+    anchors.top: prev.bottom
+    anchors.left: sep.right
+    anchors.right: parent.right
+    margin-top: 5
+    margin-left: 10
+    text: No Soft
+    tooltip: Go refill if there's no more active soft boots.     
+
+  BotSwitch
+    id: capSwitch
+    height: 20
+    anchors.left: SoftBoots.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    margin-right: 50
+    text-align: center
+    text: Cap Below:
+    tooltip: Go refill if capacity is below set value.
+
+  BotTextEdit
+    id: capValue
+    size: 40 20
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    margin-left: 5
+
+  BotSwitch
+    id: staminaSwitch
+    height: 20
+    anchors.left: SoftBoots.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 5
+    margin-right: 50
+    text-align: center
+    text: Stamina:
+    tooltip: Go refill if stamina is below set value. (in minutes)
+
+  BotTextEdit
+    id: staminaValue
+    size: 40 20
+    anchors.left: prev.right
+    anchors.right: parent.right
+    anchors.top: prev.top
+    margin-left: 5
+
+  BotSwitch
+    id: imbues
+    anchors.top: prev.bottom
+    anchors.left: sep.right
+    anchors.right: parent.right
+    margin-top: 5
+    margin-left: 10
+    text: No Imbues
+    tooltip: Go refill when mana leech imbue has worn off.
+
+  TextList
+    id: profiles
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: prev.left
+    anchors.right: prev.right
+    anchors.bottom: close.top
+    margin-bottom: 20
+  
+  BotButton
+    id: newProfile
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    size: 35 15
+    text: New
+    font: cipsoftFont
+    tooltip: Create new supplies profile.
+
+  BotItem
+    id: item1
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-top: 3 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item1Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item1Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item2
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item2Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item2Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item3
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item3Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item3Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item4
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item4Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item4Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item5
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item5Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item5Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center
+
+  BotItem
+    id: item6
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 30 
+
+  Label
+    id: MinLabel
+    !text: tr('Min Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 18
+
+  Label
+    id: MaxLabel
+    !text: tr('Max Amount')
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 35
+
+  BotTextEdit
+    id: item6Min
+    size: 100 20
+    anchors.left: parent.left
+    anchors.top: prev.top
+    margin-top: 15 
+    margin-left: 40
+    text-align: center
+
+  BotTextEdit
+    id: item6Max
+    size: 100 20
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 5
+    text-align: center         
+
+  Button
+    id: close
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-top: 15   
+    tooltip: Close supplies window and save settings.
