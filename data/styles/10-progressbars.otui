@@ -12,6 +12,9 @@ ProgressBar < UIProgressBar
     margin-bottom: 0
     height: 0
 
+ThickProgressBar < ProgressBar
+  image-source: /images/ui/progressbar_thick
+
 LifeProgressBar < UIProgressBar
   height: 16
   background-color: green

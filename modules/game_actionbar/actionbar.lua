@@ -1,7 +1,12 @@
-actionPanel1 = nil
-actionPanel2 = nil
+---@diagnostic disable: undefined-global
+bottomActionPanel1 = nil
+bottomActionPanel2 = nil
+bottomActionPanel3 = nil
+leftActionPanel1 = nil
+leftActionPanel2 = nil
+leftActionPanel3 = nil
 
-local actionConfig
+local settings = {}
 local hotkeyAssignWindow
 local actionButtonsInPanel = 50
 
@@ -24,13 +29,33 @@ ActionColors = {
 }
 
 function init()
-  local bottomPanel = modules.game_interface.getActionPanel()
-  actionPanel1 = g_ui.loadUI('actionbar', bottomPanel)
-  bottomPanel:moveChildToIndex(actionPanel1, 1)
-  actionPanel2 = g_ui.loadUI('actionbar', bottomPanel)
-  bottomPanel:moveChildToIndex(actionPanel2, 1)
+  local bottomPanel = modules.game_interface.getBottomActionPanel()
+  local leftPanel = modules.game_interface.getLeftActionPanel()
+  local rightPanel = modules.game_interface.getRightActionPanel()
 
-  actionConfig = g_configs.create("/actionbar.otml")
+  -- bottom
+  bottomActionPanel1 = g_ui.loadUI('actionbar', bottomPanel)
+  bottomPanel:moveChildToIndex(bottomActionPanel1, 1)
+  bottomActionPanel2 = g_ui.loadUI('actionbar', bottomPanel)
+  bottomPanel:moveChildToIndex(bottomActionPanel2, 1)
+  bottomActionPanel3 = g_ui.loadUI('actionbar', bottomPanel)
+  bottomPanel:moveChildToIndex(bottomActionPanel3, 1)
+
+  -- left
+  leftActionPanel1 = g_ui.loadUI('sideactionbar', leftPanel)
+  leftPanel:moveChildToIndex(leftActionPanel1, 1)
+  leftActionPanel2 = g_ui.loadUI('sideactionbar', leftPanel)
+  leftPanel:moveChildToIndex(leftActionPanel2, 1)
+  leftActionPanel3 = g_ui.loadUI('sideactionbar', leftPanel)
+  leftPanel:moveChildToIndex(leftActionPanel3, 1)
+
+  -- right
+  rightActionPanel1 = g_ui.loadUI('sideactionbar', rightPanel)
+  rightPanel:moveChildToIndex(rightActionPanel1, 1)
+  rightActionPanel2 = g_ui.loadUI('sideactionbar', rightPanel)
+  rightPanel:moveChildToIndex(rightActionPanel2, 1)
+  rightActionPanel3 = g_ui.loadUI('sideactionbar', rightPanel)
+  rightPanel:moveChildToIndex(rightActionPanel3, 1)
 
   connect(g_game, {
     onGameStart = online,
@@ -53,42 +78,105 @@ function terminate()
   })  
 
   -- remove hotkeys, also saves config
-  if actionPanel1.tabBar:getChildCount() > 0 and actionPanel2.tabBar:getChildCount() > 0 then
-    offline()
+  local panels = {
+    bottomActionPanel1,
+    bottomActionPanel2,
+    bottomActionPanel3,
+    leftActionPanel1,
+    leftActionPanel2,
+    leftActionPanel3,
+    rightActionPanel1,
+    rightActionPanel2,
+    rightActionPanel3,
+  }
+
+  for i, panel in ipairs(panels) do
+    if panel.tabBar:getChildCount() > 0 then
+      offline()
+      break
+    end
   end
   
-  actionPanel1:destroy()
-  actionPanel2:destroy()
+  bottomActionPanel1:destroy()
+  bottomActionPanel2:destroy()
+  bottomActionPanel3:destroy()
+  leftActionPanel1:destroy()
+  leftActionPanel2:destroy()
+  leftActionPanel3:destroy()
+  rightActionPanel1:destroy()
+  rightActionPanel2:destroy()
+  rightActionPanel3:destroy()
 end
 
 function show()
   if not g_game.isOnline() then return end
-  actionPanel1:setOn(g_settings.getBoolean("actionBar1", false))
-  actionPanel2:setOn(g_settings.getBoolean("actionBar2", false))
+  bottomActionPanel1:setOn(g_settings.getBoolean("actionbarBottom1", false))
+  bottomActionPanel2:setOn(g_settings.getBoolean("actionbarBottom2", false))
+  bottomActionPanel3:setOn(g_settings.getBoolean("actionbarBottom3", false))
+  leftActionPanel1:setOn(g_settings.getBoolean("actionbarLeft1", false))
+  leftActionPanel2:setOn(g_settings.getBoolean("actionbarLeft2", false))
+  leftActionPanel3:setOn(g_settings.getBoolean("actionbarLeft3", false))
+  rightActionPanel1:setOn(g_settings.getBoolean("actionbarRight1", false))
+  rightActionPanel2:setOn(g_settings.getBoolean("actionbarRight2", false))
+  rightActionPanel3:setOn(g_settings.getBoolean("actionbarRight3", false))
 end
 
 function hide()
-  actionPanel1:setOn(false)
-  actionPanel2:setOn(false)
+  bottomActionPanel1:setOn(false)
+  bottomActionPanel2:setOn(false)
+  bottomActionPanel3:setOn(false)
+  leftActionPanel1:setOn(false)
+  leftActionPanel2:setOn(false)
+  leftActionPanel3:setOn(false)
+  rightActionPanel1:setOn(false)
+  rightActionPanel2:setOn(false)
+  rightActionPanel3:setOn(false)
 end
 
 function switchMode(newMode)
   if newMode then
-    actionPanel1:setImageColor('#ffffff88')  
-    actionPanel2:setImageColor('#ffffff88')  
+    bottomActionPanel1:setImageColor('#ffffff88')  
+    bottomActionPanel2:setImageColor('#ffffff88')  
+    bottomActionPanel3:setImageColor('#ffffff88')
+    leftActionPanel1:setImageColor('#ffffff88')
+    leftActionPanel2:setImageColor('#ffffff88')
+    leftActionPanel3:setImageColor('#ffffff88')
+    rightActionPanel1:setImageColor('#ffffff88')
+    rightActionPanel2:setImageColor('#ffffff88')
+    rightActionPanel3:setImageColor('#ffffff88')
   else
-    actionPanel1:setImageColor('white')    
-    actionPanel2:setImageColor('white')    
+    bottomActionPanel1:setImageColor('white')    
+    bottomActionPanel2:setImageColor('white')    
+    bottomActionPanel3:setImageColor('white') 
+    leftActionPanel1:setImageColor('white') 
+    leftActionPanel2:setImageColor('white') 
+    leftActionPanel3:setImageColor('white') 
+    rightActionPanel1:setImageColor('white') 
+    rightActionPanel2:setImageColor('white') 
+    rightActionPanel3:setImageColor('white') 
   end
 end
 
 function online()
-  setupActionPanel(1, actionPanel1)
-  setupActionPanel(2, actionPanel2)
+  load()
+  setupActionPanel(1, bottomActionPanel1, true)
+  setupActionPanel(2, bottomActionPanel2, true)
+  setupActionPanel(3, bottomActionPanel3, true)
+  setupActionPanel(4, leftActionPanel1, false)
+  setupActionPanel(5, leftActionPanel2, false)
+  setupActionPanel(6, leftActionPanel3, false)
+  setupActionPanel(7, rightActionPanel1, false)
+  setupActionPanel(8, rightActionPanel2, false)
+  setupActionPanel(9, rightActionPanel3, false)
   show()
 end
 
-function offline()
+function refresh(reloaded)
+  offline(reloaded)
+  online()
+end
+
+function offline(reloaded)
   hide()
   if hotkeyAssignWindow then
     hotkeyAssignWindow:destroy()
@@ -96,37 +184,35 @@ function offline()
   end
 
   local gameRootPanel = modules.game_interface.getRootPanel()
-  for index, panel in ipairs({actionPanel1, actionPanel2}) do
-    local config = {}
+  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
+                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
+                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
+    settings[tostring(index)] = {}
     for i, child in ipairs(panel.tabBar:getChildren()) do
-      if child.config then
-        table.insert(config, child.config)
+      if child.config and child.config.item then
+        settings[tostring(index)][tostring(i)] = child.config
         if type(child.config.hotkey) == 'string' and child.config.hotkey:len() > 0 then
           g_keyboard.unbindKeyPress(child.config.hotkey, child.callback, gameRootPanel)
         end
-      else
-        table.insert(config, {})
       end
       if child.cooldownEvent then
         removeEvent(child.cooldownEvent)
       end
     end
-    actionConfig:setNode('actions_' .. index, config)
     panel.tabBar:destroyChildren()
   end
-  actionConfig:save()
+  if not reloaded then
+    save()
+  end
 end
 
-function setupActionPanel(index, panel)
-  local rawConfig = actionConfig:getNode('actions_' .. index) or {}
-  local config = {}
-  for i, buttonConfig in pairs(rawConfig) do -- sorting, because key in rawConfig is string
-    config[tonumber(i)] = buttonConfig
-  end
+function setupActionPanel(index, panel, bottom)
+  local config = settings[tostring(index)] or {}
   
   for i=1,actionButtonsInPanel do
-    local action = g_ui.createWidget('ActionButton', panel.tabBar)
-    action.config = config[i] or {}
+    local type = bottom and 'ActionButton' or 'SideActionButton'
+    local action = g_ui.createWidget(type, panel.tabBar)
+    action.config = config[tostring(i)] or {}
     setupAction(action)
   end  
   
@@ -143,7 +229,18 @@ function setupAction(action)
   action.item:setShowCount(false)
   action.onMouseRelease = actionOnMouseRelease
   action.onTouchRelease = actionOnMouseRelease
-  action.callback = function(k, c, ticks) executeAction(action, ticks) end
+
+  action.callback = function(k, c, ticks) 
+    local lockKeyboard = g_settings.getBoolean('actionbarLock', false)
+    local chatMode = not modules.game_walking.wsadWalking
+
+    if not lockKeyboard or not chatMode then
+      print('lock', lockKeyboard)
+      print('chatMode', chatMode)
+      executeAction(action, ticks) 
+    end
+  end
+
   action.item.onItemChange = nil -- disable callbacks for setup
   
   if config then
@@ -327,7 +424,9 @@ function actionOnItemChange(widget)
 end
 
 function onSpellCooldown(iconId, duration)
-  for index, panel in ipairs({actionPanel1, actionPanel2}) do
+  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
+                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
+                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
     for i, child in ipairs(panel.tabBar:getChildren()) do
       if child.spell and child.spell.id == iconId then
         startCooldown(child, duration)
@@ -337,7 +436,9 @@ function onSpellCooldown(iconId, duration)
 end
 
 function onSpellGroupCooldown(groupId, duration)
-  for index, panel in ipairs({actionPanel1, actionPanel2}) do
+  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
+                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
+                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
     for i, child in ipairs(panel.tabBar:getChildren()) do
       if child.spell and child.spell.group then
         for group, dur in pairs(child.spell.group) do
@@ -482,5 +583,41 @@ function executeAction(action, ticks)
         action.actionDelayTo = g_clock.millis() + actionDelay
       end
     end
+  end
+end
+
+function save()
+  local settingsFile = modules.client_profiles.getSettingsFilePath("actionbar.json")
+
+  local status, result = pcall(function() return json.encode(settings, 2) end)
+  if not status then
+      return onError(
+                 "Error while saving top bar settings. Data won't be saved. Details: " ..
+                     result)
+  end
+
+  if result:len() > 100 * 1024 * 1024 then
+      return onError(
+                 "Something went wrong, file is above 100MB, won't be saved")
+  end
+
+  g_resources.writeFileContents(settingsFile, result)
+end
+
+function load()
+  local settingsFile = modules.client_profiles.getSettingsFilePath("actionbar.json")
+
+  if g_resources.fileExists(settingsFile) then
+      local status, result = pcall(function()
+          return json.decode(g_resources.readFileContents(settingsFile))
+      end)
+      if not status then
+          return onError(
+                     "Error while reading top bar settings file. To fix this problem you can delete storage.json. Details: " ..
+                         result)
+      end
+      settings = result
+  else
+      settings = {}
   end
 end

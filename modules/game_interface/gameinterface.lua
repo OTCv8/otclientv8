@@ -3,8 +3,11 @@ gameMapPanel = nil
 gameRightPanels = nil
 gameLeftPanels = nil
 gameBottomPanel = nil
-gameActionPanel = nil
+gameBottomActionPanel = nil
+gameLeftActionPanel = nil
+gameRightActionPanel = nil
 gameLeftActions = nil
+gameTopBar = nil
 logoutButton = nil
 mouseGrabberWidget = nil
 countWindow = nil
@@ -47,7 +50,10 @@ function init()
   gameRightPanels = gameRootPanel:getChildById('gameRightPanels')
   gameLeftPanels = gameRootPanel:getChildById('gameLeftPanels')
   gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
-  gameActionPanel = gameRootPanel:getChildById('gameActionPanel')
+  gameBottomActionPanel = gameRootPanel:getChildById('gameBottomActionPanel')
+  gameRightActionPanel = gameRootPanel:getChildById('gameRightActionPanel')
+  gameLeftActionPanel = gameRootPanel:getChildById('gameLeftActionPanel')  
+  gameTopBar = gameRootPanel:getChildById('gameTopBar')
   gameLeftActions = gameRootPanel:getChildById('gameLeftActions')
   connect(gameLeftPanel, { onVisibilityChange = onLeftPanelVisibilityChange })
 
@@ -877,8 +883,20 @@ function getBottomPanel()
   return gameBottomPanel
 end
 
-function getActionPanel()
-  return gameActionPanel
+function getBottomActionPanel()
+  return gameBottomActionPanel
+end
+
+function getLeftActionPanel()
+  return gameLeftActionPanel
+end
+
+function getRightActionPanel()
+  return gameRightActionPanel
+end
+
+function getTopBar()
+  return gameTopBar
 end
 
 function refreshViewMode()  
@@ -945,9 +963,10 @@ function refreshViewMode()
   
   if classic then  
     g_game.changeMapAwareRange(19, 15)
-    gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanels', AnchorRight)
-    gameMapPanel:addAnchor(AnchorRight, 'gameRightPanels', AnchorLeft)
-    gameMapPanel:addAnchor(AnchorBottom, 'gameActionPanel', AnchorTop)
+    gameMapPanel:addAnchor(AnchorLeft, 'gameLeftActionPanel', AnchorRight)
+    gameMapPanel:addAnchor(AnchorRight, 'gameRightActionPanel', AnchorLeft)
+    gameMapPanel:addAnchor(AnchorBottom, 'gameBottomActionPanel', AnchorTop)
+    gameMapPanel:addAnchor(AnchorTop, 'gameTopBar', AnchorBottom)
     gameMapPanel:setKeepAspectRatio(true)
     gameMapPanel:setLimitVisibleRange(false)
     gameMapPanel:setZoom(11)
