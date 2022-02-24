@@ -105,8 +105,6 @@ local experienceTooltip = 'You have %d%% to advance to level %d.'
 local settings = {}
 
 function init()
-    -- unfortunately won't work for mobile
-    if g_app.isMobile() then return end
     
     connect(LocalPlayer, {
         onHealthChange = onHealthChange,
@@ -127,8 +125,6 @@ function init()
 end
 
 function terminate()
-    -- unfortunately won't work for mobile
-    if g_app.isMobile() then return end
 
     disconnect(LocalPlayer, {
         onHealthChange = onHealthChange,
@@ -145,7 +141,7 @@ end
 
 function setupTopBar()
     local topPanel = modules.game_interface.getTopBar()
-    topBar = topBar or g_ui.loadUI('topbar', topPanel)
+    topBar = topBar or g_ui.loadUI('TopBar', topPanel)
     topBar = topBar or g_ui.createWidget('TopBar', topPanel)
 
     manaBar = topBar.stats.mana

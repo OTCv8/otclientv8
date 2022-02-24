@@ -2,7 +2,7 @@ Module
   name: game_topbar
   description: Customizable Top Bar from Cipsoft's Tibia 12 Client
   author: Vithrax
-  discord: Vithrax#5814
+  website: discord_Vithrax#5814
   sandboxed: true
   autoload: true
   scripts: [ topbar ]

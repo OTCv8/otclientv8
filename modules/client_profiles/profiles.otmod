@@ -2,7 +2,7 @@ Module
   name: client_profiles
   description: Client profiles
   author: Vithrax
-  discord: Vithrax#5814
+  website: discord_Vithrax#5814
   autoload: true
   reloadable: false
   scripts: [ profiles ]

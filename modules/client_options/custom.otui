@@ -123,5 +123,3 @@ OptionPanel
   OptionCheckBox
     id: actionbarLock
     !text: tr('Disable action bar hotkeys when chat mode is on')
-    $mobile:
-      visible: false

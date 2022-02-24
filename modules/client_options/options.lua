@@ -64,7 +64,7 @@ local defaultOptions = {
   actionbarRight2 = false,
   actionbarRight3 = false,
 
-  actionbarLock = true,
+  actionbarLock = false,
 
   profile = 1
 }
