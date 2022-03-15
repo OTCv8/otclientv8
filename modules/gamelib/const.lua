@@ -210,6 +210,7 @@ GameNewCreatureStacking = 121 -- Ignore MAX_THINGS limit while adding to tile
 GameCreaturesMana = 122 -- get mana from server for creatures other than Player
 GameQuickLootFlags = 123 -- enables quick loot feature for all protocols
 GameDontMergeAnimatedText = 124
+GameCreatureTitle = 125
 
 LastGameFeature = 130
         

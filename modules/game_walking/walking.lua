@@ -17,10 +17,11 @@ autoFinishNextServerWalk = 0
 turnKeys = {}
 
 function init()
+  connect(g_game, { onTeleport = onTeleport })
+  
   connect(LocalPlayer, {
     onPositionChange = onPositionChange,
     onWalk = onWalk,
-    onTeleport = onTeleport,
     onWalkFinish = onWalkFinish,
     onCancelWalk = onCancelWalk
   })
@@ -30,10 +31,11 @@ function init()
 end
 
 function terminate()
+  disconnect(g_game, { onTeleport = onTeleport })
+  
   disconnect(LocalPlayer, {
     onPositionChange = onPositionChange,
     onWalk = onWalk,
-    onTeleport = onTeleport,
     onWalkFinish = onWalkFinish
   })
   removeEvent(autoWalkEvent)
