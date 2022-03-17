@@ -557,20 +557,29 @@ function getMaxAmount()
   return 100
 end
 
-function sellAll(delayed)
+function sellAll(delayed, exceptions)
+  -- backward support
+  if type(delayed) == "table" then
+    exceptions = delayed
+    delayed = false
+  end
+  exceptions = exceptions or {}
   removeEvent(sellAllWithDelayEvent)
   local queue = {}
   for _,entry in ipairs(tradeItems[SELL]) do
-    local sellQuantity = getSellQuantity(entry.ptr)
-    while sellQuantity > 0 do
-      local maxAmount = math.min(sellQuantity, getMaxAmount())
-      if delayed then
-        g_game.sellItem(entry.ptr, maxAmount, ignoreEquipped:isChecked())
-        sellAllWithDelayEvent = scheduleEvent(function() sellAll(true) end, 1100)
-        return
+    local id = entry.ptr:getId()
+    if not table.find(exceptions, id) then
+      local sellQuantity = getSellQuantity(entry.ptr)
+      while sellQuantity > 0 do
+        local maxAmount = math.min(sellQuantity, getMaxAmount())
+        if delayed then
+          g_game.sellItem(entry.ptr, maxAmount, ignoreEquipped:isChecked())
+          sellAllWithDelayEvent = scheduleEvent(function() sellAll(true) end, 1100)
+          return
+        end
+        table.insert(queue, {entry.ptr, maxAmount, ignoreEquipped:isChecked()})
+        sellQuantity = sellQuantity - maxAmount
       end
-      table.insert(queue, {entry.ptr, maxAmount, ignoreEquipped:isChecked()})
-      sellQuantity = sellQuantity - maxAmount
     end
   end
   for _, entry in ipairs(queue) do

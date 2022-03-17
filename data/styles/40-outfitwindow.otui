@@ -1,0 +1,476 @@
+PartCheckBoxes < Panel
+  height: 18
+
+  ButtonBox
+    id: head
+    font: cipsoftFont
+    !text: tr('Head')
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: parent.left
+    checked: true
+    width: 62
+    height: 18
+
+  ButtonBox
+    id: primary
+    font: cipsoftFont
+    !text: tr('Primary')
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    width: 62
+    height: 18
+
+  ButtonBox
+    id: secondary
+    font: cipsoftFont
+    !text: tr('Secondary')
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    width: 62
+    height: 18
+
+  ButtonBox
+    id: detail
+    font: cipsoftFont
+    !text: tr('Detail')
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    width: 62
+    height: 18
+
+  ButtonBox
+    id: randomizeButton
+    font: cipsoftFont
+    !text: tr('Randomize')
+    !tooltip: tr('Randomize characters outfit')
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    width: 62
+    height: 18 
+    @onClick: modules.game_outfit.randomize()
+
+AppearanceCategory < Panel
+  height: 20
+
+  $!first:
+    margin-top: 2
+
+  CheckBox
+    id: checkBox
+    image-source: /images/ui/checkbox_round
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: parent.left
+    margin-left: 5
+    width: 90
+    text: Outfit:
+    @onClick: modules.game_outfit.onOptionChange(self:getParent():getId(), self:isChecked(), self)
+
+  FlatLabel
+    id: description
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: prev.right
+    anchors.right: parent.right
+    margin-right: 5
+    text-align: center
+    text: -
+
+WindowPanel < Panel
+  image-source: /images/ui/window
+  image-border: 6
+  image-border-top: 27
+  padding: 5
+  padding-top: 8
+
+OptionsCheckBox < Panel
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  padding: 2
+  padding-left: 7
+  height: 22
+
+  CheckBox
+    id: check
+    anchors.centerIn: parent
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: left
+    @onCheckChange: modules.game_outfit.onOptionChange(self:getParent():getId(), self:isChecked(), self)
+
+  $!first:
+    margin-top: 3
+
+PreviewCreaturePanel < FlatPanel
+  padding: 3
+
+  Button
+    id: rotateLeft
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 20 20
+    text: <
+    @onClick: modules.game_outfit.rotatePreview(self:getId())
+
+  Button
+    id: rotateRight
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 20 20
+    text: >
+    @onClick: modules.game_outfit.rotatePreview(self:getId())
+
+  UICreature
+    id: creature
+    size: 100 100
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.horizontalCenter: parent.horizontalCenter
+
+ConfigurePanel < WindowPanel
+  width: 150
+  padding: 3
+
+  Label
+    id: title
+    margin-top: 5
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    font: verdana-11px-rounded 
+    text: Configure
+
+  Panel
+    id: options
+    anchors.fill: parent
+    anchors.top: prev.bottom
+    margin-top: 1
+    padding: 5
+    layout: verticalBox  
+
+SmallPreviewTile < UICheckBox
+  padding: 5
+  @onClick: modules.game_outfit.onElementSelect(self)
+  image-source: /images/ui/button
+  image-color: #dfdfdf
+  image-clip: 0 0 22 23
+  image-border: 10
+  opacity: 1.0
+
+  $pressed:
+    image-clip: 0 46 22 23
+
+  $hover:
+    opacity: 0.75
+
+  UICreature
+    id: creature
+    size: 60 60
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    phantom: true
+    creature-fixed-size: true
+
+  UIWidget
+    id: item
+    anchors.fill: prev
+    phantom: true
+
+  Label
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    text-align: center
+    font: verdana-11px-rounded     
+
+  $checked:
+    border-width: 1
+    border-color: #ffffff
+
+  $!checked: 
+    border-width: 0    
+
+LargePreviewTile < UICheckBox
+  padding: 15 15 2 15
+  @onClick: modules.game_outfit.onElementSelect(self)
+  image-source: /images/ui/button
+  image-color: #dfdfdf
+  image-clip: 0 0 22 23
+  image-border: 10
+  opacity: 1.0
+
+  $pressed:
+    image-clip: 0 46 22 23
+
+  UICreature
+    id: outfit
+    size: 60 60
+    anchors.left: parent.left
+    margin-left: 10
+    anchors.top: parent.top
+    phantom: true
+  
+  UICreature
+    id: mount
+    size: 60 60
+    anchors.right: parent.right
+    margin-right: 10
+    anchors.top: parent.top
+    phantom: true
+
+  Label
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    text-align: center
+    font: verdana-11px-rounded     
+
+  $checked:
+    border-width: 1
+    border-color: #ffffff
+
+  $!checked: 
+    border-width: 0    
+
+FilterPanel < WindowPanel
+  size: 242 56
+  padding-left: 10
+  padding-right: 10
+  padding-bottom: 8
+
+  Label
+    id: title
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    anchors.top: parent.top
+    font: verdana-11px-rounded 
+    text: Filter outfits
+
+  Button
+    id: clear
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 20 20
+    text: X
+    @onClick: modules.game_outfit.clearFilterText()
+
+  TextEdit
+    id: filterWindow
+    anchors.right: prev.left
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    height: 20
+    placeholder: Type to search
+    placehoder-color: black
+    @onTextChange: modules.game_outfit.onFilterList(self:getText())
+
+PresetPanel < WindowPanel
+  size: 242 47
+  padding-left: 2
+  padding-bottom: 2
+
+  Label
+    id: title
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    font: verdana-11px-rounded 
+    text: Manage Presets
+
+  Button
+    id: new
+    size: 45 18
+    font: cipsoftFont
+    text: New
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 6
+    margin-left: 25
+    @onClick: modules.game_outfit.onPresetButtonPress(self:getId())
+
+  Button
+    id: rename
+    size: 45 18
+    font: cipsoftFont
+    text: Rename
+    anchors.left: prev.right
+    margin-left: 3
+    anchors.verticalCenter: prev.verticalCenter
+    @onClick: modules.game_outfit.onPresetButtonPress(self:getId())
+    
+
+  Button
+    id: save
+    size: 45 18
+    font: cipsoftFont
+    text: Save
+    anchors.left: prev.right
+    margin-left: 3
+    anchors.verticalCenter: prev.verticalCenter
+    @onClick: modules.game_outfit.onPresetButtonPress(self:getId())
+
+  Button
+    id: delete
+    size: 45 18
+    font: cipsoftFont
+    text: Delete
+    anchors.left: prev.right
+    margin-left: 3
+    anchors.verticalCenter: prev.verticalCenter   
+    @onClick: modules.game_outfit.onPresetButtonPress(self:getId()) 
+
+PreviewPanel < WindowPanel
+  size: 477 205
+
+  Label
+    id: title
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    font: verdana-11px-rounded 
+    text: Preview Selection
+
+  FlatPanel
+    id: options
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin: 3
+    margin-top: 19
+    padding: 5
+    width: 120
+    layout: verticalBox 
+
+    Label
+      font: verdana-11px-rounded 
+      text-align: center
+      text: Show:
+
+  PreviewCreaturePanel
+    id: creaturePanel
+    margin: 3
+    margin-top: 19
+    anchors.fill: parent
+    anchors.left: prev.right
+
+AppearancePanel < WindowPanel
+  layout:
+    type: verticalBox
+    fit-children: true
+
+  Panel
+    id: categories
+    margin-top: 20
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  PartCheckBoxes
+    id: parts
+    margin-top: 3
+    margin-left: 7
+
+  Panel
+    id: colorBoxPanel
+    padding: 2 2 2 5
+    layout:
+      type: grid
+      cell-size: 14 14
+      cell-spacing: 2
+      num-columns: 19
+      num-lines: 7
+      fit-children: true
+
+ListBox < ScrollableFlatPanel
+  width: 242
+  padding-top: 6
+  padding-left: 6
+  padding-bottom: 6
+  layout:
+    type: grid
+    num-columns: 2
+    cell-size: 106 100
+    cell-spacing: 6
+    flow: true
+
+OutfitWindow < MainWindow
+  size: 760 519
+  padding-top: 35
+  !text: tr('Customize Character')
+
+  FilterPanel
+    id: search
+    anchors.top: parent.top
+    anchors.right: parent.right
+
+  PresetPanel
+    id: preset
+    anchors.fill: prev
+    visible: false
+
+  ListBox
+    id: list
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.right: parent.right
+    anchors.bottom: bottomSep.top
+    margin-bottom: 5
+    vertical-scrollbar: scrollBar
+
+  VerticalScrollBar
+    id: scrollBar
+    anchors.top: list.top
+    anchors.bottom: list.bottom
+    anchors.right: list.right
+    step: 14
+    pixels-scroll: true
+
+  PreviewPanel
+    id: preview
+    anchors.top: parent.top
+    anchors.left: parent.left
+
+  ConfigurePanel
+    id: config
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.bottom: bottomSep.top
+    margin-bottom: 5
+    anchors.left: parent.left
+
+  AppearancePanel
+    id: appearance
+    anchors.left: prev.right
+    anchors.top: preview.bottom
+    anchors.right: preview.right
+    margin: 5 0 5 5
+  
+  Label
+    anchors.top: prev.top
+    margin-top: 8
+    anchors.horizontalCenter: prev.horizontalCenter
+    font: verdana-11px-rounded 
+    text: Change Appearance
+
+  HorizontalSeparator
+    id: bottomSep
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
+  Button
+    id: closeButton
+    !text: tr('Cancel')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    @onClick: modules.game_outfit.destroy()
+
+  Button
+    id: okButton
+    !text: tr('Ok')
+    font: cipsoftFont
+    anchors.right: prev.left
+    margin-right: 7
+    anchors.bottom: parent.bottom
+    size: 45 21
+    @onClick: modules.game_outfit.accept()

@@ -226,6 +226,7 @@ end
 
 function toggleIcon(bitChanged)
     local content = states
+    if not content then return end
 
     local icon = content:getChildById(Icons[bitChanged].id)
     if icon then
@@ -245,6 +246,7 @@ function loadIcon(bitChanged)
 end
 
 function onHealthChange(localPlayer, health, maxHealth)
+    if not healthBar then return end
     if health > maxHealth then maxHealth = health end
 
     local healthPercent = (health / maxHealth) * 100
@@ -268,6 +270,7 @@ function onHealthChange(localPlayer, health, maxHealth)
 end
 
 function onManaChange(localPlayer, mana, maxMana)
+    if not manaBar then return end
     if mana > maxMana then maxMana = mana end
 
     local manaPercent = (mana / maxMana) * 100
@@ -278,6 +281,7 @@ function onManaChange(localPlayer, mana, maxMana)
 end
 
 function onLevelChange(localPlayer, value, percent)
+    if not topBar then return end
     local experienceBar = topBar.Experience.progress
     local levelLabel = topBar.Experience.level
     experienceBar:setTooltip(tr(experienceTooltip, 100-percent, value + 1))
@@ -374,6 +378,7 @@ function setupSkills()
 end
 
 function toggleSkillPanel(id)
+    if not topBar then return end
     local panel = topBar.skills[id]
     panel = panel or topBar.Experience
     if not panel then return end
@@ -384,6 +389,7 @@ function toggleSkillPanel(id)
 end
 
 function setSkillValue(id, value)
+    if not topBar then return end
     local panel = topBar.skills[id]
     if not panel then return end
 
@@ -391,6 +397,7 @@ function setSkillValue(id, value)
 end
 
 function setSkillPercent(id, percent, tooltip)
+    if not topBar then return end
     local panel = topBar.skills[id]
     if not panel then return end
 
@@ -398,6 +405,7 @@ function setSkillPercent(id, percent, tooltip)
 end
 
 function setSkillBase(id, value, baseValue)
+    if not topBar then return end
     local panel = topBar.skills[id]
     if not panel then return end
 

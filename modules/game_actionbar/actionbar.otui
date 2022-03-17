@@ -1,17 +1,9 @@
 ActionButton < Panel
   font: cipsoftFont
-  anchors.top: parent.top
-  anchors.bottom: parent.bottom
   width: 40
   padding: 1 1 1 1
   margin-left: 1
   draggable: true
-  
-  $first:
-    anchors.left: parent.left
-
-  $!first:
-    anchors.left: prev.right
     
   Item
     id: item
@@ -91,6 +83,7 @@ Panel
     anchors.right: next.left
     margin-right: 3
     clipping: true
+    layout: horizontalBox
     
   TabButton
     id: nextButton

@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-global
 bottomActionPanel1 = nil
 bottomActionPanel2 = nil
 bottomActionPanel3 = nil
@@ -235,8 +234,6 @@ function setupAction(action)
     local chatMode = not modules.game_walking.wsadWalking
 
     if not lockKeyboard or not chatMode then
-      print('lock', lockKeyboard)
-      print('chatMode', chatMode)
       executeAction(action, ticks) 
     end
   end
