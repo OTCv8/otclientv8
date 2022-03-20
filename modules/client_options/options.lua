@@ -66,7 +66,9 @@ local defaultOptions = {
 
   actionbarLock = false,
 
-  profile = 1
+  profile = 1,
+  
+  antialiasing = true
 }
 
 local optionsWindow
@@ -348,6 +350,8 @@ function setOption(key, value, force)
     generalPanel:getChildById('walkTeleportDelayLabel'):setText(tr('Walk delay after teleport: %s ms', value))  
   elseif key == 'walkCtrlTurnDelay' then
     generalPanel:getChildById('walkCtrlTurnDelayLabel'):setText(tr('Walk delay after ctrl turn: %s ms', value))  
+  elseif key == "antialiasing" then
+    g_app.setSmooth(value)
   end
 
   -- change value for keybind updates
@@ -408,6 +412,7 @@ end
 
 function online()
   setLightOptionsVisibility(not g_game.getFeature(GameForceLight))
+  g_app.setSmooth(g_settings.getBoolean("antialiasing"))
 end
 
 function offline()
