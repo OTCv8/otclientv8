@@ -1,54 +1,188 @@
+QuestTrackerLabel < Panel
+  height: 20
+  layout:
+    type: verticalBox
+    fit-children: true
+
+  $!first:
+    margin-top: 3
+
+  Label
+    id: description
+    text-align: center
+    text-wrap: true
+    text-auto-resize: true
+
+  HorizontalSeparator
+    margin-top: 3
+
 QuestLabel < Label
   font: verdana-11px-monochrome
-  text-offset: 2 0
+  height: 18
+  text-offset: 2 1
   focusable: true
   color: #aaaaaa
-  background-color: alpha
+  background-color: #484848
 
-  $on:
-    color: #00aa00
-  $!on:
-    color: #aaaaaa
+  $checked:
+    background-color: #414141
 
   $focus:
-    background-color: #444444
+    background-color: #ffffff22
 
-  $on focus:
-    color: #00ff00
-  $!on focus:
-    color: #ffffff
-
-QuestLogWindow < MainWindow
-  id: questLogWindow
-  !text: tr('Quest Log')
-  size: 500 400
-  @onEscape: self:destroy()
-  $mobile:
-    size: 500 350
-
+QuestLog < Panel
   TextList
     id: questList
-    anchors.top: parent.top
-    anchors.bottom: closeButton.top
-    anchors.left: parent.left
-    anchors.right: questListScrollBar.left
-    margin-bottom: 10
+    anchors.fill: parent
+    margin-bottom: 20
     focusable: false
+    background-color: #484848
     vertical-scrollbar: questListScrollBar
 
   VerticalScrollBar
     id: questListScrollBar
-    anchors.top: parent.top
-    anchors.bottom: closeButton.top
-    anchors.right: parent.right
-    margin-bottom: 10
+    anchors.top: questList.top
+    anchors.bottom: questList.bottom
+    anchors.right: questList.right
     step: 14
     pixels-scroll: true
 
+MissionLog < Panel
+  Label
+    id: questName
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: left
+    text: questline name
+
+  TextList
+    id: missionList
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 3
+    height: 133
+    padding: 1
+    focusable: false
+    vertical-scrollbar: missionListScrollBar
+    background-color: #484848
+
+  VerticalScrollBar
+    id: missionListScrollBar
+    anchors.top: missionList.top
+    anchors.right: missionList.right
+    anchors.bottom: missionList.bottom
+    step: 14
+    pixels-scroll: true
+
+  CheckBox
+    id: track
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 25
+    !text: tr('Show in quest tracker')
+    @onClick: modules.game_questlog.onTrackOptionChange(self)
+    enabled: false
+
+  FlatLabel
+    id: missionDescription
+    anchors.top: missionList.bottom
+    anchors.left: parent.left
+    anchors.right: missionListScrollBar.right
+    anchors.bottom: prev.top
+    background-color: #363636
+    margin-bottom: 10
+    margin-top: 10
+    text-wrap: true
+
+QuestLogWindow < MainWindow
+  id: questLogWindow
+  !text: tr('Quest Log')
+  size: 330 405
+  @onEscape: modules.game_questlog.back()
+  $mobile:
+    size: 330 350
+
+  QuestLog
+    id: questlog
+    anchors.top: parent.top
+    anchors.bottom: bottomSep.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    visible: false
+  
+  MissionLog
+    id: missionlog
+    anchors.fill: prev
+
+  HorizontalSeparator
+    id: bottomSep
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8    
+
   Button
     id: closeButton
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
     !text: tr('Close')
-    width: 90
-    @onClick: self:getParent():destroy()
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    color: #ffffff
+    size: 45 21
+    @onClick: modules.game_questlog.back()
+
+  Button
+    id: showButton
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.right: prev.left
+    margin-right: 3
+    color: #ffffff
+    size: 45 21
+    !text: tr('Show')
+    font: cipsoftFont
+    @onClick: modules.game_questlog.showQuestLine()
+
+  Button
+    id: trackerButton
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.left: parent.left
+    margin-right: 3
+    color: #ffffff
+    size: 80 21
+    text-align: center
+    !text: tr('Quest Tracker')
+    font: cipsoftFont
+    @onClick: modules.game_questlog.toggle()
+
+QuestTracker < MiniWindow
+  id: questTracker
+  !text: tr('Quest Tracker')
+  height: 60
+  icon: /images/topbuttons/quest_tracker
+
+  MiniWindowContents
+    padding-left: 5
+    padding-right: 5
+    padding-top: 5
+    layout: verticalBox
+
+    Panel
+      id: list
+      layout:
+        type: verticalBox
+        fit-children: true
+
+    Panel
+      height: 20
+      margin-top: 5
+      Button
+        !text: tr('Add Tracked Quest')
+        anchors.fill: parent
+        margin-left: 30
+        margin-right: 30 
+        font: cipsoftFont
+        color: #FFFFFF
+        @onClick: g_game.requestQuestLog()

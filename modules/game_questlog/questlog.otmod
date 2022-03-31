@@ -1,8 +1,8 @@
 Module
   name: game_questlog
-  description: View game quests status
-  author: edubart
-  website: https://github.com/edubart/otclient
+  description: Quest status preview and tracking
+  author: Vithrax
+  website: https://github.com/Vithrax
   sandboxed: true
   scripts: [ questlog ]
   @onLoad: init()
