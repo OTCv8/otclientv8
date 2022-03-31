@@ -23,55 +23,48 @@ dataTables = {
 
 math.randomseed(os.time())
 
--- take local shaders, won't work if server does not support it 
+-- take local shaders, won't work if server does not support it
 localShaders = {}
 local shaderFiles = g_resources.listDirectoryFiles("/data/shaders/", true, false)
 for i, file in ipairs(shaderFiles) do
   local name = file:split(".")[1]:trim():lower()
-  name = name:gsub("/data/shaders//","")
-  name = name:gsub("_fragment","")
-  name = name:gsub("_vertex","")
+  name = name:gsub("/data/shaders//", "")
+  name = name:gsub("_fragment", "")
+  name = name:gsub("_vertex", "")
   if name:find("outfit") and not table.find(localShaders, name) then
     table.insert(localShaders, name)
   end
 end
 
 function setupTables()
-  configOptions = { 
-
-    { id="addon1",             text="Addon 1",           checked=false,          enabled=g_game.getClientVersion()>=780                                                   },
-    { id="addon2",             text="Addon 2",           checked=false,          enabled=g_game.getClientVersion()>=780                                                   },
-    { id="mount",              text="Mount",             checked=false,          enabled=g_game.getFeature(GamePlayerMounts)                                              },
-    { id="wings",              text="Wings",             checked=false,          enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="aura",               text="Aura",              checked=false,          enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="shader",             text="Shaders",           checked=false,          enabled=g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0   },
-    { id="healtbar",           text="Health Bars",       checked=false,          enabled=g_game.getFeature(GameHealthInfoBackground)                                      },
-    { id="manabar",            text="Mana Bars",         checked=false,          enabled=g_game.getFeature(GameHealthInfoBackground)                                      },
-
+  configOptions = {
+    {id = "addon1", text = "Addon 1", checked = false, enabled = g_game.getClientVersion() >= 780},
+    {id = "addon2", text = "Addon 2", checked = false, enabled = g_game.getClientVersion() >= 780},
+    {id = "mount", text = "Mount", checked = false, enabled = g_game.getFeature(GamePlayerMounts)},
+    {id = "wings", text = "Wings", checked = false, enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "aura", text = "Aura", checked = false, enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "shader", text = "Shaders", checked = false, enabled = g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0},
+    {id = "healtbar", text = "Health Bars", checked = false, enabled = g_game.getFeature(GameHealthInfoBackground)},
+    {id = "manabar", text = "Mana Bars", checked = false, enabled = g_game.getFeature(GameHealthInfoBackground)}
   }
   appearanceOptions = {
-
-    { id="presetCat",          text="Preset",            enabled=true                                                                             },
-    { id="outfitCat",          text="Outfit",            enabled=true                                                                             },
-    { id="mountCat",           text="Mount",             enabled=g_game.getFeature(GamePlayerMounts)                                              },
-    { id="wingsCat",           text="Wings",             enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="auraCat",            text="Aura",              enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="shaderCat",          text="Shader",            enabled=g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0   },
-    { id="healtbarCat",        text="Health Bars",       enabled=g_game.getFeature(GameHealthInfoBackground)                                      },
-    { id="manabarCat",         text="Mana Bars",         enabled=g_game.getFeature(GameHealthInfoBackground)                                      },
-  
+    {id = "presetCat", text = "Preset", enabled = true},
+    {id = "outfitCat", text = "Outfit", enabled = true},
+    {id = "mountCat", text = "Mount", enabled = g_game.getFeature(GamePlayerMounts)},
+    {id = "wingsCat", text = "Wings", enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "auraCat", text = "Aura", enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "shaderCat", text = "Shader", enabled = g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0},
+    {id = "healtbarCat", text = "Health Bars", enabled = g_game.getFeature(GameHealthInfoBackground)},
+    {id = "manabarCat", text = "Mana Bars", enabled = g_game.getFeature(GameHealthInfoBackground)}
   }
   previewOptions = {
-
-    { id="move",               text="Movement",          checked=false,          enabled=true                                                                             }, 
-    { id="showOutfit",         text="Outfit",            checked=true,           enabled=true                                                                             }, 
-    { id="showMount",          text="Mount",             checked=false,          enabled=g_game.getFeature(GamePlayerMounts)                                              },
-    { id="showWings",          text="Wings",             checked=false,          enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="showAura",           text="Aura",              checked=false,          enabled=g_game.getFeature(GameWingsAndAura)                                              },
-    { id="showShader",         text="Shader",            checked=false,          enabled=g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0   },
-    
+    {id = "move", text = "Movement", checked = false, enabled = true},
+    {id = "showOutfit", text = "Outfit", checked = true, enabled = true},
+    {id = "showMount", text = "Mount", checked = false, enabled = g_game.getFeature(GamePlayerMounts)},
+    {id = "showWings", text = "Wings", checked = false, enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "showAura", text = "Aura", checked = false, enabled = g_game.getFeature(GameWingsAndAura)},
+    {id = "showShader", text = "Shader", checked = false, enabled = g_game.getFeature(GameOutfitShaders) or loadLocalShaders and #localShaders > 0}
   }
-
 end
 
 function init()
@@ -96,16 +89,20 @@ function terminate()
 end
 
 function onFilterList(text)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   filterText = text:lower()
 
   refreshVisiblePreviews()
 end
 
 function clearFilterText()
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
 
-  outfitWindow.search.filterWindow:setText('')
+  outfitWindow.search.filterWindow:setText("")
 end
 
 function onPresetButtonPress(key)
@@ -121,10 +118,9 @@ function onPresetButtonPress(key)
   end
 
   if key == "delete" then
-    if widget then    
+    if widget then
       widget:destroy()
     end
-  
   elseif key == "new" then
     local outfit = getOutfitFromCurrentChecks(1)
     outfit.mount = 0
@@ -133,22 +129,20 @@ function onPresetButtonPress(key)
 
     local widget = g_ui.createWidget("LargePreviewTile", outfitWindow.list)
     widget.catalog = "preset"
-    widget:setId("preset."..outfit.type..name)
+    widget:setId("preset." .. outfit.type .. name)
     widget.outfit:setOutfit(outfit)
     if mount then
-      widget.mount:setOutfit({
-                                type = mount
-                              })
+      widget.mount:setOutfit(
+        {
+          type = mount
+        }
+      )
     end
     widget.title:setText(name)
-
-
   elseif key == "rename" then
     if widget then
-      modules.client_textedit.show(widget.title, {title="Rename Preset", placeholder=widget.title:getText()})
+      modules.client_textedit.show(widget.title, {title = "Rename Preset", placeholder = widget.title:getText()})
     end
-
-
   elseif key == "save" then
     if widget then
       local data = getOutfitFromCurrentChecks()
@@ -165,7 +159,9 @@ function onPresetButtonPress(key)
 end
 
 function onOptionChange(key, checked, widget)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local creature = outfitWindow.preview.creaturePanel.creature
 
   if key:find("show") or key:find("addon") then
@@ -173,10 +169,10 @@ function onOptionChange(key, checked, widget)
   end
 
   if key:find("Cat") then
-    currentCategory = string.sub(key, 1, key:len()-3)
+    currentCategory = string.sub(key, 1, key:len() - 3)
 
     -- set filter window title
-    outfitWindow.search.title:setText("Filter "..currentCategory.."s")
+    outfitWindow.search.title:setText("Filter " .. currentCategory .. "s")
 
     if key == "presetCat" then
       outfitWindow.list:getLayout():setNumColumns(1)
@@ -192,16 +188,12 @@ function onOptionChange(key, checked, widget)
 
     -- set correct checks
     for i, child in ipairs(widget:getParent():getParent():getChildren()) do
-      child.checkBox:setChecked(widget==child.checkBox)
+      child.checkBox:setChecked(widget == child.checkBox)
     end
 
     refreshVisiblePreviews()
-
-    
   elseif key == "move" then
     creature:setAnimate(checked)
-
-
   elseif key == "showOutfit" or key == "showMount" then
     local options = outfitWindow.preview.options
     local showOutfit = options.showOutfit
@@ -215,15 +207,14 @@ function onOptionChange(key, checked, widget)
       options.move:disable()
     else
       options.move:enable()
-    end        
-
+    end
   end
-
-
 end
 
 function refreshVisiblePreviews()
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
 
   for i, child in ipairs(outfitWindow.list:getChildren()) do
     local id = child:getId()
@@ -240,17 +231,19 @@ function getOutfitFromCurrentChecks(returnVal)
   -- 0 - return raw table
   -- 1 - return combined outfit according to configure checks
   -- 2 - return combined outfit according to preview checks
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
 
   local data = {
-    cleanOutfit = {},      -- outfit.type & colors
-    mount = 0,             -- outfit.mount
-    addons = 0,            -- outfit.addons
-    shader = "",           -- outfit.shader
-    wings = 0,             -- outfit.wings
-    aura = 0,              -- outfit.aura
-    healthbar = "",        -- outfit.healthbar
-    manabar = ""           -- outfit.manabar
+    cleanOutfit = {}, -- outfit.type & colors
+    mount = 0, -- outfit.mount
+    addons = 0, -- outfit.addons
+    shader = "", -- outfit.shader
+    wings = 0, -- outfit.wings
+    aura = 0, -- outfit.aura
+    healthbar = "", -- outfit.healthbar
+    manabar = "" -- outfit.manabar
   }
 
   local combinedOutfit
@@ -297,7 +290,7 @@ function getOutfitFromCurrentChecks(returnVal)
     combinedOutfit = data.cleanOutfit
     combinedOutfit.addons = showAddons
     combinedOutfit.mount = showMount and data.mount > 0 and data.mount or nil
-    combinedOutfit.shader = showShader and data.shader:len() > 0 and data.shader or nil 
+    combinedOutfit.shader = showShader and data.shader:len() > 0 and data.shader or nil
     combinedOutfit.wings = showWings and data.wings > 0 and data.wings or nil
     combinedOutfit.aura = showAura and data.aura > 0 and data.aura or nil
     combinedOutfit.healthbar = showHealthBar and data.healthbar:len() > 0 and data.healthbar or nil
@@ -306,7 +299,7 @@ function getOutfitFromCurrentChecks(returnVal)
     previewOutfit = data.cleanOutfit
     previewOutfit.addons = showAddons
     previewOutfit.mount = data.mount > 0 and data.mount or nil
-    previewOutfit.shader = data.shader:len() > 0 and data.shader or nil 
+    previewOutfit.shader = data.shader:len() > 0 and data.shader or nil
     previewOutfit.wings = data.wings > 0 and data.wings or nil
     previewOutfit.aura = data.aura > 0 and data.aura or nil
     previewOutfit.healthbar = data.healthbar:len() > 0 and data.healthbar or nil
@@ -315,11 +308,11 @@ function getOutfitFromCurrentChecks(returnVal)
 
   -- TODO: test & most likely fix all custom features (wings, auras, shaders, bars)
   if returnVal == 0 then
-    return data               -- raw
+    return data -- raw
   elseif returnVal == 1 then
-    return combinedOutfit     -- combined @ configure
+    return combinedOutfit -- combined @ configure
   else
-    return previewOutfit      -- combined @ preview
+    return previewOutfit -- combined @ preview
   end
 end
 
@@ -342,21 +335,23 @@ function randomize()
 end
 
 function onElementSelect(widget)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local catalog = string.split(widget:getId(), ".")[1]
 
   -- apply correct check
   for i, child in ipairs(widget:getParent():getChildren()) do
     -- there can be few items checked, but only one per catalog
     if child.catalog == widget.catalog then
-      child:setChecked(widget==child)
+      child:setChecked(widget == child)
     end
   end
 
   if catalog == "outfit" then
     local outfit = widget.creature:getOutfit()
     local addons = outfit.addons
-    
+
     local addon1 = outfitWindow.config.options.addon1.check
     local addon2 = outfitWindow.config.options.addon2.check
 
@@ -366,15 +361,13 @@ function onElementSelect(widget)
     addon1:setEnabled(addons == 1 or addons == 3)
     addon2:setEnabled(addons > 1)
 
-
     refreshPreview()
     setCategoryDescription(catalog, outfit.type)
   elseif catalog == "mount" then
     local outfit = widget.creature:getOutfit()
-    
-    refreshPreview()
-    setCategoryDescription(catalog, outfit.type)    
 
+    refreshPreview()
+    setCategoryDescription(catalog, outfit.type)
   elseif catalog == "preset" then
     local outfit = widget.outfit:getOutfit().type
     local mount = widget.mount:getOutfit().type
@@ -392,35 +385,27 @@ function onElementSelect(widget)
       end
     end
 
-    setCategoryDescription(catalog, widget.title:getText())    
+    setCategoryDescription(catalog, widget.title:getText())
     refreshPreview()
-  
   elseif catalog == "shader" then
     local shader = widget.creature:getOutfit().shader
 
-    setCategoryDescription(catalog, widget.title:getText())    
-    refreshPreview()    
-
+    setCategoryDescription(catalog, widget.title:getText())
+    refreshPreview()
   elseif catalog == "healthbar" then
-
-
-
   elseif catalog == "manabar" then
-
-
   elseif catalog == "wings" then
-
-
   end
 end
 
 function refreshPreview()
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local creature = outfitWindow.preview.creaturePanel.creature
   local options = outfitWindow.preview.options
 
   local outfit = getOutfitFromCurrentChecks(2)
-
 
   local showOutfit = options.showOutfit and options.showOutfit.check:isChecked()
   local showMount = g_game.getFeature(GamePlayerMounts) and options.showMount and options.showMount.check:isChecked()
@@ -444,7 +429,9 @@ function refreshPreview()
 end
 
 function rotatePreview(side)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local creature = outfitWindow.preview.creaturePanel.creature
   previewDir = side == "rotateLeft" and (previewDir + 1) or (previewDir - 1)
   previewDir = previewDir % 4
@@ -453,12 +440,14 @@ function rotatePreview(side)
 end
 
 function setCategoryDescription(id, key)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
 
   -- id can be widgetId so extract id
   local type = string.split(id, ".")[1] -- ie. outfit
-  local tableKey = type.."s" -- ie. outfits
-  local newId = type.."Cat" -- ie. outfitCat
+  local tableKey = type .. "s" -- ie. outfits
+  local newId = type .. "Cat" -- ie. outfitCat
   local table = dataTables[tableKey]
   local widget = outfitWindow.appearance.categories[newId]
 
@@ -469,7 +458,9 @@ function setCategoryDescription(id, key)
   end
 
   -- something went wrong
-  if not table or not widget then return end
+  if not table or not widget then
+    return
+  end
 
   for i, data in ipairs(table) do
     if data[1] == key then
@@ -477,11 +468,13 @@ function setCategoryDescription(id, key)
     end
   end
 
-  widget:setText('-')
+  widget:setText("-")
 end
 
 function onClotheCheckChange(clotheButtonBox)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local outfit = outfitWindow.preview.creaturePanel.creature:getOutfit()
   if clotheButtonBox == currentClotheButtonBox then
     clotheButtonBox.onCheckChange = nil
@@ -509,7 +502,9 @@ function onClotheCheckChange(clotheButtonBox)
 end
 
 function onColorCheckChange(colorBox)
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local outfit = outfitWindow.preview.creaturePanel.creature:getOutfit()
   if colorBox == currentColorBox then
     colorBox.onCheckChange = nil
@@ -540,9 +535,10 @@ function onColorCheckChange(colorBox)
 end
 
 function updateOutfits()
-  if not outfitWindow then return end
+  if not outfitWindow then
+    return
+  end
   local outfit = outfitWindow.preview.creaturePanel.creature:getOutfit()
-
 
   for i, child in ipairs(outfitWindow.list:getChildren()) do
     if child.catalog == "outfit" then
@@ -615,7 +611,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     outfit.addons = addons
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("outfit."..name:lower().." "..id)
+    widget:setId("outfit." .. name:lower() .. " " .. id)
     widget.title:setText(name)
     outfit.mount = 0
     widget.creature:setOutfit(outfit)
@@ -631,7 +627,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     }
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("mount."..name:lower().." "..id)
+    widget:setId("mount." .. name:lower() .. " " .. id)
     widget.title:setText(name)
     widget.creature:setOutfit(mountOufit)
     widget.catalog = "mount"
@@ -646,7 +642,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     }
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("wings."..name:lower().." "..id)
+    widget:setId("wings." .. name:lower() .. " " .. id)
     widget.title:setText(name)
     widget.creature:setOutfit(wingsOufit)
     widget.catalog = "wings"
@@ -661,7 +657,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     }
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("aura."..name:lower().." "..id)
+    widget:setId("aura." .. name:lower() .. " " .. id)
     widget.title:setText(name)
     widget.creature:setOutfit(auraOufit)
     widget.catalog = "aura"
@@ -679,12 +675,12 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     shaderOutfit.type = outfitType
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("shader."..name:lower().." "..id)
+    widget:setId("shader." .. name:lower() .. " " .. id)
     widget.title:setText(name)
     widget.creature:setOutfit(shaderOutfit)
     widget.catalog = "shader"
     widget.shader = shaderOutfit.shader
-  end    
+  end
 
   if g_game.getFeature(GameHealthInfoBackground) then
     table.insert(hpBarList, 1, {0, "-"})
@@ -698,7 +694,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     local path = g_healthBars.getHealthBarPath(id)
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("healthbar."..name:lower().." "..id)
+    widget:setId("healthbar." .. name:lower() .. " " .. id)
     widget.item:setImageSource(i > 1 and path or "")
     widget.title:setText(i > i and name or "Standard")
     widget.catalog = "healthbar"
@@ -711,12 +707,11 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     local path = g_healthBars.getHealthBarPath(id)
 
     local widget = g_ui.createWidget("SmallPreviewTile", outfitWindow.list)
-    widget:setId("manabar."..name:lower().." "..id)
+    widget:setId("manabar." .. name:lower() .. " " .. id)
     widget.item:setImageSource(i > 1 and path or "")
     widget.title:setText(i > i and name or "Standard")
     widget.catalog = "manabar"
   end
-
 
   -- check current outfit
   for i, child in ipairs(outfitWindow.list:getChildren()) do
@@ -731,38 +726,38 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
     elseif catalog == "mount" then
       if outfit.type == mountType then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
+        outfitWindow.list:moveChildToIndex(child, 1)
         child:setVisible(false)
       end
     elseif catalog == "shader" then
       if outfit.shader == currentOutfit.shader then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
-        child:setVisible(false)        
+        outfitWindow.list:moveChildToIndex(child, 1)
+        child:setVisible(false)
       end
     elseif catalog == "wings" then
       if outfit.wings == currentOutfit.wings then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
-        child:setVisible(false)        
+        outfitWindow.list:moveChildToIndex(child, 1)
+        child:setVisible(false)
       end
     elseif catalog == "aura" then
       if outfit.aura == currentOutfit.aura then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
-        child:setVisible(false)        
+        outfitWindow.list:moveChildToIndex(child, 1)
+        child:setVisible(false)
       end
     elseif catalog == "manabar" then
       if child:getId():find(outfit.manabar) then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
-        child:setVisible(false)        
+        outfitWindow.list:moveChildToIndex(child, 1)
+        child:setVisible(false)
       end
     elseif catalog == "healthbar" then
       if child:getId():find(outfit.healthbar) then
         child:setChecked(true)
-        outfitWindow.list:moveChildToIndex(child, 1)        
-        child:setVisible(false)        
+        outfitWindow.list:moveChildToIndex(child, 1)
+        child:setVisible(false)
       end
     end
   end
@@ -792,7 +787,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
   outfitWindow.appearance.parts.secondary.onCheckChange = onClotheCheckChange
   outfitWindow.appearance.parts.detail.onCheckChange = onClotheCheckChange
 
-  -- previewOptions  
+  -- previewOptions
   for i, settings in ipairs(previewOptions) do
     if settings.enabled then
       local widget = g_ui.createWidget("OptionsCheckBox", outfitWindow.preview.options)
@@ -802,14 +797,14 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
 
       if i > 1 then
         local catalog = string.sub(settings.id, 5):lower()
-        local data = dataTables[catalog.."s"]
+        local data = dataTables[catalog .. "s"]
 
         -- if there's no options for certain category disable widget
         if not data or #data == 0 then
           widget.check:setChecked(false)
           widget.check:setEnabled(false)
           widget:setEnabled(false)
-          widget.check:setColor('#808080')
+          widget.check:setColor("#808080")
         end
       end
     end
@@ -831,7 +826,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
       local widget = g_ui.createWidget("AppearanceCategory", outfitWindow.appearance.categories)
       widget:setId(settings.id)
       widget.checkBox:setText(settings.text)
-      widget.checkBox:setChecked(i==2)
+      widget.checkBox:setChecked(i == 2)
     end
   end
 
@@ -852,20 +847,19 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
   addon1:setEnabled(availableAddons > 0)
   addon2:setEnabled(availableAddons > 1)
 
-
   for i, setting in ipairs(settings) do
     local outfit = setting.outfit
     local mount = setting.mount
     local name = setting.name
 
     local widget = g_ui.createWidget("LargePreviewTile", outfitWindow.list)
-      widget.catalog = "preset"
-      widget:setId("preset."..outfit.type..name)
-      widget.outfit:setOutfit(outfit)
-      if mount then
-        widget.mount:setOutfit(mount)
-      end
-      widget.title:setText(name)
+    widget.catalog = "preset"
+    widget:setId("preset." .. outfit.type .. name)
+    widget.outfit:setOutfit(outfit)
+    if mount then
+      widget.mount:setOutfit(mount)
+    end
+    widget.title:setText(name)
   end
 
   refreshVisiblePreviews()
@@ -921,16 +915,22 @@ function save()
 
   local file = "/settings/outfits.json"
 
-  local status, result = pcall(function() return json.encode(settings, 2) end)
+  if not g_resources.fileExists(file) then
+    g_resources.makeDir("/settings")
+  end
+
+  local status, result =
+    pcall(
+    function()
+      return json.encode(settings, 2)
+    end
+  )
   if not status then
-      return onError(
-                 "Error while saving top bar settings. Data won't be saved. Details: " ..
-                     result)
+    return onError("Error while saving top bar settings. Data won't be saved. Details: " .. result)
   end
 
   if result:len() > 100 * 1024 * 1024 then
-      return onError(
-                 "Something went wrong, file is above 100MB, won't be saved")
+    return onError("Something went wrong, file is above 100MB, won't be saved")
   end
 
   g_resources.writeFileContents(file, result)
@@ -939,17 +939,22 @@ end
 function load()
   local file = "/settings/outfits.json"
 
+  if not g_resources.fileExists(file) then
+    g_resources.makeDir("/settings")
+  end
+
   if g_resources.fileExists(file) then
-      local status, result = pcall(function()
-          return json.decode(g_resources.readFileContents(file))
-      end)
-      if not status then
-          return onError(
-                     "Error while reading top bar settings file. To fix this problem you can delete storage.json. Details: " ..
-                         result)
+    local status, result =
+      pcall(
+      function()
+        return json.decode(g_resources.readFileContents(file))
       end
-      settings = result
+    )
+    if not status then
+      return onError("Error while reading top bar settings file. To fix this problem you can delete storage.json. Details: " .. result)
+    end
+    settings = result
   else
-      settings = {}
+    settings = {}
   end
 end
