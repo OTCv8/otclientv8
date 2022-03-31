@@ -9,9 +9,11 @@ TextEdit < UITextEdit
   image-border: 1
   selection-color: #272727
   selection-background-color: #cccccc
+  change-cursor-image: true
   $disabled:
     color: #27272788
     opacity: 0.5
+    change-cursor-image: false
 
 PasswordTextEdit < TextEdit
   text-hidden: true

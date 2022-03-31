@@ -1,4 +1,7 @@
 Cursors
+  text:
+    image: textcursor
+    hot-spot: 4 9
   target:
     image: targetcursor
     hot-spot: 9 9
@@ -8,6 +11,6 @@ Cursors
   vertical:
     image: verticalcursor
     hot-spot: 4 9
-  text:
-    image: textcursor
-    hot-spot: 4 9
+  pointer:
+    image: pointer
+    hot-spot: 5 0

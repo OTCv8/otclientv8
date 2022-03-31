@@ -6,6 +6,8 @@ CheckBox < UICheckBox
   image-color: #dfdfdfff
   image-rect: 0 0 15 15
   image-source: /images/ui/checkbox
+  change-cursor-image: true
+  cursor: pointer
 
   $hover !disabled:
     color: #ffffff
@@ -26,6 +28,7 @@ CheckBox < UICheckBox
     image-color: #dfdfdf88
     color: #dfdfdf88
     opacity: 0.8
+    change-cursor-image: false
 
 ColorBox < UICheckBox
   size: 16 16
@@ -48,6 +51,8 @@ ButtonBox < UICheckBox
   image-color: #dfdfdf
   image-clip: 0 0 22 23
   image-border: 3
+  change-cursor-image: true
+  cursor: pointer
 
   $hover !disabled:
     image-clip: 0 23 22 23
@@ -59,6 +64,7 @@ ButtonBox < UICheckBox
   $disabled:
     color: #dfdfdf88
     image-color: #dfdfdf88
+    change-cursor-image: false
 
 ButtonBoxRounded < ButtonBox
   image-source: /images/ui/button_rounded
