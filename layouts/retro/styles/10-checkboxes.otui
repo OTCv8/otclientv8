@@ -55,6 +55,7 @@ ButtonBox < UICheckBox
     image-clip: 0 46 22 23
     color: white
     text-offset: 2 2
+    change-cursor-image: false
 
   $disabled:
     color: #dfdfdf88

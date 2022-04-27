@@ -144,16 +144,19 @@ function UIScrollArea:onMouseWheel(mousePos, mouseWheel)
   return true
 end
 
-function UIScrollArea:ensureChildVisible(child)
+function UIScrollArea:ensureChildVisible(child, offset)
   if child then
     local paddingRect = self:getPaddingRect()
+    if not offset then
+      offset = {x = 0, y = 0}
+    end
     if self.verticalScrollBar then
       local deltaY = paddingRect.y - child:getY()
       if deltaY > 0 then
         self.verticalScrollBar:decrement(deltaY)
       end
 
-      deltaY = (child:getY() + child:getHeight()) - (paddingRect.y + paddingRect.height)
+      deltaY = (child:getY() + child:getHeight() + offset.y) - (paddingRect.y + paddingRect.height)
       if deltaY > 0 then
         self.verticalScrollBar:increment(deltaY)
       end
@@ -163,7 +166,7 @@ function UIScrollArea:ensureChildVisible(child)
         self.horizontalScrollBar:decrement(deltaX)
       end
 
-      deltaX = (child:getX() + child:getWidth()) - (paddingRect.x + paddingRect.width)
+      deltaX = (child:getX() + child:getWidth() + offset.x) - (paddingRect.x + paddingRect.width)
       if deltaX > 0 then
         self.horizontalScrollBar:increment(deltaX)
       end
