@@ -218,7 +218,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
   end
 
   if currentOutfit.shader == "" then
-    currentOutfit.shader = "default"
+    currentOutfit.shader = "outfit_default"
   end
 
   loadSettings()
@@ -618,7 +618,7 @@ function showOutfits()
     outfit.mount = 0
     outfit.aura = 0
     outfit.wings = 0
-    outfit.shader = "default"
+    outfit.shader = "outfit_default"
     outfit.healthBar = 0
     outfit.manaBar = 0
     button.outfit:setOutfit(outfit)
@@ -777,12 +777,12 @@ function showShaders()
   local focused = nil
   do
     local button = g_ui.createWidget("SelectionButton", window.selectionList)
-    button:setId("default")
+    button:setId("outfit_default")
 
-    button.outfit:setOutfit({type = tempOutfit.type, addons = tempOutfit.addons, shader = "default"})
+    button.outfit:setOutfit({type = tempOutfit.type, addons = tempOutfit.addons, shader = "outfit_default"})
     button.name:setText("None")
-    if tempOutfit.shader == "default" then
-      focused = "default"
+    if tempOutfit.shader == "outfit_default" then
+      focused = "outfit_default"
     end
   end
 
@@ -1118,7 +1118,9 @@ function updatePreview()
   local previewOutfit = table.copy(tempOutfit)
 
   if not settings.showOutfit then
-    previewOutfit.type = 0
+    previewCreature:hide()
+  else
+    previewCreature:show()
   end
 
   if not settings.showMount then
@@ -1134,7 +1136,7 @@ function updatePreview()
   end
 
   if not settings.showShader then
-    previewOutfit.shader = "default"
+    previewOutfit.shader = "outfit_default"
   end
 
   if not settings.showBars then

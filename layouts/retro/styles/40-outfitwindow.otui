@@ -258,7 +258,7 @@ OutfitWindow < MainWindow
         size: 128 128
         margin-right: 32
         margin-bottom: 32
-        outfit-shader: default
+        outfit-shader: outfit_default
       
       Panel
         id: bars
