@@ -103,46 +103,12 @@ function onShowFloorChange(checkBox, checked)
             local newMargin = floor:getMarginRight() + 8
             floor:setMarginRight(newMargin)
             if newMargin >= 64 then
-              for i = 1, floorTiles do
-                local sprites = {}
-                local startIndex = 1 + ((i - 1) * floorTiles)
-                local endIndex = i * floorTiles
-
-                for k = startIndex, endIndex do
-                  sprites[#sprites + 1] = floor:getChildByIndex(k):getSpriteId()
-                end
-
-                table.insert(sprites, #sprites, table.remove(sprites, 1))
-
-                local sid = 1
-                for k = startIndex, endIndex do
-                  floor:getChildByIndex(k):setSpriteId(sprites[sid])
-                  sid = sid + 1
-                end
-              end
               floor:setMarginRight(0)
             end
           elseif direction == Directions.West then
             local newMargin = floor:getMarginLeft() + 8
             floor:setMarginLeft(newMargin)
             if newMargin >= 64 then
-              for i = 1, floorTiles do
-                local sprites = {}
-                local startIndex = 1 + ((i - 1) * floorTiles)
-                local endIndex = i * floorTiles
-
-                for k = startIndex, endIndex do
-                  sprites[#sprites + 1] = floor:getChildByIndex(k):getSpriteId()
-                end
-
-                table.insert(sprites, 1, table.remove(sprites, #sprites))
-
-                local sid = 1
-                for k = startIndex, endIndex do
-                  floor:getChildByIndex(k):setSpriteId(sprites[sid])
-                  sid = sid + 1
-                end
-              end
               floor:setMarginLeft(0)
             end
           end
@@ -238,8 +204,7 @@ function create(currentOutfit, outfitList, mountList, wingList, auraList, shader
 
   floor = window.preview.panel.floor
   for i = 1, floorTiles * floorTiles do
-    local tile = g_ui.createWidget("UISprite", floor)
-    tile:setSpriteId(math.random(10057, 10064))
+    g_ui.createWidget("FloorTile", floor)
   end
   floor:hide()
 

@@ -8,6 +8,7 @@ CreatureButton < UICreatureButton
     anchors.left: parent.left
     anchors.top: parent.top
     phantom: true
+    old-scaling: true
 
   UIWidget
     id: spacer
