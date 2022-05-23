@@ -211,6 +211,7 @@ GameCreaturesMana = 122 -- get mana from server for creatures other than Player
 GameQuickLootFlags = 123 -- enables quick loot feature for all protocols
 GameDontMergeAnimatedText = 124
 GameMissionId = 125
+GameItemCustomAttributes = 126
 
 LastGameFeature = 130
         
