@@ -201,7 +201,7 @@ function tryExit()
     return true
   end
 
-  local exitFunc = function() g_game.safeLogout() forceExit() end
+  local exitFunc = function() scheduleEvent(exit, 10) end
   local logoutFunc = function() g_game.safeLogout() exitWindow:destroy() exitWindow = nil end
   local cancelFunc = function() exitWindow:destroy() exitWindow = nil end
 

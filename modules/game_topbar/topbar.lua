@@ -141,7 +141,7 @@ end
 
 function setupTopBar()
     local topPanel = modules.game_interface.getTopBar()
-    topBar = topBar or g_ui.loadUI('TopBar', topPanel)
+    topBar = topBar or g_ui.loadUI('topbar', topPanel)
     topBar = topBar or g_ui.createWidget('TopBar', topPanel)
 
     manaBar = topBar.stats.mana
