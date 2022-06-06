@@ -6,6 +6,10 @@ BotConfig < Panel
 
   ComboBox
     id: list
+    &menuScroll: true
+    &menuHeight: 450
+    &menuScrollStep: 100
+    &parentWidth: true
     anchors.top: parent.top
     anchors.left: parent.left
     text-offset: 3 0

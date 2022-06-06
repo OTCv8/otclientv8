@@ -164,4 +164,3 @@ context.ping = g_game.getPing
 
 modules.game_cooldown.isGroupCooldownIconActive(id)
 modules.game_cooldown.isCooldownIconActive(id)
-

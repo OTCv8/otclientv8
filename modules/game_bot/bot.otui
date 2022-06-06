@@ -32,6 +32,10 @@ MiniWindow
   MiniWindowContents   
     ComboBox
       id: config
+      &menuScroll: true
+      &menuHeight: 450
+      &menuScrollStep: 100
+      &parentWidth: true
       anchors.top: parent.top
       anchors.left: parent.left
       anchors.right: parent.right

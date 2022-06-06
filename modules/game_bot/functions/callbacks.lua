@@ -205,7 +205,7 @@ context.onRemoveItem = function(callback)
   return context.callback("onRemoveItem", callback)
 end
 
--- onStatesChange - callback = function(states, oldStates)
+-- onStatesChange - callback = function(player, states, oldStates)
 context.onStatesChange = function(callback)
   return context.callback("onStatesChange", callback)
 end
@@ -223,6 +223,11 @@ end
 -- onGroupSpellCooldown - callback = function(iconId, duration)
 context.onGroupSpellCooldown = function(callback)
   return context.callback("onGroupSpellCooldown", callback)
+end
+
+-- onInventoryChange - callback = function(player, slot, item, oldItem)
+context.onInventoryChange = function(callback)
+  return context.callback("onInventoryChange", callback)
 end
 
 -- onGameQuestLog - callback = function(quests)
@@ -262,6 +267,15 @@ context.onPlayerHealthChange = function(callback)
   return context.onCreatureHealthPercentChange(function(creature, healthPercent)
     if creature == context.player then
       callback(healthPercent)
+    end
+  end)
+end
+
+-- onPlayerInventoryChange -- callback = function(slot, item, oldItem)
+context.onPlayerInventoryChange = function(callback)
+  return context.onInventoryChange(function(player, slot, item, oldItem)
+    if player == context.player then
+      callback(slot, item, oldItem)
     end
   end)
 end
