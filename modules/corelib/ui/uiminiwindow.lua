@@ -156,6 +156,7 @@ function UIMiniWindow:setup()
         local parent = rootWidget:recursiveGetChildById(selfSettings.parentId)
         if parent then
           if parent:getClassName() == 'UIMiniWindowContainer' and selfSettings.index and parent:isOn() then
+            self:setParent(parent, true)
             self.miniIndex = selfSettings.index
             parent:scheduleInsert(self, selfSettings.index)
           elseif selfSettings.position then
