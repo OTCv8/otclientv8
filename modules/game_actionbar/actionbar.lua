@@ -1,61 +1,66 @@
-bottomActionPanel1 = nil
-bottomActionPanel2 = nil
-bottomActionPanel3 = nil
-leftActionPanel1 = nil
-leftActionPanel2 = nil
-leftActionPanel3 = nil
-
+local actionBars = {}
 local settings = {}
-local hotkeyAssignWindow
-local actionButtonsInPanel = 50
+local settingsFile = ""
+local cachedSettings = nil
+local window = nil
+local mouseGrabberWidget = nil
 
-ActionTypes = {
-  USE = 0,
-  USE_SELF = 1,
-  USE_TARGET = 2,
-  USE_WITH = 3,
-  EQUIP = 4
+local TYPE = {
+  BLANK = 0,
+  TEXT = 1,
+  SPELL = 2,
+  ITEM = 3
 }
 
-ActionColors = {
-  empty = '#00000033',
-  text = '#00000033',
-  itemUse = '#8888FF88',
-  itemUseSelf = '#00FF0088',
-  itemUseTarget = '#FF000088',
-  itemUseWith = '#F5B32588',
-  itemEquip = '#FFFFFF88'
+local ACTION = {
+  BLANK = 0,
+  EQUIP = 1,
+  USE = 2,
+  USE_SELF = 3,
+  USE_TARGET = 4,
+  USE_CROSS = 5
 }
+
+-- servers may have different id's, change if not working properly (only for protocols 910+)
+local function translateVocation(id) 
+  if id == 1 or id == 11 then
+    return 8 -- ek
+  elseif id == 2 or id == 12 then
+    return 7 -- rp
+  elseif id == 3 or id == 13 then
+    return 5 -- ms
+  elseif id == 4 or id == 14 then
+    return 6 -- ed
+  end
+end
+
+local function isSpell(text) -- returns bool or table (spelldata, param text)
+  text = text:lower():trim()
+
+  for spellName, spellData in pairs(SpellInfo['Default']) do
+    local words = spellData.words
+    local param = spellData.parameter
+    local data = spellData
+    data.spellName = spellName
+
+    if not param then
+      if words == text then
+        return {data=data}
+      end
+    else
+      if text:find(words) then
+        text = text:gsub(words, ""):trim()
+        text = text:gsub('"', "")
+        text = text:gsub("'", "")
+        return {data=data, param=text}
+      end
+    end
+  end
+
+  return false
+end
 
 function init()
-  local bottomPanel = modules.game_interface.getBottomActionPanel()
-  local leftPanel = modules.game_interface.getLeftActionPanel()
-  local rightPanel = modules.game_interface.getRightActionPanel()
-
-  -- bottom
-  bottomActionPanel1 = g_ui.loadUI('actionbar', bottomPanel)
-  bottomPanel:moveChildToIndex(bottomActionPanel1, 1)
-  bottomActionPanel2 = g_ui.loadUI('actionbar', bottomPanel)
-  bottomPanel:moveChildToIndex(bottomActionPanel2, 1)
-  bottomActionPanel3 = g_ui.loadUI('actionbar', bottomPanel)
-  bottomPanel:moveChildToIndex(bottomActionPanel3, 1)
-
-  -- left
-  leftActionPanel1 = g_ui.loadUI('sideactionbar', leftPanel)
-  leftPanel:moveChildToIndex(leftActionPanel1, 1)
-  leftActionPanel2 = g_ui.loadUI('sideactionbar', leftPanel)
-  leftPanel:moveChildToIndex(leftActionPanel2, 1)
-  leftActionPanel3 = g_ui.loadUI('sideactionbar', leftPanel)
-  leftPanel:moveChildToIndex(leftActionPanel3, 1)
-
-  -- right
-  rightActionPanel1 = g_ui.loadUI('sideactionbar', rightPanel)
-  rightPanel:moveChildToIndex(rightActionPanel1, 1)
-  rightActionPanel2 = g_ui.loadUI('sideactionbar', rightPanel)
-  rightPanel:moveChildToIndex(rightActionPanel2, 1)
-  rightActionPanel3 = g_ui.loadUI('sideactionbar', rightPanel)
-  rightPanel:moveChildToIndex(rightActionPanel3, 1)
-
   connect(g_game, {
     onGameStart = online,
     onGameEnd = offline,
@@ -66,6 +71,12 @@ function init()
   if g_game.isOnline() then
     online()
   end
+
+  -- taken from game_hotkeys
+  mouseGrabberWidget = g_ui.createWidget('UIWidget')
+  mouseGrabberWidget:setVisible(false)
+  mouseGrabberWidget:setFocusable(false)
+  mouseGrabberWidget.onMouseRelease = onDropActionButton
 end
 
 function terminate()
@@ -74,358 +85,1004 @@ function terminate()
     onGameEnd = offline,
     onSpellGroupCooldown = onSpellGroupCooldown,
     onSpellCooldown = onSpellCooldown
-  })  
+  })
+end
 
-  -- remove hotkeys, also saves config
-  local panels = {
-    bottomActionPanel1,
-    bottomActionPanel2,
-    bottomActionPanel3,
-    leftActionPanel1,
-    leftActionPanel2,
-    leftActionPanel3,
-    rightActionPanel1,
-    rightActionPanel2,
-    rightActionPanel3,
-  }
+function createActionBars()
+  local bottomPanel = modules.game_interface.getBottomActionPanel()
+  local leftPanel = modules.game_interface.getLeftActionPanel()
+  local rightPanel = modules.game_interface.getRightActionPanel()
 
-  for i, panel in ipairs(panels) do
-    if panel.tabBar:getChildCount() > 0 then
-      offline()
-      break
+  -- 1-3: bottom
+  -- 4-6: left
+  -- 7-9: right
+  for i=1,9 do
+    local parent
+    local index
+    local layout
+
+    if i <= 3 then
+      parent = bottomPanel
+      index = i
+      layout = 'actionbar'
+    elseif i <= 6 then
+      parent = leftPanel
+      index = i - 3
+      layout = 'sideactionbar'
+    else
+      parent = rightPanel
+      index = i - 6
+      layout = 'sideactionbar'
+    end
+
+    actionBars[i] = g_ui.loadUI(layout, parent)
+    actionBars[i]:setId("actionbar."..i)
+    actionBars[i].n = i
+    parent:moveChildToIndex(actionBars[i], index)
+  end
+end
+
+function offline()
+  -- save settings to json
+  save()
+
+  -- destroy windows
+  destroyAssignWindows()
+  mouseGrabberWidget:destroy()
+
+  -- remove binds
+  for index, actionbar in ipairs(actionBars) do
+    if actionbar.tabBar then
+      for i, actionButton in ipairs(actionbar.tabBar:getChildren()) do
+        local callback = actionButton.callback
+        local hotkey = actionButton.hotkey and actionButton.hotkey:len() > 0 and actionButton.hotkey or false
+
+        if callback and hotkey then
+          local gameRootPanel = modules.game_interface.getRootPanel()
+          g_keyboard.unbindKeyPress(hotkey, callback, gameRootPanel)
+        end
+      end
     end
   end
-  
-  bottomActionPanel1:destroy()
-  bottomActionPanel2:destroy()
-  bottomActionPanel3:destroy()
-  leftActionPanel1:destroy()
-  leftActionPanel2:destroy()
-  leftActionPanel3:destroy()
-  rightActionPanel1:destroy()
-  rightActionPanel2:destroy()
-  rightActionPanel3:destroy()
-end
 
-function show()
-  if not g_game.isOnline() then return end
-  bottomActionPanel1:setOn(g_settings.getBoolean("actionbarBottom1", false))
-  bottomActionPanel2:setOn(g_settings.getBoolean("actionbarBottom2", false))
-  bottomActionPanel3:setOn(g_settings.getBoolean("actionbarBottom3", false))
-  leftActionPanel1:setOn(g_settings.getBoolean("actionbarLeft1", false))
-  leftActionPanel2:setOn(g_settings.getBoolean("actionbarLeft2", false))
-  leftActionPanel3:setOn(g_settings.getBoolean("actionbarLeft3", false))
-  rightActionPanel1:setOn(g_settings.getBoolean("actionbarRight1", false))
-  rightActionPanel2:setOn(g_settings.getBoolean("actionbarRight2", false))
-  rightActionPanel3:setOn(g_settings.getBoolean("actionbarRight3", false))
-end
-
-function hide()
-  bottomActionPanel1:setOn(false)
-  bottomActionPanel2:setOn(false)
-  bottomActionPanel3:setOn(false)
-  leftActionPanel1:setOn(false)
-  leftActionPanel2:setOn(false)
-  leftActionPanel3:setOn(false)
-  rightActionPanel1:setOn(false)
-  rightActionPanel2:setOn(false)
-  rightActionPanel3:setOn(false)
-end
-
-function switchMode(newMode)
-  if newMode then
-    bottomActionPanel1:setImageColor('#ffffff88')  
-    bottomActionPanel2:setImageColor('#ffffff88')  
-    bottomActionPanel3:setImageColor('#ffffff88')
-    leftActionPanel1:setImageColor('#ffffff88')
-    leftActionPanel2:setImageColor('#ffffff88')
-    leftActionPanel3:setImageColor('#ffffff88')
-    rightActionPanel1:setImageColor('#ffffff88')
-    rightActionPanel2:setImageColor('#ffffff88')
-    rightActionPanel3:setImageColor('#ffffff88')
-  else
-    bottomActionPanel1:setImageColor('white')    
-    bottomActionPanel2:setImageColor('white')    
-    bottomActionPanel3:setImageColor('white') 
-    leftActionPanel1:setImageColor('white') 
-    leftActionPanel2:setImageColor('white') 
-    leftActionPanel3:setImageColor('white') 
-    rightActionPanel1:setImageColor('white') 
-    rightActionPanel2:setImageColor('white') 
-    rightActionPanel3:setImageColor('white') 
+  -- destroy actionbars
+  for i, panel in ipairs(actionBars) do
+    panel:destroy()
   end
 end
 
 function online()
+  settingsFile = modules.client_profiles.getSettingsFilePath("actionbar_v2.json")
+  -- load settings
   load()
-  setupActionPanel(1, bottomActionPanel1, true)
-  setupActionPanel(2, bottomActionPanel2, true)
-  setupActionPanel(3, bottomActionPanel3, true)
-  setupActionPanel(4, leftActionPanel1, false)
-  setupActionPanel(5, leftActionPanel2, false)
-  setupActionPanel(6, leftActionPanel3, false)
-  setupActionPanel(7, rightActionPanel1, false)
-  setupActionPanel(8, rightActionPanel2, false)
-  setupActionPanel(9, rightActionPanel3, false)
+
+  -- create actionbars
+  createActionBars()
+
+  -- show & setup actionbars
   show()
+
+  destroyAssignWindows()
 end
 
-function refresh(reloaded)
-  offline(reloaded)
-  online()
-end
+function show()
+  for i=1,#actionBars do
+    local actionbar = actionBars[i]
+    local enabled = g_settings.getBoolean("actionbar"..i, false)
 
-function offline(reloaded)
-  hide()
-  if hotkeyAssignWindow then
-    hotkeyAssignWindow:destroy()
-    hotkeyAssignWindow = nil
-  end
-
-  local gameRootPanel = modules.game_interface.getRootPanel()
-  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
-                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
-                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
-    settings[tostring(index)] = {}
-    for i, child in ipairs(panel.tabBar:getChildren()) do
-      if child.config and child.config.item then
-        settings[tostring(index)][tostring(i)] = child.config
-        if type(child.config.hotkey) == 'string' and child.config.hotkey:len() > 0 then
-          g_keyboard.unbindKeyPress(child.config.hotkey, child.callback, gameRootPanel)
-        end
-      end
-      if child.cooldownEvent then
-        removeEvent(child.cooldownEvent)
-      end
-    end
-    panel.tabBar:destroyChildren()
-  end
-  if not reloaded then
-    save()
+    actionbar:setOn(enabled)
+    setupActionBar(i)
   end
 end
 
-function setupActionPanel(index, panel, bottom)
-  local config = settings[tostring(index)] or {}
-  
-  for i=1,actionButtonsInPanel do
-    local type = bottom and 'ActionButton' or 'SideActionButton'
-    local action = g_ui.createWidget(type, panel.tabBar)
-    action.config = config[tostring(i)] or {}
-    setupAction(action)
-  end  
-  
-  panel.nextButton.onClick = function()
-    panel.tabBar:moveChildToIndex(panel.tabBar:getFirstChild(), panel.tabBar:getChildCount())
+function refresh()
+  -- first save
+  save()
+
+  -- recheck file
+  settingsFile = modules.client_profiles.getSettingsFilePath("actionbar_v2.json")
+
+  -- load settings
+  load()
+
+  -- setup actionbars
+  show()
+
+  destroyAssignWindows()
+end
+
+function translateHotkeyDesc(text)
+  -- formatting similar to cip Tibia 12
+  if not text then 
+    return ""
   end
-  panel.prevButton.onClick = function()
-    panel.tabBar:moveChildToIndex(panel.tabBar:getLastChild(), 1)  
+
+  local values = {
+    {"Shift", "S"},
+    {"Ctrl", "C"},
+    {"+", ""},
+    {"PageUp", "PgUp"},
+    {"PageDown", "PgDown"},
+    {"Enter", "Return"},
+    {"Insert", "Ins"},
+    {"Delete", "Del"},
+    {"Escape", "Esc"}
+  }
+
+  for i, v in pairs(values) do
+    text = text:gsub(v[1], v[2])
+  end
+
+  if text:len() > 6 then
+    text = text:sub(text:len()-3,text:len())
+    text = "..."..text
+  end
+
+  return text
+end
+
+function destroyAssignWindows()
+  local windows = {
+    'assignItemWindow',
+    'assignSpellWindow',
+    'assignTextWindow',
+    'assignHotkeyWindow'
+  }
+
+  local rootWidget = g_ui.getRootWidget()
+  for i, id in ipairs(windows) do
+    local widget = rootWidget[id]
+
+    if widget then
+      widget:destroy()
+    end
   end
 end
 
-function setupAction(action)
-  local config = action.config
-  action.item:setShowCount(false)
-  action.onMouseRelease = actionOnMouseRelease
-  action.onTouchRelease = actionOnMouseRelease
+function changeLockState(widget)
+  local actionbar = widget:getParent():getParent()
 
-  action.callback = function(k, c, ticks) 
-    local lockKeyboard = g_settings.getBoolean('actionbarLock', false)
-    local chatMode = not modules.game_walking.wsadWalking
+  widget:setOn(not widget:isOn())
+  widget.image:setOn(widget:isOn())
+  actionbar.locked = not widget:isOn()
 
-    if not lockKeyboard or not chatMode then
-      executeAction(action, ticks) 
-    end
-  end
-
-  action.item.onItemChange = nil -- disable callbacks for setup
-  
-  if config then
-    if type(config.text) == 'number' then
-      config.text = tostring(config.text)
-    end
-    if type(config.hotkey) == 'number' then
-      config.hotkey = tostring(config.hotkey)
-    end
-    if type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
-      local gameRootPanel = modules.game_interface.getRootPanel()
-      g_keyboard.bindKeyPress(config.hotkey, action.callback, gameRootPanel)
-      local text = config.hotkey
-      -- formatting similar to cip Tibia 12
-      local values = {
-        {"Shift", "S"},
-        {"Ctrl", "C"},
-        {"+", ""},
-        {"PageUp", "PgUp"},
-        {"PageDown", "PgDown"},
-        {"Enter", "Return"},
-        {"Insert", "Ins"},
-        {"Delete", "Del"},
-        {"Escape", "Esc"}
-      }
-      for i, v in pairs(values) do
-        text = text:gsub(v[1], v[2])
-      end
-      if text:len() > 6 then
-        text = text:sub(text:len()-3,text:len())
-        text = "..."..text
-      end
-      action.hotkeyLabel:setText(text)
-    else
-      action.hotkeyLabel:setText("")
-    end
-
-    action.text:setImageSource("")
-    action.cooldownTill = 0
-    action.cooldownStart = 0
-    if type(config.text) == 'string' and config.text:len() > 0 then
-      action.text:setText(config.text)
-      action.item:setBorderColor(ActionColors.text)
-      action.item:setOn(true) -- removes background
-      action.item:setItemId(0)
-      if Spells then
-        local spell, profile = Spells.getSpellByWords(config.text:lower())
-        action.spell = spell
-        if action.spell and action.spell.icon and profile then
-          action.text:setImageSource(SpelllistSettings[profile].iconFile)
-          action.text:setImageClip(Spells.getImageClip(SpellIcons[action.spell.icon][1], profile))
-          action.text:setText("")
-        end
-      end
-    else      
-      action.text:setText("")
-      action.spell = nil
-      if type(config.item) == 'number' and config.item > 100 then
-        action.item:setOn(true)
-        action.item:setItemId(config.item)
-        action.item:setItemCount(config.count or 1)
-        setupActionType(action, config.actionType)
-      else
-        action.item:setItemId(0)
-        action.item:setOn(false)
-        action.item:setBorderColor(ActionColors.empty)
-      end    
-    end
-  end
-
-  action.item.onItemChange = actionOnItemChange
+  settings[actionbar:getId()] = not widget:isOn() or nil
 end
 
-function setupActionType(action, actionType)
-  local item = action.item:getItem()
-  if action.item:getItem():isMultiUse() then
-    if not actionType or actionType <= ActionTypes.USE then
-     actionType = ActionTypes.USE_WITH
-    end
-  elseif g_game.getClientVersion() >= 910 then
-    if actionType ~= ActionTypes.USE and actionType ~= ActionTypes.EQUIP then
-      actionType = ActionTypes.USE
-    end
+function moveActionButtons(widget)
+  local dir = widget:getId()
+  local actionBar = widget:getParent():getParent()
+  local scroll = actionBar.actionScroll
+  local buttons = {actionBar.prevPanel.prev, actionBar.prevPanel.first, actionBar.nextPanel.next, actionBar.nextPanel.last}
+
+  if dir == "next" then
+    scroll:increment(37)
+  elseif dir == "last" then
+    scroll:setValue(scroll:getMaximum())
+  elseif dir == "prev" then
+    scroll:decrement(37)
   else
-    actionType = ActionTypes.USE
+    scroll:setValue(scroll:getMinimum())
   end
 
-  action.config.actionType = actionType
-  if action.config.actionType == ActionTypes.USE then
-    action.item:setBorderColor(ActionColors.itemUse)
-  elseif action.config.actionType == ActionTypes.USE_SELF then
-    action.item:setBorderColor(ActionColors.itemUseSelf)
-  elseif action.config.actionType == ActionTypes.USE_TARGET then
-    action.item:setBorderColor(ActionColors.itemUseTarget)
-  elseif action.config.actionType == ActionTypes.USE_WITH then
-    action.item:setBorderColor(ActionColors.itemUseWith)
-  elseif action.config.actionType == ActionTypes.EQUIP then
-    action.item:setBorderColor(ActionColors.itemEquip)
-  end
+  local prevEnabled = scroll:getValue() > 0
+  local nextEnabled = scroll:getValue() < scroll:getMaximum()
+  
+  buttons[1]:setOn(prevEnabled)
+  buttons[2]:setOn(prevEnabled)
+  buttons[3]:setOn(nextEnabled)
+  buttons[4]:setOn(nextEnabled)
+  buttons[1].image:setOn(prevEnabled)
+  buttons[2].image:setOn(prevEnabled)
+  buttons[3].image:setOn(nextEnabled)
+  buttons[4].image:setOn(nextEnabled)
 end
 
-function updateAction(action, newConfig)
-  local config = action.config
-  if type(config.hotkey) == 'string' and config.hotkey:len() > 0 then
-    local gameRootPanel = modules.game_interface.getRootPanel()
-    g_keyboard.unbindKeyPress(config.hotkey, action.callback, gameRootPanel)
-  end
-  for key, val in pairs(newConfig) do
-    action.config[key] = val
-  end
-  setupAction(action)
-end
+function onDropActionButton(self, mousePosition, mouseButton)
+  if not g_ui.isMouseGrabbed() then return end
 
-function actionOnMouseRelease(action, mousePosition, mouseButton)
-  if mouseButton == MouseTouch then return end
-  if mouseButton == MouseRightButton or not action.item:isOn() then
-    local menu = g_ui.createWidget('PopupMenu')
-    menu:setGameMenu(true)
-    if action.item:getItemId() > 0 then
-      if action.item:getItem():isMultiUse() then
-        menu:addOption(tr('Use on yourself'), function() return setupActionType(action, ActionTypes.USE_SELF) end)
-        menu:addOption(tr('Use on target'), function() return setupActionType(action, ActionTypes.USE_TARGET) end)
-        menu:addOption(tr('With crosshair'), function() return setupActionType(action, ActionTypes.USE_WITH) end)
+  local clickedWidget = modules.game_interface.getRootPanel():recursiveGetChildByPos(mousePosition, false)
+  if clickedWidget and clickedWidget:getParent() and clickedWidget:getParent():getStyleName():find('ActionButton') then
+    if cachedSettings then
+      clickedWidget = clickedWidget:getParent()
+      if clickedWidget ~= cachedSettings.widget then
+        local clickedHotkey = clickedWidget.hotkey
+        local cachedHotkey = cachedSettings.widget.hotkey
+
+        settings[cachedSettings.id] = settings[clickedWidget:getId()]
+        settings[clickedWidget:getId()] = cachedSettings.data
+        
+        local clickedTill = clickedWidget.cooldownTill or 0
+        local clickedStart = clickedWidget.cooldownStart or 0
+        local cachedTill = cachedSettings.widget.cooldownTill or 0
+        local cachedStart = cachedSettings.widget.cooldownStart or 0
+
+        cachedSettings.widget.cooldownTill = clickedTill
+        cachedSettings.widget.cooldownStart = clickedStart
+        clickedWidget.cooldownTill = cachedTill
+        clickedWidget.cooldownStart = cachedStart
+
+        -- hotkeys remain unchanged
+        settings[cachedSettings.id] = settings[cachedSettings.id] or {}
+        settings[cachedSettings.id].hotkey = cachedHotkey
+        settings[clickedWidget:getId()] = settings[clickedWidget:getId()] or {}
+        settings[clickedWidget:getId()].hotkey = clickedHotkey
+
+        updateCooldown(clickedWidget)
+        updateCooldown(cachedSettings.widget)
+        setupButton(cachedSettings.widget)
+        setupButton(clickedWidget)
       end
-      if g_game.getClientVersion() >= 910 then
-        if not action.item:getItem():isMultiUse() then
-          menu:addOption(tr('Use'), function() return setupActionType(action, ActionTypes.USE) end)
-        end
-        menu:addOption(tr('Equip'), function() return setupActionType(action, ActionTypes.EQUIP) end)
-      end
-    else
-      menu:addOption(tr('Select item'), function() return modules.game_itemselector.show(action.item) end)      
     end
-    menu:addSeparator()
-    menu:addOption(tr('Set text'), function() 
-      modules.client_textedit.singlelineEditor(action.config.text or "", function(newText)
-        updateAction(action, {text=newText, item=0})
-      end)
-    end)
-    menu:addOption(tr('Set hotkey'), function()
-      if hotkeyAssignWindow then
-        hotkeyAssignWindow:destroy()
-      end
-      local assignWindow = g_ui.createWidget('ActionAssignWindow', rootWidget)
-      assignWindow:grabKeyboard()
-      assignWindow.comboPreview.keyCombo = ''
-      assignWindow.onKeyDown = function(assignWindow, keyCode, keyboardModifiers)
-        local keyCombo = determineKeyComboDesc(keyCode, keyboardModifiers)
-        assignWindow.comboPreview:setText(tr('Current action hotkey: %s', keyCombo))
-        assignWindow.comboPreview.keyCombo = keyCombo
-        assignWindow.comboPreview:resizeToText()
-        return true
-      end
-      assignWindow.onDestroy = function(widget)
-        if widget == hotkeyAssignWindow then
-          hotkeyAssignWindow = nil
-        end
-      end
-      assignWindow.addButton.onClick = function()
-        local text = tostring(assignWindow.comboPreview.keyCombo)
-        updateAction(action, {hotkey=text})
-        assignWindow:destroy()
-      end
-      hotkeyAssignWindow = assignWindow
-    end)
-    menu:addSeparator()
-    menu:addOption(tr('Clear'), function()
-      updateAction(action, {hotkey="", text="", item=0, count=1})
-    end)
-    menu:display(mousePosition)
-    return true
-  elseif mouseButton == MouseLeftButton or mouseButton == MouseTouch2 or mouseButton == MouseTouch3 then
-    action.callback()
-    return true
   end
-  return false
+
+  cachedSettings.widget.item:setBorderColor('#00000000')
+  cachedSettings = nil
+  g_mouse.popCursor('target')
+  self:ungrabMouse()
 end
 
-function actionOnItemChange(widget)
-  updateAction(widget:getParent(), {text="", item=widget:getItemId(), count=widget:getItemCountOrSubType()})
+function setupActionBar(n)
+  local actionbar = actionBars[n]
+  local visible = actionbar:isVisible()
+  locked = settings[actionbar:getId()]
+  actionbar.tabBar.onMouseWheel = nil -- disable scroll wheel
+
+  actionbar.locked = locked
+  actionbar.nextPanel.lock:setOn(not locked)
+  actionbar.nextPanel.lock.image:setOn(not locked)
+
+  if not visible then
+    return actionbar.tabBar:destroyChildren() -- will hopefully lower stress
+  else
+    actionbar.tabBar:destroyChildren()
+    for i=1,50 do
+      local layout = n < 4 and 'ActionButton' or 'SideActionButton'
+      local widget = g_ui.createWidget(layout, actionbar.tabBar)
+      widget:setId(actionbar.n.."."..i)
+
+      setupButton(widget)
+    end
+  end
+end
+
+function setupButton(widget)
+  local id = widget:getId()
+  local config = settings[id]
+  local actionbar = widget:getParent():getParent()
+
+  -- disable count
+  widget.item:setShowCount(false)
+
+  -- remove callback to avoid recurrency
+  widget.item.onItemChange = nil
+
+  -- clear settings
+  widget.type = TYPE.BLANK
+  widget.text:setText("")
+  widget.parameterText:setText("")
+  if widget.item:getItemId() ~= 0 then
+    widget.item:setItemId(0)
+  end
+  widget.item:setOn(false)
+  widget.autoSay = nil
+  widget.action = ACTION.BLANK
+  widget.spellData = nil
+  widget.item:setItemVisible(true)
+  widget.text:setImageSource('')
+  widget.hotkey = config and config.hotkey or ""
+  widget.callback = nil
+
+  -- add new settings
+  if config and config.type then
+    widget.item:setOn(true)
+    widget.type = config.type
+    widget.text:setText(config.sayText or "")
+    if widget.item:getItemId() ~= (config.itemId and config.itemId > 100 and config.itemId or 0) then
+      widget.item:setItem(Item.create(config.itemId, 50))
+    end
+    widget.sayText = config.sayText
+    widget.autoSay = config.autoSay
+    widget.action = config.action
+    widget.spellData = config.spellData
+    if config.type ~= 0 and config.type ~= 3 then
+      widget.item:setItemVisible(false)
+    end
+  end
+
+  -- callback
+  setupAction(widget)
+
+  --hotkey
+  widget.hotkeyLabel:setText(translateHotkeyDesc(widget.hotkey))
+  
+  if widget.spellData then
+    --image
+    widget.text:setImageSource(widget.spellData.source)
+    widget.text:setImageClip(widget.spellData.clip)
+
+    --param
+    local param = widget.spellData.param
+    if param and param:len() > 6 then
+      param = param:sub(1,5) .. "..."
+    end
+    widget.parameterText:setText(param or "")
+  else
+    widget.text:setImageSource('')
+  end
+
+  widget.item.onDragEnter = function(self)
+    if g_ui.isMouseGrabbed() or actionbar.locked then return end
+    mouseGrabberWidget:grabMouse()
+    g_mouse.pushCursor('target')
+
+    self:setBorderColor('#FFFFFF')
+    cachedSettings = {id=widget:getId(), data=settings[widget:getId()], widget=widget}
+  end
+
+  -- popupmenu & execute action
+  widget.onMouseRelease = function(widget, mousePos, mouseButton)
+    if mouseButton == MouseRightButton then 
+
+      local menu = g_ui.createWidget('PopupMenu')
+      menu:setGameMenu(true)
+      menu:addOption(widget.spellId and tr('Edit Spell') or tr('Assign Spell'), function() assignSpell(widget) end)
+      menu:addOption(widget.item:getItemId() > 100 and tr('Edit Object') or tr('Assign Object'), function() assignItem(widget) end)
+      menu:addOption(widget.text:getText():len() > 0 and tr('Edit Text') or tr('Assign Text'), function() assignText(widget) end)
+      menu:addOption(widget.hotkey and tr('Edit Hotkey') or tr('Assign Hotkey'), function() assignHotkey(widget) end)
+
+      if widget.type > 0 then
+        menu:addSeparator()
+        menu:addOption(tr('Clear Action'), function() resetSlot(widget) end)
+      end
+      menu:display(mousePos)
+    elseif mouseButton == MouseLeftButton and widget.callback then 
+      widget.callback()
+    end
+  end
+
+  widget.item.onItemChange = function(widget)
+    widget:setOn(true)
+    assignItem(widget:getParent())
+  end
+
+  -- tooltip
+  local itemAction
+  if widget.type == TYPE.ITEM then
+    if widget.action == ACTION.EQUIP then
+      itemAction = "Equip/Unequip this object"
+    elseif widget.action == ACTION.USE then
+      itemAction = "Use this object"
+    elseif widget.action == ACTION.USE_SELF then
+      itemAction = "Use this object on Yourself"
+    elseif widget.action == ACTION.USE_TARGET then
+      itemAction = "Use this object on Attack Target"
+    elseif widget.action == ACTION.USE_CROSS then
+      itemAction = "Use this object with Crosshair"
+    end
+  end
+
+  local actionDesc
+  local spellData = widget.spellData
+  if widget.type == TYPE.BLANK then
+    actionDesc = "None"
+  elseif widget.type == TYPE.TEXT then
+    actionDesc = 'Say: "'..widget.text:getText()..'"\n'
+    actionDesc = actionDesc.. "Auto sent:  " .. (widget.autoSay and "Yes" or "No")
+  elseif widget.type == TYPE.SPELL then
+    local paramText 
+    if spellData.param and spellData.param:len() > 0 then
+      paramText = ' "'.. spellData.param ..'"' 
+    else 
+      paramText = ""
+    end
+    actionDesc = "Cast " .. spellData.name .."\n"
+    actionDesc = actionDesc.. "Formula:  ".. spellData.words .. paramText.."\n"
+    actionDesc = actionDesc.. "Cooldown:  "..spellData.cd.."s\n"
+    actionDesc = actionDesc.. "Mana:  "..spellData.mana
+  elseif widget.type == TYPE.ITEM then
+    actionDesc = itemAction
+  end
+
+  local hotkeyDesc = widget.hotkey and widget.hotkey:len() > 0 and widget.hotkey or "None"
+  local tooltip = "Action Button "..id
+  tooltip = tooltip.."\n\n\tAction:  ".. actionDesc
+  tooltip = tooltip.."\nHotkeys:  ".. hotkeyDesc
+
+  widget.item:setTooltip(tooltip)
+end
+
+function resetSlot(widget)
+  local hotkey = settings[widget:getId()] and settings[widget:getId()].hotkey or nil
+  if hotkey and hotkey:len() > 0 and widget.callback then
+    local gameRootPanel = modules.game_interface.getRootPanel()
+    g_keyboard.unbindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+  end
+  
+  if hotkey then
+    settings[widget:getId()] = {hotkey=hotkey}
+  else
+    settings[widget:getId()] = nil
+  end
+
+  setupButton(widget)
+end
+
+function assignItem(widget)
+  destroyAssignWindows()
+  local radio = UIRadioGroup.create()
+  local item = widget.item:getItem()
+  local id = widget.item:getItemId()
+
+  -- check if item wasn't cleared
+  if id == 0 and widget.item:isOn() then
+    return resetSlot(widget) 
+  end
+
+  -- create window
+  window = g_ui.loadUI('object', g_ui.getRootWidget())
+  window:show()
+  window:raise()
+  window:focus()
+
+  -- basics
+  window:setText("Assign Object to Action Button "..widget:getId())
+  window:setId("assignItemWindow")
+
+  -- select item
+  window.select.onClick = function()
+    modules.game_itemselector.show(widget.item)
+  end
+
+  -- checks
+  window.item:setShowCount(false)
+  window.item.onItemChange = function(widget)
+    local item = window.item:getItem()
+
+    if item then
+      for i, child in ipairs(window.checks:getChildren()) do
+        -- add to radio grouo
+        radio:addWidget(child)
+
+        -- enabled
+        if item:getId() < 100 then
+          child:setEnabled(false)
+        elseif i < 4 then
+          local check = item:isMultiUse()
+          child:setEnabled(check)
+          if check then
+            radio:selectWidget(child)
+          end
+        elseif g_game.getClientVersion() >= 910 then
+          if i == 4 then
+  --           local check = item:getClothSlot() > 0
+            local check = true -- unfortunately two handed weapons returns cloth 0, so we have to disable this check
+            child:setEnabled(check)
+            if check then
+              radio:selectWidget(child)
+            end
+          else
+            child:setEnabled(true)
+            radio:selectWidget(child)
+          end
+        else
+          child:setVisible(false)
+        end
+      end
+    end
+
+    -- validation
+    window.buttonOk:setEnabled(item and item:getId() > 100)
+    window.buttonApply:setEnabled(item and item:getId() > 100)
+  end
+
+  window.item:setItemId(id)
+
+  -- select current action, if exists
+  local actionType = widget.action or 0
+  if actionType > ACTION.BLANK then
+    local id
+    if actionType == ACTION.USE_SELF then
+      id = "useSelf"
+    elseif actionType == ACTION.USE_TARGET then
+      id = "useTarget"
+    elseif actionType == ACTION.USE_CROSS then
+      id = "useCross"
+    elseif actionType == ACTION.EQUIP then
+      id = "equip"
+    elseif actionType == ACTION.USE then
+      id = "use"
+    end
+
+    for i, child in ipairs(radio.widgets) do
+      local childId = child:getId()
+      if childId == id then
+        radio:selectWidget(child)
+        break
+      end
+    end
+  end
+
+  -- functions
+  local okFunc = function(destroy)
+    local hotkey = settings[widget:getId()] and settings[widget:getId()].hotkey
+    if hotkey and hotkey:len() > 0 and widget.callback then
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      g_keyboard.unbindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+    end
+
+    settings[widget:getId()] = {hotkey=hotkey}
+    settings[widget:getId()].itemId = window.item:getItemId()
+    settings[widget:getId()].type = TYPE.ITEM
+
+    local selected = radio:getSelectedWidget():getId()
+    if selected == "useSelf" then
+      settings[widget:getId()].action = ACTION.USE_SELF
+    elseif selected == "useTarget" then
+      settings[widget:getId()].action = ACTION.USE_TARGET
+    elseif selected == "useCross" then
+      settings[widget:getId()].action = ACTION.USE_CROSS
+    elseif selected == "equip" then
+      settings[widget:getId()].action = ACTION.EQUIP
+    else
+      settings[widget:getId()].action = ACTION.USE
+    end
+
+    if destroy then
+      window:destroy()
+      radio:destroy()
+    end
+    setupButton(widget)
+  end
+
+  local cancelFunc = function()
+    setupButton(widget)
+    window:destroy()
+    radio:destroy()
+  end
+
+  -- callbacks
+  window.buttonOk.onClick = function() okFunc(true) end
+  window.onEnter = function() okFunc(true) end
+  window.buttonApply.onClick = function() okFunc(false) end
+  window.buttonClose.onClick = cancelFunc
+  window.onEscape = cancelFunc
+
+  local actionbar = widget:getParent():getParent()
+  if actionbar.locked then
+    cancelFunc()
+  end
+end
+
+function assignText(widget)
+  destroyAssignWindows()
+
+  -- create window
+  window = g_ui.loadUI('text', g_ui.getRootWidget())
+  window:show()
+  window:raise()
+  window:focus()
+
+  window.text.onTextChange = function(self, text)
+    window.buttonOk:setEnabled(text:len() > 0)
+    window.buttonApply:setEnabled(text:len() > 0)
+  end
+
+  -- copy settings from current widget
+  window.text:setText(widget.text:getText())
+  if widget.type > 0 then
+    window.checkPanel.tick:setChecked(widget.autoSay)
+  end
+
+  -- functions
+  local okFunc = function(destroy) 
+    local autoSay = window.checkPanel.tick:isChecked()
+    local text = window.text:getText()
+
+    local hotkey = settings[widget:getId()] and settings[widget:getId()].hotkey
+    if hotkey and hotkey:len() > 0 and widget.callback then
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      g_keyboard.unbindKeyPress(hotkey, widget.callback, gameRootPanel)
+    end
+
+    settings[widget:getId()] = {hotkey=hotkey}
+
+    local spell = isSpell(text)
+    if spell then -- entered text is spell
+      local paramText = spell.param
+      local spellData = spell.data
+      local newGroup = {}
+      for groupId, duration in pairs(spellData.group) do
+        table.insert(newGroup, groupId)
+      end
+      spellData.group = newGroup
+
+  
+      settings[widget:getId()].type = TYPE.SPELL
+      settings[widget:getId()].spellData = {
+        words = spellData.words,
+        cd = spellData.exhaustion/1000,
+        mana = spellData.mana,
+        source = SpelllistSettings['Default'].iconFile,
+        clip = Spells.getImageClip(SpellIcons[spellData.icon][1], 'Default'),
+        name = spellData.spellName,
+        param = paramText,
+        group = spellData.group,
+        id = spellData.id
+      }
+    else -- is just text
+      settings[widget:getId()].sayText = text
+      settings[widget:getId()].type = TYPE.TEXT
+      settings[widget:getId()].autoSay = autoSay
+    end
+  
+    if destroy then
+      window:destroy()
+    end
+    setupButton(widget)
+  end
+  local cancelFunc = function()
+    window:destroy()
+    setupButton(widget)
+  end
+
+  -- buttons
+  window.buttonOk.onClick = function() okFunc(true) end
+  window.buttonApply.onClick = function() okFunc(false) end
+  window.buttonClose.onClick = cancelFunc
+  window.onEscape = cancelFunc
+  window.onEnter = function() okFunc(true) end
+
+  local actionbar = widget:getParent():getParent()
+  if actionbar.locked then
+    cancelFunc()
+  end
+end
+
+function assignSpell(widget)
+  destroyAssignWindows()
+  local radio = UIRadioGroup.create()
+
+  -- create window
+  window = g_ui.loadUI('spell', g_ui.getRootWidget())
+  window:show()
+  window:raise()
+  window:focus()
+
+  window:setText("Assign Spell to Action Button "..widget:getId())
+
+  -- old tibia does not send vocation
+  if g_game.getClientVersion() < 910 then
+    window.checkPanel:setVisible(false)
+  end
+
+  local spells = modules.gamelib.SpellInfo['Default']
+  for spellName, spellData in pairs(spells) do
+    local widget = g_ui.createWidget('SpellPreview', window.spellList)
+    -- radio
+    radio:addWidget(widget)
+    local newGroup = {}
+    for groupId, duration in pairs(spellData.group) do
+      table.insert(newGroup, groupId)
+    end
+    spellData.group = newGroup
+    
+    widget:setId(spellData.id)
+    widget:setText(spellName.."\n"..spellData.words)
+    widget.voc = spellData.vocations
+    widget.param = spellData.parameter
+    widget.source = SpelllistSettings['Default'].iconFile
+    widget.clip = Spells.getImageClip(SpellIcons[spellData.icon][1], 'Default')
+    widget.image:setImageSource(widget.source)
+    widget.image:setImageClip(widget.clip)
+
+    widget.spellData = {
+      words = spellData.words,
+      cd = spellData.exhaustion/1000,
+      mana = spellData.mana,
+      source = widget.source,
+      clip = widget.clip,
+      name = spellName,
+      param = spellData.parameter,
+      group = spellData.group,
+      id = spellData.id
+    }
+  end
+
+  -- sort alphabetically
+  local widgets = window.spellList:getChildren()
+  table.sort(widgets, function(a, b) return a.spellData.name < b.spellData.name end)
+  for i, widget in ipairs(widgets) do
+    window.spellList:moveChildToIndex(widget, i)
+  end
+
+  local function filterByVocation(a, filter)
+     -- disable callback
+    window.spellList.onChildFocusChange = nil
+
+    local widgets = window.spellList:getChildren()
+    local vocation = translateVocation(g_game.getLocalPlayer():getVocation())
+
+    -- visible
+    local fistVisible = nil
+    for i, widget in ipairs(widgets) do
+      local viable = not filter or table.find(widget.voc, vocation) and true or false
+      widget:setVisible(viable)
+      if viable and not fistVisible then
+        fistVisible = widget
+        radio:selectWidget(fistVisible)
+      end
+    end
+
+    -- select current one if exist
+    local currentSpell = widget.spellData and widget.spellData.id or 0
+    if currentSpell > 0 then
+      for i, child in ipairs(radio.widgets) do
+        local childId = child.spellData.id
+
+        if childId == currentSpell then
+          child:setVisible(true)
+          window.spellList:ensureChildVisible(child)
+          radio:selectWidget(child)
+          break
+        end
+      end
+    end
+  end
+
+  -- callback
+  radio.onSelectionChange = function(widget, selected)
+    if selected then
+      local name = selected:getText()
+      local source = selected.source
+      local clip = selected.clip
+      local param = selected.param
+
+      -- preview
+      window.preview:setText(name)
+      window.preview.image:setImageSource(source)
+      window.preview.image:setImageClip(clip)
+
+      -- param
+      window.paramLabel:setOn(param)
+      window.paramText:setEnabled(param)
+      window.spellList:ensureChildVisible(widget)
+    end
+  end
+
+  window.checkPanel.tick.onCheckChange = filterByVocation
+  filterByVocation(nil, true)
+
+  local okFunc = function(destroy) 
+    local selected = radio:getSelectedWidget()
+    local paramWidgetText = window.paramText:getText()
+    if not selected then return end
+
+    selected.spellData.param = paramWidgetText
+
+    local hotkey = settings[widget:getId()] and settings[widget:getId()].hotkey   
+    if hotkey and hotkey:len() > 0 and widget.callback then
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      g_keyboard.unbindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+    end
+
+    settings[widget:getId()] = {hotkey=hotkey}
+    settings[widget:getId()].spellData = selected.spellData
+    settings[widget:getId()].type = TYPE.SPELL
+ 
+    if destroy then
+      window:destroy()
+    end
+    setupButton(widget)
+  end
+  local cancelFunc = function() 
+    window:destroy()
+    setupButton(widget)
+  end
+
+  window.buttonOk.onClick = function() okFunc(true) end
+  window.buttonApply.onClick = function() okFunc(false) end
+  window.buttonClose.onClick = cancelFunc
+  window.onEscape = cancelFunc
+  window.onEnter = function() okFunc(true) end
+
+  local actionbar = widget:getParent():getParent()
+  if actionbar.locked then
+    cancelFunc()
+  end
+end
+
+function assignHotkey(widget)
+  destroyAssignWindows()
+
+  -- create window
+  window = g_ui.loadUI('hotkey', g_ui.getRootWidget())
+  window:show()
+  window:raise()
+  window:focus()
+
+  local barN = widget:getParent():getParent().n
+  local barDesc
+  if barN < 4 then
+    barDesc = "Bottom"
+  elseif barN < 7 then
+    barDesc = "Left"
+  else
+    barDesc = "Right"
+  end
+
+  -- things
+  barDesc = barDesc.." Action Bar: Action Button "..widget:getId()
+  window:setText('Edit Hotkey for "'..barDesc)
+  window.desc:setText(window.desc:getText()..barDesc..'"')
+  window.display:setText(widget.hotkey or "")
+  
+  -- hotkey
+  window:grabKeyboard()
+  window.onKeyDown = function(window, keyCode, keyboardModifiers)
+    local keyCombo = determineKeyComboDesc(keyCode, keyboardModifiers)
+    window.display:setText(keyCombo)
+    return true
+  end
+
+  local okFunc = function() 
+    local hotkey = window.display:getText()
+
+    if settings[widget:getId()].hotkey and settings[widget:getId()].hotkey:len() > 0 and widget.callback then
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      g_keyboard.unbindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+    end
+    settings[widget:getId()] = settings[widget:getId()] or {}
+    settings[widget:getId()].hotkey = hotkey
+  
+    window:destroy()
+    setupButton(widget)
+  end
+  local clearFunc = function() 
+    window.display:setText('')
+    local hotkey = window.display:getText()
+
+    if settings[widget:getId()].hotkey and settings[widget:getId()].hotkey:len() > 0 and widget.callback then
+      local gameRootPanel = modules.game_interface.getRootPanel()
+      g_keyboard.unbindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+    end
+    settings[widget:getId()] = settings[widget:getId()] or {}
+    settings[widget:getId()].hotkey = hotkey
+  
+    window:destroy()
+    setupButton(widget)
+  end
+  local closeFunc = function() 
+    window:destroy()
+    setupButton(widget)
+  end
+
+  window.buttonOk.onClick = okFunc
+  window.buttonClear.onClick = clearFunc
+  window.buttonClose.onClick = closeFunc
+
+  local actionbar = widget:getParent():getParent()
+  if actionbar.locked then
+    cancelFunc()
+  end
+end
+
+function setupAction(widget)
+  if widget.type == TYPE.BLANK then 
+    return
+  end
+  if widget.type == TYPE.TEXT then
+    widget.callback = function()
+      if modules.game_interface.isChatVisible() then
+        if widget.autoSay then
+          modules.game_console.sendMessage(widget.sayText)
+        else
+          modules.game_console.setTextEditText(widget.sayText)
+        end
+      elseif widget.autoSay then
+        g_game.talk(widget.sayText)
+      end
+    end
+  elseif widget.type == TYPE.SPELL then
+    widget.callback = function()
+      if g_app.isMobile() then -- turn to direction of targer
+        local target = g_game.getAttackingCreature()
+        if target then
+          local pos = g_game.getLocalPlayer():getPosition()
+          local tpos = target:getPosition()
+          if pos and tpos then
+            local offx = tpos.x - pos.x
+            local offy = tpos.y - pos.y
+            if offy < 0 and offx <= 0 and math.abs(offx) < math.abs(offy) then
+              g_game.turn(Directions.North)
+            elseif offy > 0 and offx >= 0 and math.abs(offx) < math.abs(offy) then
+              g_game.turn(Directions.South)
+            elseif offx < 0 and offy <= 0 and math.abs(offx) > math.abs(offy) then
+              g_game.turn(Directions.West)
+            elseif offx > 0 and offy >= 0 and math.abs(offx) > math.abs(offy) then
+              g_game.turn(Directions.East)
+            end
+          end
+        end
+      end
+      local paramText 
+      if widget.spellData.param and widget.spellData.param:len() > 0 then
+        paramText = ' "'.. widget.spellData.param ..'"' 
+      else 
+        paramText = ""
+      end
+      g_game.talk(widget.spellData.words..paramText)
+    end
+  elseif widget.type == TYPE.ITEM then
+    widget.callback = function()
+      if widget.action == ACTION.BLANK then
+        return
+      elseif widget.action == ACTION.EQUIP then
+        if g_game.getClientVersion() >= 910 then
+          local item = Item.create(widget.item:getItemId())
+          return g_game.equipItem(item)
+        end
+      elseif widget.action == ACTION.USE then
+        if g_game.getClientVersion() < 780 then
+          local item = g_game.findPlayerItem(widget.item:getItemId(), widget.item:getItemSubType() or -1)
+          if item then
+            g_game.use(item)
+          end
+        else
+          g_game.useInventoryItem(widget.item:getItemId())
+        end
+      elseif widget.action == ACTION.USE_SELF then
+        if g_game.getClientVersion() < 780 then
+          local item = g_game.findPlayerItem(widget.item:getItemId(), widget.item:getItemSubType() or -1)
+          if item then
+            g_game.useWith(item, g_game.getLocalPlayer())
+          end
+        else
+          g_game.useInventoryItemWith(widget.item:getItemId(), g_game.getLocalPlayer(), widget.item:getItemSubType() or -1)
+        end
+      elseif widget.action == ACTION.USE_TARGET then
+        local attackingCreature = g_game.getAttackingCreature()
+        if not attackingCreature then
+          local item = Item.create(widget.item:getItemId())
+          if g_game.getClientVersion() < 780 then
+            local tmpItem = g_game.findPlayerItem(widget.item:getItemId(), widget.item:getItemSubType() or -1)
+            if not tmpItem then return end
+            item = tmpItem
+          end
+          modules.game_interface.startUseWith(item, widget.item:getItemSubType() or - 1)
+          return
+        end
+        if not attackingCreature:getTile() then return end
+        if g_game.getClientVersion() < 780 then
+          local item = g_game.findPlayerItem(widget.item:getItemId(), widget.item:getItemSubType() or -1)
+          if item then
+            g_game.useWith(item, attackingCreature, widget.item:getItemSubType() or -1)
+          end
+        else
+          g_game.useInventoryItemWith(widget.item:getItemId(), attackingCreature, widget.item:getItemSubType() or -1)
+        end
+      elseif widget.action == ACTION.USE_CROSS then
+        local item = Item.create(widget.item:getItemId())
+        if g_game.getClientVersion() < 780 then
+          local tmpItem = g_game.findPlayerItem(widget.item:getItemId(), widget.item:getItemSubType() or -1)
+          if not tmpItem then return true end
+          item = tmpItem
+        end
+        modules.game_interface.startUseWith(item, widget.item:getItemSubType() or - 1)
+      end
+    end
+  end
+
+  if widget.hotkey and widget.hotkey:len() > 0 and widget.callback then
+    local gameRootPanel = modules.game_interface.getRootPanel()
+    g_keyboard.bindKeyPress(widget.hotkey, widget.callback, gameRootPanel)
+  end
 end
 
 function onSpellCooldown(iconId, duration)
-  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
-                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
-                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
-    for i, child in ipairs(panel.tabBar:getChildren()) do
-      if child.spell and child.spell.id == iconId then
+  for index, actionbar in ipairs(actionBars) do
+    for i, child in ipairs(actionbar.tabBar:getChildren()) do
+      if child.type == 2 and child.spellData.id == iconId then
         startCooldown(child, duration)
       end
     end
@@ -433,12 +1090,10 @@ function onSpellCooldown(iconId, duration)
 end
 
 function onSpellGroupCooldown(groupId, duration)
-  for index, panel in ipairs({bottomActionPanel1, bottomActionPanel2, bottomActionPanel3, 
-                              leftActionPanel1, leftActionPanel2, leftActionPanel3, 
-                              rightActionPanel1, rightActionPanel2, rightActionPanel3}) do
-    for i, child in ipairs(panel.tabBar:getChildren()) do
-      if child.spell and child.spell.group then
-        for group, dur in pairs(child.spell.group) do
+  for index, actionbar in ipairs(actionBars) do
+    for i, child in ipairs(actionbar.tabBar:getChildren()) do
+      if child.type == 2 and child.spellData.group then
+        for i, group in ipairs(child.spellData.group) do
           if groupId == group then
             startCooldown(child, duration)
           end
@@ -460,7 +1115,7 @@ end
 function updateCooldown(action)
   if not action or not action.cooldownTill then return end
   local timeleft = action.cooldownTill - g_clock.millis()
-  if timeleft <= 30 then
+  if timeleft <= 50 then
     action.cooldown:setPercent(100)
     action.cooldownEvent = nil
     action.cooldown:setText("")
@@ -475,126 +1130,31 @@ function updateCooldown(action)
     formattedText = math.floor(formattedText * 10) / 10
     formattedText = math.floor(formattedText) .. "." .. math.floor(formattedText * 10) % 10
   end
+
+  local retry
+  if timeleft > 60000 then
+    retry = math.min(math.floor(timeleft * 0.1), 60 * 1000) -- max 1min
+    retry = math.max(retry, 100) -- min 100
+  elseif timeleft > 1000 then
+    retry = 100
+  else
+    retry = 30
+  end
   action.cooldown:setText(formattedText) 
   action.cooldown:setPercent(100 - math.floor(100 * timeleft / duration))
-  action.cooldownEvent = scheduleEvent(function() updateCooldown(action) end, 30)
-end
-
-function executeAction(action, ticks)
-  if not action.config then return end
-  if type(ticks) ~= 'number' then ticks = 0 end
-
-  local actionDelay = 100  
-  if ticks == 0 then
-    actionDelay = 200 -- for first use
-  elseif action.actionDelayTo ~= nil and g_clock.millis() < action.actionDelayTo then
-    return
-  end
-  
-  local actionType = action.config.actionType
-
-  if type(action.config.text) == 'string' and action.config.text:len() > 0 then
-    if g_app.isMobile() then -- turn to direction of targer
-      local target = g_game.getAttackingCreature()
-      if target then
-        local pos = g_game.getLocalPlayer():getPosition()
-        local tpos = target:getPosition()
-        if pos and tpos then
-          local offx = tpos.x - pos.x
-          local offy = tpos.y - pos.y
-          if offy < 0 and offx <= 0 and math.abs(offx) < math.abs(offy) then
-            g_game.turn(Directions.North)
-          elseif offy > 0 and offx >= 0 and math.abs(offx) < math.abs(offy) then
-            g_game.turn(Directions.South)
-          elseif offx < 0 and offy <= 0 and math.abs(offx) > math.abs(offy) then
-            g_game.turn(Directions.West)
-          elseif offx > 0 and offy >= 0 and math.abs(offx) > math.abs(offy) then
-            g_game.turn(Directions.East)
-          end
-        end
-      end
-    end
-    if modules.game_interface.isChatVisible() then
-      modules.game_console.sendMessage(action.config.text)    
-    else
-      g_game.talk(action.config.text)
-    end
-    action.actionDelayTo = g_clock.millis() + actionDelay
-  elseif action.item:getItemId() > 0 then    
-    if actionType == ActionTypes.USE then
-      if g_game.getClientVersion() < 780 then
-        local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
-        if item then
-          g_game.use(item)
-        end
-      else
-        g_game.useInventoryItem(action.item:getItemId())
-      end
-      action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif actionType == ActionTypes.USE_SELF then
-      if g_game.getClientVersion() < 780 then
-        local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
-        if item then
-          g_game.useWith(item, g_game.getLocalPlayer())
-        end
-      else
-        g_game.useInventoryItemWith(action.item:getItemId(), g_game.getLocalPlayer(), action.item:getItemSubType() or -1)
-      end
-      action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif actionType == ActionTypes.USE_TARGET then
-      local attackingCreature = g_game.getAttackingCreature()
-      if not attackingCreature then
-        local item = Item.create(action.item:getItemId())
-        if g_game.getClientVersion() < 780 then
-          local tmpItem = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
-          if not tmpItem then return end
-          item = tmpItem
-        end
-
-        modules.game_interface.startUseWith(item, action.item:getItemSubType() or - 1)
-        return
-      end
-
-      if not attackingCreature:getTile() then return end
-      if g_game.getClientVersion() < 780 then
-        local item = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
-        if item then
-          g_game.useWith(item, attackingCreature, action.item:getItemSubType() or -1)
-        end
-      else
-        g_game.useInventoryItemWith(action.item:getItemId(), attackingCreature, action.item:getItemSubType() or -1)
-      end
-      action.actionDelayTo = g_clock.millis() + actionDelay
-    elseif actionType == ActionTypes.USE_WITH then
-      local item = Item.create(action.item:getItemId())
-      if g_game.getClientVersion() < 780 then
-        local tmpItem = g_game.findPlayerItem(action.item:getItemId(), action.item:getItemSubType() or -1)
-        if not tmpItem then return true end
-        item = tmpItem
-      end
-      modules.game_interface.startUseWith(item, action.item:getItemSubType() or - 1)
-    elseif actionType == ActionTypes.EQUIP then
-      if g_game.getClientVersion() >= 910 then
-        local item = Item.create(action.item:getItemId())
-        g_game.equipItem(item)
-        action.actionDelayTo = g_clock.millis() + actionDelay
-      end
-    end
-  end
+  action.cooldownEvent = scheduleEvent(function() updateCooldown(action) end, retry)
 end
 
 function save()
-  local settingsFile = modules.client_profiles.getSettingsFilePath("actionbar.json")
-
   local status, result = pcall(function() return json.encode(settings, 2) end)
   if not status then
-      return onError(
+      return g_logger.error(
                  "Error while saving top bar settings. Data won't be saved. Details: " ..
                      result)
   end
 
   if result:len() > 100 * 1024 * 1024 then
-      return onError(
+      return g_logger.error(
                  "Something went wrong, file is above 100MB, won't be saved")
   end
 
@@ -602,14 +1162,12 @@ function save()
 end
 
 function load()
-  local settingsFile = modules.client_profiles.getSettingsFilePath("actionbar.json")
-
   if g_resources.fileExists(settingsFile) then
       local status, result = pcall(function()
           return json.decode(g_resources.readFileContents(settingsFile))
       end)
       if not status then
-          return onError(
+          return g_logger.error(
                      "Error while reading top bar settings file. To fix this problem you can delete storage.json. Details: " ..
                          result)
       end

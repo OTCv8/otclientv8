@@ -1,9 +1,7 @@
 Module
   name: game_actionbar
-  description: Action bar
-  author: otclient@otclient.ovh
-  website: otclient.ovh
+  author: https://github.com/Vithrax/
   sandboxed: true
-  scripts: [ actionbar ]
   @onLoad: init()
   @onUnload: terminate()
+  scripts: [ actionbar ]

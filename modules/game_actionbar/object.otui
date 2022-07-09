@@ -1,0 +1,100 @@
+RoundCheckBox < CheckBox
+  image-source: /images/ui/checkbox_round
+  
+  $first:
+    margin-top: 2
+
+  $!first:
+    margin-top: 5
+
+MainWindow
+  id: assignItemWindow
+  size: 275 195
+
+  UIItem
+    id: item
+    anchors.top: parent.top
+    anchors.left: parent.left
+    size: 86 86
+    padding: 5
+    &selectable: true
+    &editable: false
+    image-source: /images/ui/panel_flat
+    image-border: 1
+
+  Panel
+    id: checks
+    anchors.left: prev.right
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-left: 10
+    layout: 
+      type: verticalBox
+      fit-children: true
+
+    RoundCheckBox
+      id: useSelf
+      text: Use on yourself
+      enabled: false
+    
+    RoundCheckBox
+      id: useTarget
+      text: Use on target
+      enabled: false
+
+    RoundCheckBox
+      id: useCross
+      text: With crosshair
+      enabled: false
+
+    RoundCheckBox
+      id: equip
+      text: Equip/Unequip
+      enabled: false
+
+    RoundCheckBox
+      id: use
+      text: Use
+      enabled: false
+
+  Button
+    id: select
+    anchors.left: item.left
+    anchors.right: item.right
+    anchors.top: item.bottom
+    margin-top: 5
+    font: cipsoftFont
+    height: 20
+    text: Select item
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  Button
+    id: buttonClose
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Close
+
+  Button
+    id: buttonApply
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Apply
+
+  Button
+    id: buttonOk
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Ok

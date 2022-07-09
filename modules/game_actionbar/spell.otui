@@ -1,0 +1,150 @@
+SpellPreview < UICheckBox
+  height: 34
+  text-wrap: true
+  multi-line: true
+  focusable: true
+  text-offset: 38 2
+  image-source:
+  change-cursor-image: false
+
+  $hover !disabled:
+    color: #ffffff
+
+  $!checked:
+    background-color: alpha
+
+  $checked:
+    background-color: #ffffff22
+
+  $disabled:
+    image-color: #dfdfdf88
+    color: #dfdfdf88
+    opacity: 0.8
+
+  UIWidget
+    id: image
+    anchors.left: parent.left
+    anchors.top: parent.top
+    phantom: true
+    padding: 1
+    size: 34 34
+
+MainWindow
+  id: assignSpellWindow
+  size: 275 310
+  @onEscape: self:destroy()
+
+  SpellPreview
+    id: preview
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    focusable: false
+
+    $!checked:
+      background-color: alpha
+
+    $checked:
+      background-color: alpha
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  TextList
+    id: spellList
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    height: 120
+    padding: 1
+    focusable: false
+    vertical-scrollbar: listScrollBar
+    background-color: #484848
+
+  VerticalScrollBar
+    id: listScrollBar
+    anchors.top: spellList.top
+    anchors.right: spellList.right
+    margin-right: 1
+    anchors.bottom: spellList.bottom
+    step: 14
+    pixels-scroll: true
+
+  FlatPanel
+    id: checkPanel
+    anchors.top: spellList.bottom
+    margin-top: 8
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 20
+
+    CheckBox
+      id: tick
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: parent.right
+      margin-left: 5
+      text: Only show vocation spells
+      checked: true
+
+  Label
+    id: paramLabel
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+    text: Parameter:
+    height: 20
+    text-horizontal-auto-resize: true
+    text-offset: 0 3
+    on: false
+
+    $on:
+      color: white
+
+    $!on:
+      color: #c0c0c0
+
+  TextEdit
+    id: paramText
+    anchors.top: prev.top
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+    anchors.left: prev.right
+    margin-left: 5
+    enabled: false
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  Button
+    id: buttonClose
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Close
+
+  Button
+    id: buttonApply
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Apply
+
+  Button
+    id: buttonOk
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Ok

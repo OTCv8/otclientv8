@@ -142,7 +142,6 @@ end
 function setupTopBar()
     local topPanel = modules.game_interface.getTopBar()
     topBar = topBar or g_ui.loadUI('topbar', topPanel)
-    topBar = topBar or g_ui.createWidget('TopBar', topPanel)
 
     manaBar = topBar.stats.mana
     healthBar = topBar.stats.health
@@ -287,6 +286,7 @@ function onLevelChange(localPlayer, value, percent)
     experienceBar:setTooltip(tr(experienceTooltip, 100-percent, value + 1))
     experienceBar:setPercent(percent)
     levelLabel:setText(value)
+    levelLabel:setTextAutoResize(true)
 end
 
 function onStatesChange(localPlayer, now, old)
@@ -394,6 +394,7 @@ function setSkillValue(id, value)
     if not panel then return end
 
     panel.level:setText(value)
+    panel.level:setTextAutoResize(true)
 end
 
 function setSkillPercent(id, percent, tooltip)

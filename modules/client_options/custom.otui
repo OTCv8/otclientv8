@@ -45,17 +45,17 @@ OptionPanel
       type: horizontalBox
 
     OptionCheckBox
-      id: actionbarBottom1
+      id: actionbar1
       !text: tr('Bar 1')
       width: 60
 
     OptionCheckBox
-      id: actionbarBottom2
+      id: actionbar2
       !text: tr('Bar 2')
       width: 60
 
     OptionCheckBox
-      id: actionbarBottom3
+      id: actionbar3
       !text: tr('Bar 3')
       width: 60
 
@@ -75,17 +75,17 @@ OptionPanel
       type: horizontalBox
 
     OptionCheckBox
-      id: actionbarLeft1
+      id: actionbar4
       !text: tr('Bar 1')
       width: 60
 
     OptionCheckBox
-      id: actionbarLeft2
+      id: actionbar5
       !text: tr('Bar 2')
       width: 60
 
     OptionCheckBox
-      id: actionbarLeft3
+      id: actionbar6
       !text: tr('Bar 3')
       width: 60
 
@@ -104,17 +104,17 @@ OptionPanel
       visible: false
 
     OptionCheckBox
-      id: actionbarRight1
+      id: actionbar7
       !text: tr('Bar 1')
       width: 60
 
     OptionCheckBox
-      id: actionbarRight2
+      id: actionbar8
       !text: tr('Bar 2')
       width: 60
 
     OptionCheckBox
-      id: actionbarRight3
+      id: actionbar9
       !text: tr('Bar 3')
       width: 60
 

@@ -1,0 +1,56 @@
+MainWindow
+  id: assignHotkeyWindow
+  size: 400 170
+
+  FlatLabel
+    id: display
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 33
+    text-align: center
+    font: verdana-11px-rounded
+
+  Label
+    id: desc
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    multi-line: true
+    height: 40
+    text-wrap: true
+    text: Click "Ok" to assign the hotkey. Click "Clear" to remove the hotkey from "
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  Button
+    id: buttonClose
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Close
+    @onClick: self:getParent():destroy()
+
+  Button
+    id: buttonClear
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Clear
+
+  Button
+    id: buttonOk
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Ok

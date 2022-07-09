@@ -566,10 +566,11 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
 
   if g_game.getFeature(GameBot) and useThing and useThing:isItem() then
     menu:addSeparator()
+    local useThingId = useThing:getId()
     if useThing:getSubType() > 1 then
-      menu:addOption("ID: " .. useThing:getId() .. " SubType: " .. useThing:getSubType(), function() end)    
+      menu:addOption("ID: " .. useThingId .. " SubType: " .. g_game..setClipboardText(useThingId), function() end)    
     else
-      menu:addOption("ID: " .. useThing:getId(), function() end)
+      menu:addOption("ID: " .. useThingId, function() g_game.setClipboardText(useThingId) end)
     end
   end
 
@@ -997,9 +998,9 @@ function refreshViewMode()
       modules.game_console.switchMode(true)
     end
   end
-  if modules.game_actionbar then
-    modules.game_actionbar.switchMode(not classic)    
-  end
+--  if modules.game_actionbar then
+--    modules.game_actionbar.switchMode(not classic)    
+--  end
   
   if g_settings.getBoolean("cacheMap") then
     g_game.enableFeature(GameBiggerMapCache)

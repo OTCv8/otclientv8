@@ -52,17 +52,15 @@ local defaultOptions = {
 
   topBar = true,
 
-  actionbarBottom1 = true,
-  actionbarBottom2 = false,
-  actionbarBottom3 = false,
-
-  actionbarLeft1 = false,
-  actionbarLeft2 = false,
-  actionbarLeft3 = false,
-
-  actionbarRight1 = false,
-  actionbarRight2 = false,
-  actionbarRight3 = false,
+  actionbar1 = true,
+  actionbar2 = false,
+  actionbar3 = false,
+  actionbar4 = false,
+  actionbar5 = false,
+  actionbar6 = false,
+  actionbar7 = false,
+  actionbar8 = false,
+  actionbar9 = false,
 
   actionbarLock = false,
 

@@ -1,0 +1,66 @@
+MainWindow
+  id: assignTextWindow
+  size: 275 150
+  text: Assign Text
+
+  Label
+    anchors.top: parent.top
+    anchors.left: parent.left
+    text: Text:
+    text-horizontal-auto-resize: true
+
+  TextEdit
+    id: text
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+
+  FlatPanel
+    id: checkPanel
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 20
+
+    CheckBox
+      id: tick
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.right: parent.right
+      margin-left: 5
+      text: Send automatically
+      checked: true
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  Button
+    id: buttonClose
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Close
+
+  Button
+    id: buttonApply
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Apply
+
+  Button
+    id: buttonOk
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.bottom: parent.bottom
+    size: 45 21
+    font: cipsoftFont
+    text: Ok

@@ -1,29 +1,42 @@
-ActionButton < Panel
+ActionButton < UIButton
   font: cipsoftFont
-  width: 40
-  padding: 1 1 1 1
+  width: 36
+  padding: 1
   margin-left: 1
-  draggable: true
     
   Item
     id: item
     anchors.fill: parent
+    padding: 1
     &selectable: true
     &editable: false
     virtual: true
     border-width: 1
-    
     border-color: #00000000
+    draggable: true
     
     $!on:
-      image-source: /images/game/actionbarslot
+      image-source: /images/game/actionbar/actionbarslot
+      image-color: #dfdfdf
+      image-clip: 0 0 34 34
+      image-border: 0
+
+    $on:
+      image-source: /images/ui/button
+      image-color: #dfdfdf
+      image-clip: 0 0 22 23
+      image-border: 3
+
+    $pressed on:
+      image-clip: 0 46 22 23
 
   Label
     id: text
-    anchors.fill: parent
+    anchors.fill: prev
     text-auto-resize: true
     text-wrap: true
     phantom: true
+    margin: 1
     text-align: center
     font: verdana-9px
 
@@ -31,7 +44,7 @@ ActionButton < Panel
     id: hotkeyLabel
     anchors.top: parent.top
     anchors.right: parent.right
-    margin: 2 3 3 3
+    margin: 3 4 3 3
     text-auto-resize: true
     text-wrap: false
     phantom: true
@@ -39,22 +52,172 @@ ActionButton < Panel
     color: white
     background: #292A2A
 
+  Label
+    id: parameterText
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-bottom: -3
+    margin-left: 2
+    margin-right: 2
+    font: verdana-9px
+    color: white
+    text-align: center
+
   UIProgressRect
     id: cooldown
-    background: #585858AA
+    background: #101010aa
     percent: 100
     focusable: false
     phantom: true
     anchors.fill: parent
-    margin: 1 1 1 1
     font: verdana-11px-rounded
     color: white
-    
+
+LeftSliders < Panel
+  size: 17 34
+
+  Button
+    id: prev
+    anchors.fill: parent
+    anchors.bottom: parent.verticalCenter
+    @onClick: modules.game_actionbar.moveActionButtons(self)
+
+    $!on:
+      tooltip: No further action buttons in this direction
+
+    $on:
+      tooltip: Move to the previous action button
+
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      phantom: true
+
+      $!on:
+        image-source: /images/game/actionbar/arrow-disabled
+
+      $on:
+        image-source: /images/game/actionbar/arrow
+
+  Button
+    id: first
+    anchors.fill: parent
+    anchors.top: parent.verticalCenter
+    @onClick: modules.game_actionbar.moveActionButtons(self)
+
+    $!on:
+      tooltip: No further action buttons in this direction
+
+    $on:
+      tooltip: Move to the first action button
+
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      phantom: true
+
+      $!on:
+        image-source: /images/game/actionbar/arrow-skip-disabled
+
+      $on:
+        image-source: /images/game/actionbar/arrow-skip
+
+RightSliders < Panel
+  size: 29 34
+  
+  Button
+    id: lock
+    anchors.top: parent.top
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    width: 12
+    @onClick: modules.game_actionbar.changeLockState(self)
+
+    $!on:
+      tooltip: Action Bar Locked: You cannot assign actions to or switch actions on action buttons by "drag&drop".
+
+    $on:
+      tooltip: Action Bar Unlocked: You can assign actions to or switch actions on action buttons by "drag&drop".
+
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      margin-right: 1
+      phantom: true
+      
+      $!on:
+        image-source: /images/game/actionbar/locked
+
+      $on:
+        image-source: /images/game/actionbar/unlocked
+
+  Button
+    id: next
+    anchors.top: parent.top
+    anchors.bottom: parent.verticalCenter
+    anchors.left: parent.left
+    anchors.right: lock.left
+    margin-right: 1
+    @onClick: modules.game_actionbar.moveActionButtons(self)
+    on: true
+
+    $!on:
+      tooltip: No further action buttons in this direction
+
+    $on:
+      tooltip: Move to the next action button
+
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      phantom: true
+      margin-top: 1
+      margin-left: 2
+      rotation: 180
+      on: true
+
+      $!on:
+        image-source: /images/game/actionbar/arrow-disabled
+
+      $on:
+        image-source: /images/game/actionbar/arrow
+
+  Button
+    id: last
+    anchors.top: parent.verticalCenter
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: prev.right
+    @onClick: modules.game_actionbar.moveActionButtons(self)
+    on: true
+
+    $!on:
+      tooltip: No further action buttons in this direction
+
+    $on:
+      tooltip: Move to the last action button
+
+    UIWidget
+      id: image
+      anchors.centerIn: parent
+      phantom: true
+      margin-top: 1
+      margin-left: 1
+      rotation: 180
+      on: true
+
+      $!on:
+        image-source: /images/game/actionbar/arrow-skip-disabled
+
+      $on:
+        image-source: /images/game/actionbar/arrow-skip
+  
 Panel
   id: actionBar
   focusable: false
-  image-source: /images/ui/panel_side
-  image-border: 4
+  image-source: /images/ui/actionbar_background
+  image-border: 1
   margin-top: -1
   
   $on:
@@ -65,77 +228,37 @@ Panel
     height: 0
     visible: false
 
-  TabButton
-    id: prevButton
-    icon: /images/game/console/leftarrow
+  LeftSliders
+    id: prevPanel
     anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
+    anchors.verticalCenter: parent.verticalCenter
     margin-left: 1
-    margin-top: 1
-    margin-bottom: 2
     
-  Panel
+  ScrollablePanel
     id: tabBar
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.left: prev.right
-    anchors.right: next.left
-    margin-right: 3
+    anchors.right: nextPanel.left
+    margin-left: 4
+    margin-right: 4
     clipping: true
+    padding-top: 2
+    padding-bottom: 2
+    horizontal-scrollbar: actionScroll
     layout: horizontalBox
-    
-  TabButton
-    id: nextButton
-    icon: /images/game/console/rightarrow
-    anchors.right: parent.right
+
+  HorizontalScrollBar
+    id: actionScroll
     anchors.top: parent.top
     anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    step: 37
+    pixels-scroll: true
+    visible: false
+
+  RightSliders
+    id: nextPanel
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
     margin-right: 1
-    margin-top: 1
-    margin-bottom: 2
-
-ActionAssignWindow < MainWindow
-  id: assignWindow
-  !text: tr('Button Assign')
-  size: 360 150
-  @onEscape: self:destroy()
-
-  Label
-    !text: tr('Please, press the key you wish to use for action')
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: parent.top
-    text-auto-resize: true
-    text-align: left
-
-  Label
-    id: comboPreview
-    !text: tr('Current action hotkey: %s', 'none')
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.top: prev.bottom
-    margin-top: 10
-    text-auto-resize: true
-
-  HorizontalSeparator
-    id: separator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 10
-
-  Button
-    id: addButton
-    !text: tr('Add')
-    width: 64
-    anchors.right: next.left
-    anchors.bottom: parent.bottom
-    margin-right: 10
-
-  Button
-    id: cancelButton
-    !text: tr('Cancel')
-    width: 64
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    @onClick: self:getParent():destroy()

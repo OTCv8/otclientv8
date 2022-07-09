@@ -100,7 +100,7 @@ SkillPanel < Panel
     margin-bottom: -2
     anchors.right: progress.right  
 
-TopBar < Panel
+Panel
   id: topbar
   focusable: false
   padding-top: 4
