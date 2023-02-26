@@ -2,7 +2,7 @@
 
 OTClientV8 is highly optimized, cross-platform tile based 2d game engine built with c++17, lua, physfs, OpenGL ES 2.0 and OpenAL.
 It has been created as alternative client for game called [Tibia](https://tibia.com/), but now it's much more functional and powerful.
-It works well even on 12 years old computers. In April 2021 it reached 290k unique installations, including 80k android installations.
+It works well even on 12 years old computers. In 2023 it reached 1 mln unique installations, including 250k android installations.
 
 Supported platforms:
 - Windows (min. Windows 7, requires https://aka.ms/vs/16/release/vc_redist.x86.exe)
@@ -10,14 +10,14 @@ Supported platforms:
 - Linux
 - Mac Os (requires https://www.xquartz.org/)
 
-### Forum: http://otclient.net
-### Discord: https://discord.gg/feySup6
-### Website: http://otclient.ovh
-### Wiki: https://github.com/OTCv8/otclientv8/wiki
+### Forum: [https://otland.net/forums/otclient.494/](https://otland.net/forums/otclient.494/)
+### Discord: [https://discord.gg/feySup6](https://discord.gg/feySup6)
+### Website: [http://otclient.ovh](http://otclient.ovh)
+### Wiki: [https://github.com/OTCv8/otclientv8/wiki](https://github.com/OTCv8/otclientv8/wiki)
 
-## Version for developers
+## Version for developers (sources)
 
-In this repository, you can find clean, always up-to-date, ready to use version of OTClientv8. Most commits from version 3.0 are automatic using GitHub Actions. If you want to help with development, please visit repository for developers - https://github.com/OTCv8/otcv8-dev
+In this repository, you can find clean, always up-to-date, ready to use version of OTClientv8. Most commits starting from version 3.0 are automated using GitHub Actions. If you want to help with development, please visit repository for developers - https://github.com/OTCv8/otcv8-dev
 
 ## FEATURES
 - Rewritten and optimized rendering (60 fps on 11 years old computer)
@@ -46,8 +46,7 @@ In this repository, you can find clean, always up-to-date, ready to use version 
 - Full tibia 11.00 support
 - Layouts
 - New login server (with ingame account and character creation)
-- Support for proxies to lower latency and protect against DDoS (extra paid option)
-- Bot protection (extra paid option)
+- Support for proxies to lower latency and protect against DDoS
 
 ### And hundreds of smaller features, optimizations and bug fixes!
 ### Check out [Wiki page](https://github.com/OTCv8/otclientv8/wiki) to see how activate and use new features
