@@ -632,6 +632,10 @@ function showMounts()
     end
   end
 
+  if #ServerData.mounts == 1 then
+    window.selectionList:focusChild(nil)
+  end
+
   window.configure.mount.check:setEnabled(focused)
   window.configure.mount.check:setChecked(g_game.getLocalPlayer():isMounted() and focused)
 
