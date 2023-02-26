@@ -4,7 +4,6 @@ EnterGame = { }
 local loadBox
 local enterGame
 local enterGameButton
-local logpass
 local clientBox
 local protocolLogin
 local server = nil
@@ -298,9 +297,6 @@ end
 function EnterGame.init()
   if USE_NEW_ENERGAME then return end
   enterGame = g_ui.displayUI('entergame')
-  if LOGPASS ~= nil then
-    logpass = g_ui.loadUI('logpass', enterGame:getParent())
-  end
   
   serverSelectorPanel = enterGame:getChildById('serverSelectorPanel')
   customServerSelectorPanel = enterGame:getChildById('customServerSelectorPanel')
@@ -362,11 +358,6 @@ end
 function EnterGame.terminate()
   if not enterGame then return end
   g_keyboard.unbindKeyDown('Ctrl+G')
-
-  if logpass then
-    logpass:destroy()
-    logpass = nil
-  end
   
   enterGame:destroy()
   if loadBox then
@@ -386,22 +377,11 @@ function EnterGame.show()
   enterGame:raise()
   enterGame:focus()
   enterGame:getChildById('accountNameTextEdit'):focus()
-  if logpass then
-    logpass:show()
-    logpass:raise()
-    logpass:focus()
-  end
 end
 
 function EnterGame.hide()
   if not enterGame then return end
   enterGame:hide()
-  if logpass then
-    logpass:hide()
-    if modules.logpass then
-      modules.logpass:hide()
-    end
-  end
 end
 
 function EnterGame.openWindow()
