@@ -39,6 +39,7 @@ macro(500, "Eat Food", function()
     for __, item in ipairs(container:getItems()) do
       for i, foodItem in ipairs(storage.foodItems) do
         if item:getId() == foodItem.id then
+          delay(30000)  -- Adiciona um delay de 30 segundos
           return g_game.use(item)
         end
       end
