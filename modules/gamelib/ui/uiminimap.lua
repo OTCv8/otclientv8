@@ -134,7 +134,7 @@ function UIMinimap:addFlag(pos, icon, description, temporary)
   self:centerInPosition(flag, pos)
 end
 
-function UIMinimap:addAlternativeWidget(widget, pos, maxZoom)
+function UIMinimap:addAlternativeWidget(widget, pos, maxZoom, minZoom)
   widget.pos = pos
   widget.maxZoom = maxZoom or 0
   widget.minZoom = minZoom

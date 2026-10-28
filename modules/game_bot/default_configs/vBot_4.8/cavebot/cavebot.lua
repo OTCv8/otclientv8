@@ -136,6 +136,9 @@ config = Config.setup("cavebot_configs", configWidget, "cfg", function(name, ena
     -- restore focused child on the action list
     ui.list:focusChild(ui.list:getChildByIndex(currentActionIndex))
   end
+  if enabled and CaveBot.Config.get("startNearest") then
+    CaveBot.gotoNearestWaypoint()
+  end
   lastConfig = name  
 end)
 
@@ -261,6 +264,36 @@ function rpairs(t)
 			return i, t[i]
 		end
 	end, t, #t + 1
+end
+
+-- focuses the goto waypoint with the shortest path from the player
+CaveBot.gotoNearestWaypoint = function()
+  local playerPos = player:getPosition()
+  local maxDist = storage.extras.gotoMaxDistance or 40
+  local best, bestLen = nil, nil
+  for i, child in ipairs(ui.list:getChildren()) do
+    if child.action == "goto" then
+      local re = regexMatch(child.value, [[\s*([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)]])
+      if re[1] then
+        local pos = {x = tonumber(re[1][2]), y = tonumber(re[1][3]), z = tonumber(re[1][4])}
+        local d = math.max(math.abs(pos.x - playerPos.x), math.abs(pos.y - playerPos.y))
+        if pos.z == playerPos.z and d <= maxDist and (not bestLen or d < bestLen) then
+          local len = 0
+          if d > 0 then
+            local path = findPath(playerPos, pos, maxDist, { ignoreNonPathable = true, ignoreCreatures = true, precision = 1 })
+            len = path and #path
+          end
+          if len and (not bestLen or len < bestLen) then
+            best, bestLen = child, len
+          end
+        end
+      end
+    end
+  end
+  if not best then return false end
+  ui.list:focusChild(best)
+  ui.list:ensureChildVisible(best)
+  return true
 end
 
 CaveBot.gotoFirstPreviousReachableWaypoint = function()

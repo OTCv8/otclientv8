@@ -20,6 +20,17 @@ TargetBot.Creature.calculatePriority = function(creature, config, path)
 
   -- add config priority
   priority = priority + config.priority
+
+  -- keep current target: another monster needs a priority higher by more
+  -- than switchThreshold to make the bot change target
+  if currentTarget == creature then
+    priority = priority + (config.switchThreshold or 5)
+  end
+
+  -- when our health is low, prefer monsters that are more dangerous
+  if (config.danger or 0) > 0 and hppercent() <= (config.dangerHp or 50) then
+    priority = priority + config.danger * 2
+  end
   
   -- extra priority for close distance
   local path_length = #path

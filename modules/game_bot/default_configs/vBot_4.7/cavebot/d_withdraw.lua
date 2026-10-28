@@ -70,7 +70,7 @@ CaveBot.Extensions.DWithdraw.setup = function()
 		if containerIsFull(destContainer) then
 			for i, item in pairs(destContainer:getItems()) do
 				if item:getId() == destId then
-					g_game.open(foundNextContainer, destContainer)
+					g_game.open(item, destContainer)
 					return "retry"
 				end
 			end

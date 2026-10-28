@@ -79,6 +79,65 @@ CaveBot.Editor.setup = function()
     action:destroy()
     CaveBot.save()
   end)
+  registerAction("add here", function()
+    if CaveBot.Recorder.isOn() then
+      return CaveBot.Recorder.addHere()
+    end
+    local focusedAction = CaveBot.actionList:getFocusedChild()
+    local widget = CaveBot.addAction("goto", posx() .. "," .. posy() .. "," .. posz())
+    if focusedAction then
+      CaveBot.actionList:moveChildToIndex(widget, CaveBot.actionList:getChildIndex(focusedAction) + 1)
+    end
+    CaveBot.actionList:focusChild(widget)
+    CaveBot.actionList:ensureChildVisible(widget)
+    CaveBot.save()
+  end)
+  registerAction("duplicate", function()
+    local action = CaveBot.actionList:getFocusedChild()
+    if not action then return end
+    local widget = CaveBot.addAction(action.action, action.value)
+    CaveBot.actionList:moveChildToIndex(widget, CaveBot.actionList:getChildIndex(action) + 1)
+    CaveBot.actionList:focusChild(widget)
+    CaveBot.actionList:ensureChildVisible(widget)
+    CaveBot.save()
+  end)
+  registerAction("undo last", function()
+    local action = CaveBot.actionList:getLastChild()
+    if not action then return end
+    action:destroy()
+    CaveBot.save()
+  end)
+  registerAction("clean up", function()
+    -- removes repeated actions and goto waypoints standing right next to the previous one
+    local removed = 0
+    local prev = nil
+    local prevPos = nil
+    for _, child in ipairs(CaveBot.actionList:getChildren()) do
+      local remove = false
+      if prev and prev.action == child.action and prev.value == child.value and child.action ~= "delay" and child.action ~= "say" and child.action ~= "npcsay" then
+        remove = true
+      elseif child.action == "goto" then
+        local p = regexMatch(child.value, "\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+),?\\s*([0-9]?)")
+        if p[1] then
+          local pos = {x=tonumber(p[1][2]), y=tonumber(p[1][3]), z=tonumber(p[1][4]), stairs=(p[1][5] == "0")}
+          if prev and prev.action == "goto" and prevPos and not pos.stairs and not prevPos.stairs and pos.z == prevPos.z
+            and math.max(math.abs(pos.x - prevPos.x), math.abs(pos.y - prevPos.y)) <= 1 then
+            remove = true
+          else
+            prevPos = pos
+          end
+        end
+      end
+      if remove then
+        child:destroy()
+        removed = removed + 1
+      else
+        prev = child
+      end
+    end
+    print("CaveBot: clean up removed " .. removed .. " action(s)")
+    CaveBot.save()
+  end)
     
   registerAction("label", {
     value="labelName",
@@ -137,6 +196,12 @@ CaveBot.Editor.setup = function()
     description="Enter text to NPC say",
     multiline=false   
   }) 
+  registerAction("stop", "stop cavebot", {
+    value="Waypoints finished",
+    title="Stop CaveBot",
+    description="Turns CaveBot off, the text is shown as a message",
+    multiline=false
+  })
   registerAction("function", {
     title="Edit bot function",
     multiline=true,

@@ -16,6 +16,12 @@ CaveBot.Config.setup = function()
   add("ignoreFields", "Ignore fields", false)  
   add("skipBlocked", "Skip blocked path", false)  
   add("useDelay", "Delay after use", 400)
+  add("startNearest", "Start at nearest", false)
+  -- auto recording
+  add("recStep", "Record step", 5)
+  add("recSmart", "Smart recording", true)
+  add("recPauseAttack", "No rec. in fight", true)
+  add("recGotoBeforeUse", "Goto before use", true)
 end
 
 CaveBot.Config.show = function()

@@ -137,6 +137,8 @@ if true then
       vocText = "- MS"
   elseif voc() == 4 or voc() == 14 then
       vocText = "- ED"
+  elseif voc() == 5 or voc() == 15 then
+      vocText = "- EM"
   end
 
   macro(5000, function()
@@ -569,8 +571,10 @@ if true then
           guild = guild:sub(1,10) -- change to proper (last) values
           guild = guild.."..."
         end
-        local voc
-        if text:lower():find("sorcerer") then
+        local voc = ""
+        if text:lower():find("monk") then
+            voc = "EM"
+        elseif text:lower():find("sorcerer") then
             voc = "MS"
         elseif text:lower():find("druid") then
             voc = "ED"

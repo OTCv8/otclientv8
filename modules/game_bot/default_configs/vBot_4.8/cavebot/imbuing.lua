@@ -36,7 +36,12 @@ CaveBot.Extensions.Imbuing.setup = function()
     EquipManager.setOff()
 
     if value == 'name' then
-      local imbuData = AutoImbueTable[player:getName()]      
+      local imbuData = AutoImbueTable and AutoImbueTable[player:getName()]
+      if not imbuData then
+        warn("CaveBot[Imbuing] no AutoImbueTable data for this character, proceeding")
+        reset()
+        return false
+      end
       for id, imbues in pairs(imbuData) do
         table.insert(ids, id)
       end

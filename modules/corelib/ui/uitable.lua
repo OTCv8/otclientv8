@@ -117,7 +117,7 @@ function UITable:setHeader(headerWidget)
   self:removeHeader()
 
   if self.dataSpace then
-    local newHeight = self.dataSpace:getHeight()-headerRow:getHeight()-self.dataSpace:getMarginTop()
+    local newHeight = self.dataSpace:getHeight()-headerWidget:getHeight()-self.dataSpace:getMarginTop()
     self.dataSpace:applyStyle({ height = newHeight })
   end
 

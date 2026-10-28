@@ -51,10 +51,12 @@ storage.bestHeal = storage.bestHeal or 0
 local lootedItems = {}
 local useData = {}
 local usedItems ={}
-local lastDataSend = {0, 0}
 local analyzerButton
 local killList = {}
 local membersData = {}
+local bestDPS = 0
+local bestHPS = 0
+local lastCap = freecap()
 HuntingSessionStart = os.date('%Y-%m-%d, %H:%M:%S')
 
 if not storage.analyzers then
@@ -279,7 +281,7 @@ for bossName, dueTime in pairs(storage.analyzers.trackedBoss) do
   createBossPanel(bossName, dueTime)
 end
 
-local bossRegex = [[You (?:can|may) challenge ([\w\W]*) again in ([\d]*)]]
+local bossRegex = [[You (?:can|may) challenge ([\w\W]*) again in ([\d]+) ?([a-z]*)]]
 onTalk(function(name, level, mode, text, channelId, pos)
   if mode == 34 then
     local re = regexMatch(text, bossRegex)
@@ -297,7 +299,17 @@ onTalk(function(name, level, mode, text, channelId, pos)
 
     if not cd then return end
 
-    cd = tonumber(cd) * 60 * 60 -- cd in seconds
+    -- cd in seconds, the message says hours unless it names another unit
+    local unit = re[1][4] or ""
+    local multiplier = 60 * 60
+    if unit:find("^min") then
+      multiplier = 60
+    elseif unit:find("^day") then
+      multiplier = 24 * 60 * 60
+    elseif unit:find("^sec") then
+      multiplier = 1
+    end
+    cd = tonumber(cd) * multiplier
 
     storage.analyzers.trackedBoss[name] = os.time() + cd
     createBossPanel(name, os.time() + cd)
@@ -723,17 +735,17 @@ end
 sessionTime()
 
 local expPerHour = function(calculation)
-  local r = 0
-  if #expTable > 0 then
-      r = exp() - expTable[1]
-  else
-      return "-"
+  if #expTable == 0 then
+      return calculation and 0 or "-"
   end
 
-  if uptime < 15*60 then
-      r = math.ceil((r/uptime)*60*60)
+  -- expTable holds samples from the last 15 minutes
+  local r = exp() - expTable[1].e
+  local seconds = (now - expTable[1].t) / 1000
+  if seconds <= 0 then
+      r = 0
   else
-      r = math.ceil(r*8)
+      r = math.ceil((r/seconds)*60*60)
   end
   if calculation then
       return r
@@ -774,12 +786,8 @@ local function sendData()
       sessionTime()
     }
 
-    -- validation
-    if lastDataSend.totalDmg ~= t[1] and lastDataSend.totalHeal ~= t[2] then
-      BotServer.send("partyHunt", t)
-      lastDataSend[1] = t[1]
-      lastDataSend[2] = t[2]
-    end
+    -- always send, members without data for 10s are shown as inactive
+    BotServer.send("partyHunt", t)
   end
 end
 
@@ -880,13 +888,16 @@ end
 
 local nameRegex = [[Loot of (?:an |a |the |)([^:]+)]]
 onTextMessage(function(mode, text)
-    if not storage.analyzers.lootChannel then return end
     if not text:find("Loot of") and not text:find("The following items are available in your reward chest") then return end
-    local name
+    local rawText = text
+    -- 12.x servers send items as {id|name}, keep only the name
+    text = text:gsub("{%d+|([^}]*)}", "%1")
+    local name = "reward chest"
 
     -- adding monster to killed list
     if text:find("Loot of") then
-      name = regexMatch(text, nameRegex)[1][2]
+      local re = regexMatch(text, nameRegex)
+      name = re[1] and re[1][2] or "unknown creature"
       if not killList[name] then
         killList[name] = 1
       else
@@ -896,6 +907,7 @@ onTextMessage(function(mode, text)
     end
     -- variables
     local split = string.split(text, ":")
+    if not split[2] then return end
     local re = regexMatch(split[2], regex)
     local combinedWorth = 0
     local formatted
@@ -927,9 +939,11 @@ onTextMessage(function(mode, text)
             for i, child in ipairs(dropTrackerWindow.contentsPanel:getChildren()) do
               local childName = child.name
               childName = childName and childName:getText()
+              local trackedId = child.item and tostring(child.item:getItemId())
+              local lootName = formatStr(formattedLoot):lower()
 
-
-              if childName and formattedLoot:find(childName) then
+              -- prefix match keeps plurals ("gold coins") but not "giant sword" for "sword"
+              if childName and trackedLoot[trackedId] and lootName:sub(1, #childName) == childName:lower() then
                 trackedLoot[tostring(child.item:getItemId())] = trackedLoot[tostring(child.item:getItemId())] + (amount or 1)
                 child.drops:setText("Loot Drops: "..trackedLoot[tostring(child.item:getItemId())])
 
@@ -959,12 +973,15 @@ onTextMessage(function(mode, text)
         formatted = combinedWorth .. "gp"
     end
 
-    if modules.game_textmessage.messagesPanel.centerTextMessagePanel.highCenterLabel:getText() == text then
+    if modules.game_textmessage.messagesPanel.centerTextMessagePanel.highCenterLabel:getText() == rawText then
       modules.game_textmessage.messagesPanel.centerTextMessagePanel.highCenterLabel:setColoredText(messageT)
       schedule(math.max(#text * 50, 2000), function() 
         modules.game_textmessage.messagesPanel.centerTextMessagePanel.highCenterLabel:setVisible(false)
       end)
     end
+
+    -- the rest only writes to the loot channel
+    if not storage.analyzers.lootChannel then return end
 
     -- add total worth to string
     add(t, " - (", "#FFFFFF", true)
@@ -1005,7 +1022,7 @@ local function niceFormat(v)
 end
 
 resetAnalyzerSessionData = function()
-    vBot.CaveBotData = vBot.CaveBotData or {
+    vBot.CaveBotData = {
       refills = 0,
       rounds = 0,
       time = {},
@@ -1028,6 +1045,9 @@ resetAnalyzerSessionData = function()
     lootedItems = {}
     useData = {}
     usedItems ={}
+    bestDPS = 0
+    bestHPS = 0
+    lastCap = freecap()
     refreshLoot()
     refreshWaste()
     xpGraph:clear()
@@ -1083,6 +1103,14 @@ displayCondition = function(menuPosition, lookThing, useThing, creatureThing)
 end
 local interface = modules.game_interface
 
+local function clearFrames()
+  for _, container in pairs(getContainers()) do
+    for i, child in pairs(container.itemsPanel:getChildren()) do
+      child:setImageSource("/images/ui/item")
+    end
+  end
+end
+
 local function setFrames()
   if not storage.analyzers.rarityFrames then return end
   for _, container in pairs(getContainers()) do
@@ -1113,20 +1141,31 @@ local function setFrames()
 end 
 setFrames()
 
+-- looting fires many events at once, redraw the frames once per batch
+local framesScheduled = false
+local function requestFrames()
+  if framesScheduled or not storage.analyzers.rarityFrames then return end
+  framesScheduled = true
+  schedule(100, function()
+    framesScheduled = false
+    setFrames()
+  end)
+end
+
 onContainerOpen(function(container, previousContainer)
-  setFrames()
+  requestFrames()
 end)
 
 onAddItem(function(container, slot, item, oldItem)
-  setFrames()
+  requestFrames()
 end)
 
 onRemoveItem(function(container, slot, item)
-  setFrames()
+  requestFrames()
 end)
 
 onContainerUpdateItem(function(container, slot, item, oldItem)
-  setFrames()
+  requestFrames()
 end)
 
 function smallNumbers(n)
@@ -1166,7 +1205,12 @@ settingsWindow.addItem.onClick = function()
     return warn("No item added!")
   end
 
-  local name = Item.create(id):getMarketData().name
+  if not newPrice then
+    return warn("Enter a price first!")
+  end
+
+  -- getPrice() looks names up in lower case
+  local name = Item.create(id):getMarketData().name:lower()
 
   if newPrices[name] then
     return warn("Item already added! Remove it from the list to set a new price!")
@@ -1191,12 +1235,16 @@ settingsWindow.RarityFrames:setOn(storage.analyzers.rarityFrames)
 settingsWindow.RarityFrames.onClick = function(widget)
   storage.analyzers.rarityFrames = not storage.analyzers.rarityFrames
   widget:setOn(storage.analyzers.rarityFrames)
-  setFrames()
+  if storage.analyzers.rarityFrames then
+    setFrames()
+  else
+    clearFrames()
+  end
 end
 
 local timeToLevel = function()
     local t = 0
-    if expPerHour(true) == 0 or expPerHour() == "-" then
+    if expPerHour(true) <= 0 then
         return "-"
     else
         t = expLeft()/expPerHour(true)
@@ -1230,7 +1278,7 @@ local valueInSeconds = function(t)
     return math.ceil(d/((now-time)/1000))
 end
 
-local regex = "You lose ([0-9]*) hitpoints due to an attack by ([a-z]*) ([a-z A-z-]*)" 
+local regex = [[You lose ([0-9]+) hitpoints? due to an attack by (?:an |a |the )?([^.]+)]]
 onTextMessage(function(mode, text)
   local value = getFirstNumberInText(text)
     if mode == 21 then -- damage dealt
@@ -1252,8 +1300,8 @@ onTextMessage(function(mode, text)
     if text:find("You lose") then
       local data = regexMatch(text, regex)[1]
       if data then
-        local monster = data[4]
-        local val = data[2]
+        local monster = data[3]:lower()
+        local val = tonumber(data[2]) or 0
         table.insert(dmgDistribution, {v=val,m=monster,t=now})
       end
     end
@@ -1268,25 +1316,21 @@ macro(500, function()
   local dmgFinal = {}
   local labelTable = {}
   local dmgSum = 0
-    table.insert(expTable, exp())
-    if #expTable > 15*60 then
-        for i,v in pairs(expTable) do
-            if i == 1 then
-              table.remove(expTable, i)
-            end
-        end
+    table.insert(expTable, {e = exp(), t = now})
+    while #expTable > 1 and now - expTable[1].t > 15*60*1000 do
+        table.remove(expTable, 1)
     end
 
-    for i,v in pairs(dmgDistribution) do
-      if now - v.t > 60*1000*10 then
-        table.remove(dmgDistribution, i)
+    while #dmgDistribution > 0 and now - dmgDistribution[1].t > 60*1000*10 do
+      table.remove(dmgDistribution, 1)
+    end
+
+    for i,v in ipairs(dmgDistribution) do
+      dmgSum = dmgSum + v.v
+      if not dmgFinal[v.m] then
+        dmgFinal[v.m] = v.v
       else
-        dmgSum = dmgSum + v.v
-        if not dmgFinal[v.m] then
-          dmgFinal[v.m] = v.v
-        else
-          dmgFinal[v.m] = dmgFinal[v.m] + v.v
-        end
+        dmgFinal[v.m] = dmgFinal[v.m] + v.v
       end
     end
 
@@ -1399,6 +1443,7 @@ function refreshWaste()
         amount = math.floor(amount)
         local label1 = UI.createWidget("AnalyzerLootItem", parents[i])
         local price = amount and getPrice(v.name) * amount or getPrice(v.name)
+        label1.amount = amount
 
         label1:setItemId(k)
         label1:setItemCount(50)
@@ -1414,12 +1459,32 @@ end
 -- loot analyzer
 -- adding
 local containers = CaveBot.GetLootContainers()
-local lastCap = freecap()
+macro(5000, function()
+  containers = CaveBot.GetLootContainers()
+end)
+
+-- without CaveBot loot containers every container counts, the cap check filters out non-loot
+local function isLootContainer(container)
+  if #containers == 0 then return true end
+  local containerItem = container:getContainerItem()
+  return containerItem and table.find(containers, containerItem:getId())
+end
+
+-- Canary quick loot can put loot in the Loot pouch in the Store Inbox, which weighs nothing,
+-- so loot there is counted without the cap check (only while the pouch is open)
+local function isLootPouch(container)
+  local containerItem = container:getContainerItem()
+  if containerItem and containerItem:getId() == 23721 then return true end
+  local cName = container:getName():lower()
+  return cName == "loot pouch" or cName == "loot bag"
+end
+
 onAddItem(function(container, slot, item, oldItem)
-  if not table.find(containers, container:getContainerItem():getId()) then return end
+  local pouch = isLootPouch(container)
+  if not pouch and not isLootContainer(container) then return end
   if isInPz() then return end
   if slot > 0 then return end 
-  if freecap() >= lastCap then return end
+  if not pouch and freecap() >= lastCap then return end
   local name = item:getId()
   local tmpname = item:getId() == 3031 and "gold coin" or item:getId() == 3035 and "platinum coin" or item:getId() == 3043 and "crystal coin" or item:getMarketData().name
   if not lootedItems[name] then
@@ -1434,10 +1499,11 @@ onAddItem(function(container, slot, item, oldItem)
 end)
 
 onContainerUpdateItem(function(container, slot, item, oldItem)
-  if not table.find(containers, container:getContainerItem():getId()) then return end
+  local pouch = isLootPouch(container)
+  if not pouch and not isLootContainer(container) then return end
   if not oldItem then return end
   if isInPz() then return end 
-  if freecap() == lastCap then return end
+  if not pouch and freecap() == lastCap then return end
   
   local tmpname = item:getId() == 3031 and "gold coin" or item:getId() == 3035 and "platinum coin" or item:getId() == 3043 and "crystal coin" or item:getMarketData().name
   local amount = item:getCount() - oldItem:getCount()
@@ -1456,33 +1522,44 @@ end)
 
 -- ammo
 local ammo = {16143, 763, 761, 7365, 3448, 762, 21470, 7364, 14251, 3447, 3449, 15793, 25757, 774, 35901, 6528, 7363, 3450, 16141, 25758, 14252, 3446, 16142, 35902}
-onContainerUpdateItem(function(container, slot, item, oldItem)
+local function countAmmo(item, oldItem)
+  if not item or not oldItem then return end
   local id = item:getId()
-  if not table.find(ammo, id) then return end
-  local newCount = item:getCount()
-  local oldCount = oldItem:getCount()
-  local name = item:getMarketData().name
+  if id ~= oldItem:getId() or not table.find(ammo, id) then return end
 
-  if oldCount - newCount == 1 then
+  if oldItem:getCount() - item:getCount() == 1 then
     if not usedItems[id] then
-      usedItems[id] = { count = 1, name = name}
+      usedItems[id] = { count = 1, name = oldItem:getMarketData().name }
     else
       usedItems[id].count = usedItems[id].count + 1
     end
     refreshWaste()
   end
+end
+
+onContainerUpdateItem(function(container, slot, item, oldItem)
+  countAmmo(item, oldItem)
+end)
+
+-- arrows/bolts in the ammo slot (no quiver)
+onInventoryChange(function(player, slot, item, oldItem)
+  if slot ~= InventorySlotAmmo then return end
+  countAmmo(item, oldItem)
 end)
 
 -- waste
 local regex3 = [[\d ([a-z A-Z]*)s...]]
+local regexLast = [[using the last ([a-z A-Z]*)\.]]
 local lackOfData = {}
 onTextMessage(function(mode, text)
   text = text:lower()
-  if not text:find("using one of") then return end
+  local last = text:find("using the last")
+  if not text:find("using one of") and not last then return end
 
-  local amount = getFirstNumberInText(text)
-  local re = regexMatch(text, regex3)
-  local name = re[1][2]
+  local amount = last and 0 or getFirstNumberInText(text)
+  local re = regexMatch(text, last and regexLast or regex3)
+  local name = re and re[1] and re[1][2]
+  if not name then return end
   local id = WasteItems[name]
 
   if not id then
@@ -1495,25 +1572,20 @@ onTextMessage(function(mode, text)
     return
   end
 
-  if not useData[name] then
-    useData[name] = amount
+  -- every message is one item used, the same amount twice in a row is a repeated message
+  if useData[name] == amount then return end
+  useData[name] = amount
+  if not usedItems[id] then
+    usedItems[id] = { count = 1, name = name}
   else
-    if math.abs(useData[name]-amount) == 1 then
-      useData[name] = amount
-      if not usedItems[id] then
-        usedItems[id] = { count = 1, name = name}
-      else
-        usedItems[id].count = usedItems[id].count + 1
-      end
-    else
-      useData[name] = amount
-    end
-    refreshWaste()
+    usedItems[id].count = usedItems[id].count + 1
   end
+  refreshWaste()
 end)
 
 function hourVal(v)
   v = v or 0
+  if not uptime or uptime <= 0 then return 0 end
   return (v/uptime)*3600
 end
 
@@ -1521,45 +1593,35 @@ function bottingStats()
   lootWorth = 0
   wasteWorth = 0
   for k, v in pairs(lootedItems) do
-    if LootItems[v.name] then
-      lootWorth = lootWorth + (LootItems[v.name]*v.count)
-    end
+    lootWorth = lootWorth + (getPrice(v.name)*v.count)
   end
   for k, v in pairs(usedItems) do
-    if LootItems[v.name] then
-      wasteWorth = wasteWorth + (LootItems[v.name]*v.count)
-    end
+    wasteWorth = wasteWorth + (getPrice(v.name)*v.count)
   end
   balance = lootWorth - wasteWorth
 
   return lootWorth, wasteWorth, balance
 end
 
+-- 1234567 -> "1.2kk", -1500 -> "-1.5k", sign is kept apart so floor doesn't round negatives down
+local function shortValue(v, unit)
+  local sign = v < 0 and "-" or ""
+  local a = math.abs(v)
+  local div, suffix
+  if a >= 1000000 then
+    div, suffix = a / 1000000, "kk"
+  elseif a >= 1000 then
+    div, suffix = a / 1000, "k"
+  else
+    return sign .. math.floor(a) .. "gp" .. unit
+  end
+  return sign .. math.floor(div) .. "." .. math.floor(div * 10) % 10 .. suffix .. unit
+end
+
 function bottingLabels(lootWorth, wasteWorth, balance)
-  balanceDesc = nil
-  hourDesc = nil
-  desc = nil
-
-  if balance >= 1000000 or balance <= -1000000 then
-    desc = balance / 1000000
-    balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .. "kk"
-  elseif balance >= 1000 or balance <= -1000 then
-    desc = balance / 1000
-    balanceDesc = math.floor(desc) .. "." .. math.floor(desc * 10) % 10 .."k"
-  else
-    balanceDesc = balance .. "gp"
-  end
-
   hour = hourVal(balance)
-  if hour >= 1000000 or hour <= -1000000 then
-    desc = balance / 1000000
-    hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "kk/h"
-  elseif hour >= 1000 or hour <= -1000 then
-    desc = balance / 1000
-    hourDesc = math.floor(hourVal(desc)) .. "." .. math.floor(hourVal(desc) * 10) % 10 .. "k/h"
-  else
-    hourDesc = math.floor(hourVal(balance)) .. "gp/h"
-  end
+  balanceDesc = shortValue(balance, "")
+  hourDesc = shortValue(hour, "/h")
 
   return balanceDesc, hourDesc
 end
@@ -1632,11 +1694,11 @@ function avgTable(t)
   end
 end
 
---bestdps/hps
-local bestDPS = 0
-local bestHPS = 0
 --main loop
 macro(500, function()
+    -- cap can go up (potions used, items dropped) without loot, keep the reference fresh
+    lastCap = math.max(lastCap, freecap())
+
     local lootWorth, wasteWorth, balance = bottingStats()
     local balanceDesc, hourDesc = bottingLabels(lootWorth, wasteWorth, balance)
 
@@ -1754,7 +1816,7 @@ end
 
 Analyzer.getLootedAmount = function(nameOrId)
   if type(nameOrId) == "number" then
-    return lootedItems[nameOrId].count or 0
+    return lootedItems[nameOrId] and lootedItems[nameOrId].count or 0
   else
     local nameOrId = nameOrId:lower()
     for k,v in pairs(lootedItems) do
@@ -1804,7 +1866,7 @@ Analyzer.getCaveBotStats = function()
     local data = parents[i]
     for j, child in ipairs(data:getChildren()) do
       local id = child:getItemId()
-      local count = child.count
+      local count = child.amount or 0
 
       if i == 1 then
         round[id] = count

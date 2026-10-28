@@ -2,7 +2,7 @@ VocationPanel < Panel
   padding: 3
   image-source: /images/ui/panel_flat
   image-border: 6
-  size: 190 55
+  size: 190 74
 
   Label
     anchors.top: parent.top
@@ -12,15 +12,22 @@ VocationPanel < Panel
     text: for BotServer, Heal only:
 
   BotSwitch
-    id: ED
+    id: EM
     anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text: Monks
+
+  BotSwitch
+    id: ED
+    anchors.bottom: EM.top
     anchors.left: parent.left
     anchors.right: parent.horizontalCenter
     text: Druids
 
   BotSwitch
     id: MS
-    anchors.bottom: parent.bottom
+    anchors.bottom: EM.top
     anchors.left: parent.horizontalCenter
     anchors.right: parent.right
     text: Sorcerers
@@ -43,7 +50,7 @@ VocationPanel < Panel
 
 SioListWindow < MainWindow
   !text: tr('Healer Options')
-  size: 220 360
+  size: 220 380
   @onEscape: self:hide()
 
   BotSwitch

@@ -356,7 +356,7 @@ function menu(mouseButton)
         end
     end
 
-    menu:display(mousePos)
+    menu:display(g_window.getMousePosition())
     return true
 end
 

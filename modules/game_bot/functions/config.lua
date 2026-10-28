@@ -19,7 +19,7 @@ end
 Config.list = function(dir)
   if not Config.exist(dir) then
     if not Config.create(dir) then
-      return contex.error("Can't create config dir: " .. context.configDir .. "/" .. dir)
+      return context.error("Can't create config dir: " .. context.configDir .. "/" .. dir)
     end
   end
   local list = g_resources.listDirectoryFiles(context.configDir .. "/" .. dir)
@@ -94,7 +94,7 @@ end
 Config.save = function(dir, name, value, forcedExtension)
   if not Config.exist(dir) then
     if not Config.create(dir) then
-      return contex.error("Can't create config dir: " .. context.configDir .. "/" .. dir)
+      return context.error("Can't create config dir: " .. context.configDir .. "/" .. dir)
     end
   end
   if type(value) ~= 'table' then

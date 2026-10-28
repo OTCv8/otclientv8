@@ -26,6 +26,17 @@ UI.Container = function(callback, unique, parent, widget)
   
   local oldItems = {}
   
+  -- the grid layout updates later, so wait for the new scroll maximum
+  local scrollToBottom = function()
+    context.schedule(50, function()
+      if widget:isDestroyed() then return end
+      local scrollbar = widget.scroll
+      if scrollbar and scrollbar.setValue and scrollbar.getMaximum then
+        scrollbar:setValue(scrollbar:getMaximum())
+      end
+    end)
+  end
+
   local updateItems = function()
     local items = widget:getItems()
 
@@ -72,6 +83,7 @@ UI.Container = function(callback, unique, parent, widget)
     for i, child in ipairs(widget.items:getChildren()) do
       child.onItemChange = updateItems
     end
+    scrollToBottom()
   end
   
   widget.getItems = function()
@@ -281,7 +293,7 @@ UI.DualLabel = function(left, right, params, parent)
   left = left or ""
   right = right or ""
   params = params or {}
-  if not type(params) == "table" then
+  if type(params) ~= "table" then
     parent = params
     params = {}
   end

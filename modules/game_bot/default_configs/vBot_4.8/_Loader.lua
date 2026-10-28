@@ -32,6 +32,7 @@ local luaFiles = {
   "combo",
   "HealBot",
   "new_healer",
+  "paladin_healer",
   "AttackBot", -- last of major modules
   "ingame_editor",
   "Dropper",
@@ -51,6 +52,7 @@ local luaFiles = {
   "npc_talk",
   "xeno_menu",
   "hold_target",
+  "hunt_guard",
   "cavebot_control_panel"
 }
 

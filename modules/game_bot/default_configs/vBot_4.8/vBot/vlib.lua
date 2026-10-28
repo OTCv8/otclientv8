@@ -289,7 +289,7 @@ function canCast(spell, ignoreRL, ignoreCd)
     if getSpellData(spell) then
         if (ignoreCd or not getSpellCoolDown(spell)) and
             (ignoreRL or level() >= getSpellData(spell).level and mana() >=
-                getSpellData(spell).mana) then
+                (tonumber(getSpellData(spell).mana) or 0)) then
             return true
         else
             return false
@@ -837,7 +837,7 @@ function reachGroundItem(id)
     end
 
     if dest then
-        return autoWalk(iPos, 20, {ignoreNonPathable = true, precision = 1})
+        return autoWalk(dest:getPosition(), 20, {ignoreNonPathable = true, precision = 1})
     else
         return false
     end

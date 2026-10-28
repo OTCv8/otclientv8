@@ -19,6 +19,7 @@ vocationBoxSorcerer   = nil
 vocationBoxDruid      = nil
 vocationBoxPaladin    = nil
 vocationBoxKnight     = nil
+vocationBoxMonk       = nil
 
 groupBoxAny           = nil
 groupBoxAttack        = nil
@@ -43,6 +44,11 @@ FILTER_VOCATION_SORCERER  = 1
 FILTER_VOCATION_DRUID     = 2
 FILTER_VOCATION_PALADIN   = 3
 FILTER_VOCATION_KNIGHT    = 4
+FILTER_VOCATION_MONK      = 9
+
+-- base <-> promoted vocation ids (server side)
+local promotedVocation = {[1] = 5, [2] = 6, [3] = 7, [4] = 8, [9] = 10}
+local baseVocation = {[5] = 1, [6] = 2, [7] = 3, [8] = 4, [10] = 9}
 
 FILTER_GROUP_ANY          = 0
 FILTER_GROUP_ATTACK       = 1
@@ -120,6 +126,7 @@ function init()
   vocationBoxDruid      = spelllistWindow:getChildById('vocationBoxDruid')
   vocationBoxPaladin    = spelllistWindow:getChildById('vocationBoxPaladin')
   vocationBoxKnight     = spelllistWindow:getChildById('vocationBoxKnight')
+  vocationBoxMonk       = spelllistWindow:getChildById('vocationBoxMonk')
 
   groupBoxAny           = spelllistWindow:getChildById('groupBoxAny')
   groupBoxAttack        = spelllistWindow:getChildById('groupBoxAttack')
@@ -136,6 +143,7 @@ function init()
   vocationRadioGroup:addWidget(vocationBoxDruid)
   vocationRadioGroup:addWidget(vocationBoxPaladin)
   vocationRadioGroup:addWidget(vocationBoxKnight)
+  vocationRadioGroup:addWidget(vocationBoxMonk)
 
   groupRadioGroup = UIRadioGroup.create()
   groupRadioGroup:addWidget(groupBoxAny)
@@ -241,7 +249,7 @@ function updateSpelllist()
     local tmpLabel = spellList:getChildById(spell)
 
     local localPlayer = g_game.getLocalPlayer()
-    if (not(filters.level) or info.level <= localPlayer:getLevel()) and (not(filters.vocation) or table.find(info.vocations, localPlayer:getVocation())) and (filters.vocationId == FILTER_VOCATION_ANY or table.find(info.vocations, filters.vocationId) or table.find(info.vocations, filters.vocationId+4)) and (filters.groupId == FILTER_GROUP_ANY or info.group[filters.groupId]) and (filters.premium == FILTER_PREMIUM_ANY or (info.premium and filters.premium == FILTER_PREMIUM_YES) or (not(info.premium) and filters.premium == FILTER_PREMIUM_NO)) then
+    if (not(filters.level) or info.level <= localPlayer:getLevel()) and (not(filters.vocation) or table.find(info.vocations, localPlayer:getVocation())) and (filters.vocationId == FILTER_VOCATION_ANY or table.find(info.vocations, filters.vocationId) or table.find(info.vocations, promotedVocation[filters.vocationId])) and (filters.groupId == FILTER_GROUP_ANY or info.group[filters.groupId]) and (filters.premium == FILTER_PREMIUM_ANY or (info.premium and filters.premium == FILTER_PREMIUM_YES) or (not(info.premium) and filters.premium == FILTER_PREMIUM_NO)) then
       tmpLabel:setVisible(true)
     else
       tmpLabel:setVisible(false)
@@ -271,7 +279,7 @@ function updateSpellInformation(widget)
 
     for i = 1, #info.vocations do
       local vocationId = info.vocations[i]
-      if vocationId <= 4 or not(table.find(info.vocations, (vocationId-4))) then
+      if not baseVocation[vocationId] or not(table.find(info.vocations, baseVocation[vocationId])) then
         vocation = vocation .. (vocation:len() == 0 and '' or ', ') .. VocationNames[vocationId]
       end
     end
@@ -328,6 +336,8 @@ function toggleFilter(widget, selectedWidget)
       filters.vocationId = FILTER_VOCATION_PALADIN
     elseif boxId == 'vocationBoxKnight' then
       filters.vocationId = FILTER_VOCATION_KNIGHT
+    elseif boxId == 'vocationBoxMonk' then
+      filters.vocationId = FILTER_VOCATION_MONK
     end
   elseif widget == groupRadioGroup then
     local boxId = selectedWidget:getId()

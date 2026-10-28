@@ -1,0 +1,86 @@
+HuntGuardWindow < MainWindow
+  !text: tr('Hunt Guard')
+  size: 330 445
+  padding: 15
+  @onEscape: self:hide()
+
+  FlatPanel
+    id: triggers
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    padding: 5
+    padding-left: 10
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  Label
+    anchors.verticalCenter: triggers.top
+    anchors.left: triggers.left
+    margin-left: 5
+    width: 200
+    text: When this happens
+    font: verdana-11px-rounded
+    color: #9f5031
+
+  FlatPanel
+    id: actions
+    anchors.top: triggers.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 20
+    padding: 5
+    padding-left: 10
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  Label
+    anchors.verticalCenter: actions.top
+    anchors.left: actions.left
+    margin-left: 5
+    width: 200
+    text: Do this
+    font: verdana-11px-rounded
+    color: #9f5031
+
+  Label
+    id: status
+    anchors.top: actions.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: separator.top
+    margin-top: 8
+    margin-bottom: 5
+    text-wrap: true
+    text-align: center
+    font: verdana-11px-rounded
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8
+
+  Button
+    id: resetButton
+    !text: tr('Reset')
+    !tooltip: tr('Clear the last trigger and cancel a pending logout.')
+    font: cipsoftFont
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-left: 5
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-right: 5
+    @onClick: self:getParent():hide()

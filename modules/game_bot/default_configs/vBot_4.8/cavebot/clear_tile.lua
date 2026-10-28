@@ -19,7 +19,7 @@ CaveBot.Extensions.ClearTile.setup = function()
     end
 
 
-    if not #pos == 3 then
+    if not pos.x or not pos.y or not pos.z then
       warn("CaveBot[ClearTile]: invalid value. It should be position (x,y,z), is: " .. value)
       return false
     end

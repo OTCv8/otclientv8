@@ -1,5 +1,6 @@
 CaveBot.Extensions.StandLure = {}
 local enable = nil
+local oldTibia = g_game.getClientVersion() < 960
 
 local function modPos(dir)
     local y = 0
@@ -33,11 +34,10 @@ local function reset(delay)
     if type(Supplies.hasEnough()) == 'table' then
         return
     end
-    delay = delay or 0
-    CaveBot.delay(delay)
     if delay == nil then
         enable = nil
     end
+    CaveBot.delay(delay or 0)
 end
 
 local resetRetries = false
@@ -87,7 +87,7 @@ CaveBot.Extensions.StandLure.setup = function()
 
             local playerPos = player:getPosition()
             local pathWithoutMonsters = findPath(playerPos, pos, 30, { ignoreFields = true, ignoreNonPathable = true, ignoreCreatures = true, precision = 0})
-            local pathWithMonsters = findPath(playerPos, pos, maxDist, { ignoreFields = true, ignoreNonPathable = true, ignoreCreatures = false, precision = 0 })
+            local pathWithMonsters = findPath(playerPos, pos, 30, { ignoreFields = true, ignoreNonPathable = true, ignoreCreatures = false, precision = 0 })
 
             if not pathWithoutMonsters then
                 reset()

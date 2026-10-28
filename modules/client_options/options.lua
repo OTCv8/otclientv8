@@ -39,6 +39,7 @@ local defaultOptions = {
   highlightThingsUnderCursor = true,
   topHealtManaBar = true,
   displayText = true,
+  showEffects = true,
   dontStretchShrink = false,
   turnDelay = 30,
   hotkeyDelay = 30,
@@ -141,12 +142,16 @@ function init()
   addEvent(function() setup() end)
   
   connect(g_game, { onGameStart = online,
-                     onGameEnd = offline })                    
+                     onGameEnd = offline })
+  connect(Tile, { onAddThing = onTileAddThing })
+  connect(g_map, { onMissle = onMapMissile })
 end
 
 function terminate()
   disconnect(g_game, { onGameStart = online,
-                     onGameEnd = offline })  
+                     onGameEnd = offline })
+  disconnect(Tile, { onAddThing = onTileAddThing })
+  disconnect(g_map, { onMissle = onMapMissile })
 
   g_keyboard.unbindKeyDown('Ctrl+Shift+F')
   g_keyboard.unbindKeyDown('Ctrl+N')
@@ -322,6 +327,11 @@ function setOption(key, value, force)
     modules.game_healthinfo.topManaBar:setVisible(value)
   elseif key == 'displayText' then
     gameMapPanel:setDrawTexts(value)
+  elseif key == 'showEffects' then
+    -- effects are hidden from the Tile onAddThing callback, which is off by default
+    if not value then
+      g_game.enableTileThingLuaCallback(true)
+    end
   elseif key == 'dontStretchShrink' then
     addEvent(function()
       modules.game_interface.updateStretchShrink()
@@ -404,6 +414,19 @@ end
 
 function addButton(name, func, icon)
   optionsTabBar:addButton(name, func, icon)
+end
+
+-- game effects (magic effects on tiles and missiles)
+function onTileAddThing(tile, thing)
+  if options['showEffects'] == false and thing:isEffect() then
+    thing:setHidden(true)
+  end
+end
+
+function onMapMissile(missile)
+  if options['showEffects'] == false then
+    g_map.removeThing(missile)
+  end
 end
 
 -- hide/show

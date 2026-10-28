@@ -62,6 +62,7 @@ if not storage[panelName] then
             paladins = true,
             druids = false,
             sorcerers = false,
+            monks = true,
             party = true,
             guild = false,
             botserver = false,
@@ -200,6 +201,16 @@ targetSettings.vocations.box.druids:setChecked(config.conditions.druids)
 targetSettings.vocations.box.druids.onClick = function(widget)
     config.conditions.druids = not config.conditions.druids
     widget:setChecked(config.conditions.druids)
+    validate(widget, 2)
+end
+
+if config.conditions.monks == nil then
+    config.conditions.monks = true
+end
+targetSettings.vocations.box.monks:setChecked(config.conditions.monks)
+targetSettings.vocations.box.monks.onClick = function(widget)
+    config.conditions.monks = not config.conditions.monks
+    widget:setChecked(config.conditions.monks)
     validate(widget, 2)
 end
 
@@ -396,7 +407,8 @@ local function isCandidate(spec)
         if specText:find("EK") and not config.conditions.knights or
            specText:find("RP") and not config.conditions.paladins or
            specText:find("ED") and not config.conditions.druids or
-           specText:find("MS") and not config.conditions.sorcerers then
+           specText:find("MS") and not config.conditions.sorcerers or
+           specText:find("EM") and not config.conditions.monks then
            if not config.customPlayers[name] then
                return nil
            end

@@ -596,12 +596,12 @@ ui = UI.createWidget("AttackBotBotPanel")
 local setActiveProfile = function()
   local n = AttackBotConfig.currentBotProfile
   currentSettings = AttackBotConfig[panelName][n]
+  -- older profiles can miss some fields, fill them so the UI and the macro don't get nil
+  currentSettings.attackTable = currentSettings.attackTable or {}
+  currentSettings.AntiRsRange = currentSettings.AntiRsRange or 5
+  currentSettings.KillsAmount = currentSettings.KillsAmount or 1
 end
 setActiveProfile()
-
-if not currentSettings.AntiRsRange then
-  currentSettings.AntiRsRange = 5 
-end
 
 local setProfileName = function()
   ui.name:setText(currentSettings.name)
@@ -756,6 +756,7 @@ end
         showItem = params.itemId > 100 and true or false
         panel.itemId:setItemId(params.itemId)
         panel.spellName:setText(params.spell or "")
+        panel.monsters:setText((params.creatures and params.creatures:len() > 0) and params.creatures or "monster names")
         panel.orMore:setChecked(params.orMore)
         toggleItem()
         category = params.category
@@ -802,7 +803,12 @@ end
     panel.addEntry.onClick = function(wdiget)
       -- first variables
       local creatures = panel.monsters:getText():lower()
-      local monsters = (creatures:len() == 0 or creatures == "*" or creatures == "monster names") and true or string.split(creatures, ",")
+      local monsters = (creatures:trim():len() == 0 or creatures:trim() == "*" or creatures == "monster names") and true or string.split(creatures, ",")
+      if monsters ~= true then
+        for i, name in ipairs(monsters) do
+          monsters[i] = name:trim()
+        end
+      end
       local mana = panel.manaPercent:getValue()
       local count = panel.creatures:getValue()
       local minHp = panel.minHp:getValue()
@@ -1036,7 +1042,7 @@ end
   
     AttackBot.setActiveProfile = function(n)
       if not n or not tonumber(n) or n < 1 or n > 5 then
-        return error("[AttackBot] wrong profile parameter! should be 1 to 5 is " .. n)
+        return error("[AttackBot] wrong profile parameter! should be 1 to 5 is " .. tostring(n))
       else
         AttackBotConfig.currentBotProfile = n
         profileChange()
@@ -1058,15 +1064,30 @@ function getPattern(category, pattern, safe)
 end
 
 
+-- entries saved by older versions keep spaces after commas ("rat, cave rat")
+-- so names are trimmed and lowercased once and cached per entry table
+local cleanNamesCache = setmetatable({}, {__mode = "k"})
+local function cleanNames(monsterNamesTable)
+  if monsterNamesTable == true or type(monsterNamesTable) ~= "table" then return {} end
+  local cached = cleanNamesCache[monsterNamesTable]
+  if cached then return cached end
+  cached = {}
+  for _, name in pairs(monsterNamesTable) do
+    if type(name) == "string" then
+      name = name:trim():lower()
+      if name:len() > 0 then
+        table.insert(cached, name)
+      end
+    end
+  end
+  cleanNamesCache[monsterNamesTable] = cached
+  return cached
+end
+
 function getMonstersInArea(category, posOrCreature, pattern, minHp, maxHp, safePattern, monsterNamesTable)
   -- monsterNamesTable can be nil
   local monsters = 0
-  local t = {}
-  if monsterNamesTable == true or not monsterNamesTable then
-    t = {}
-  else
-    t = monsterNamesTable
-  end
+  local t = cleanNames(monsterNamesTable)
 
   if safePattern then
     for i, spec in pairs(getSpectators(posOrCreature, safePattern)) do
@@ -1096,7 +1117,7 @@ function getMonstersInArea(category, posOrCreature, pattern, minHp, maxHp, safeP
       if spec ~= player then
         local specHp = spec:getHealthPercent()
         local name = spec:getName():lower()
-        monsters = spec:isMonster() and specHp >= minHp and specHp <= maxHp and (#t == 0 or table.find(t, name)) and
+        monsters = spec:isMonster() and specHp >= minHp and specHp <= maxHp and (#t == 0 or table.find(t, name, true)) and
                    (g_game.getClientVersion() < 960 or spec:getType() < 3) and monsters + 1 or monsters
       end
   end
@@ -1107,16 +1128,25 @@ end
 -- for area runes only
 -- should return valid targets number (int) and position
 function getBestTileByPattern(pattern, minHp, maxHp, safePattern, monsterNamesTable)
-  local tiles = g_map.getTiles(posz())
-  local targetTile = {amount=0,pos=false}
+  local targetTile = {amount=0,pos=false,dist=100}
+  local playerPos = pos()
+  local targetPos = target() and target():getPosition()
 
-  for i, tile in pairs(tiles) do
-    local tPos = tile:getPosition()
-    local distance = distanceFromPlayer(tPos)
-    if tile:canShoot() and tile:isWalkable() and distance < 4 then
-      local amount = getMonstersInArea(2, tPos, pattern, minHp, maxHp, safePattern, monsterNamesTable)
-      if amount > targetTile.amount then
-        targetTile = {amount=amount,pos=tPos}
+  -- only tiles within 3 sqm can be picked, no need to check the whole floor
+  for dx = -3, 3 do
+    for dy = -3, 3 do
+      local tPos = {x = playerPos.x + dx, y = playerPos.y + dy, z = playerPos.z}
+      local tile = g_map.getTile(tPos)
+      -- isWalkable(true) ignores creatures, so tiles with monsters on them can be picked too
+      if tile and tile:canShoot() and tile:isWalkable(true) then
+        local amount = getMonstersInArea(2, tPos, pattern, minHp, maxHp, safePattern, monsterNamesTable)
+        if amount > 0 and amount >= targetTile.amount then
+          -- on a tie prefer the tile closer to current target
+          local dist = targetPos and getDistanceBetween(tPos, targetPos) or 0
+          if amount > targetTile.amount or dist < targetTile.dist then
+            targetTile = {amount=amount,pos=tPos,dist=dist}
+          end
+        end
       end
     end
   end
@@ -1136,7 +1166,9 @@ end
 -- support function covered, now the main loop
 macro(100, function()
   if not currentSettings.enabled then return end
-  if #currentSettings.attackTable == 0 or isInPz() or not target() or modules.game_cooldown.isGroupCooldownIconActive(1) then return end
+  if #currentSettings.attackTable == 0 or isInPz() or not target() then return end
+  -- attack group cooldown blocks attacks, but empowerment (support group) can still be cast
+  local attackCooldown = modules.game_cooldown.isGroupCooldownIconActive(1)
 
   if currentSettings.Training and target() and target():getName():lower():find("training") then return end
 
@@ -1162,7 +1194,12 @@ macro(100, function()
     end
   end
   -- associate biggest number with turn direction
-  if monstersN == bestSide then bestDir = 0
+  local byDir = {[0] = monstersN, [1] = monstersE, [2] = monstersS, [3] = monstersW}
+  local currentDir = player:getDirection()
+  -- monsters in front of the player, used by sweep (exori min)
+  local facingCount = byDir[currentDir] or 0
+  if facingCount == bestSide then bestDir = currentDir -- don't turn on a tie
+    elseif monstersN == bestSide then bestDir = 0
     elseif monstersE == bestSide then bestDir = 1
     elseif monstersS == bestSide then bestDir = 2
     elseif monstersW == bestSide then bestDir = 3
@@ -1199,12 +1236,14 @@ macro(100, function()
   for i, child in ipairs(panel.entryList:getChildren()) do
     local entry = child.params
     local attackData = entry.itemId > 100 and entry.itemId or entry.spell
-    if entry.enabled and manapercent() >= entry.mana then
+    if entry.enabled and manapercent() >= entry.mana and (not attackCooldown or entry.category == 4) then
       if (type(attackData) == "string" and canCast(entry.spell, not currentSettings.ignoreMana, not currentSettings.Cooldown)) or (entry.itemId > 100 and (not currentSettings.Visible or findItem(entry.itemId))) then 
         -- first PVP scenario
         if currentSettings.pvpMode and target():getHealthPercent() >= entry.minHp and target():getHealthPercent() <= entry.maxHp and target():canShoot() then
           if entry.category == 2 then
             return warn("[AttackBot] Area Runes cannot be used in PVP situation!")
+          elseif entry.category == 4 and isBuffed() then
+            -- already buffed, check next entry
           else
             return executeAttackBotAction(entry.category, attackData, entry.cooldown)
           end
@@ -1218,16 +1257,20 @@ macro(100, function()
         --
         elseif entry.category == 1 or entry.category == 3 then
           local monsterAmount = getMonstersInArea(entry.category, nil, nil, entry.minHp, entry.maxHp, false, entry.monsters)
-          if (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count) and distanceFromPlayer(target():getPosition()) <= entry.pattern then
+          local targetHp = target():getHealthPercent()
+          -- target itself has to be in hp range and in sight, otherwise the spell/rune is wasted
+          if targetHp >= entry.minHp and targetHp <= entry.maxHp and target():canShoot() and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count) and distanceFromPlayer(target():getPosition()) <= entry.pattern then
             return executeAttackBotAction(entry.category, attackData, entry.cooldown)
           end
         elseif entry.category == 5 then
           local pCat = entry.patternCategory
           local pattern = entry.pattern
-          local anchorParam = (pattern == 2 or pattern == 6 or pattern == 7 or pattern > 9) and player or pos()
+          -- directional patterns (waves, beams) need player as anchor to use his direction
+          local anchorParam = (pattern == 2 or pattern == 6 or pattern == 7 or pattern >= 9) and player or pos()
           local safe = currentSettings.PvpSafe and spellPatterns[pCat][entry.pattern][2] or false
-          local monsterAmount = pCat ~= 8 and getMonstersInArea(entry.category, anchorParam, spellPatterns[pCat][entry.pattern][1], entry.minHp, entry.maxHp, safe, entry.monsters)
-          if (pattern ~= 8 and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count)) or (pattern == 8 and bestSide >= entry.count and (not currentSettings.PvpSafe or getPlayers(2) == 0)) then
+          local monsterAmount = pattern ~= 8 and getMonstersInArea(entry.category, anchorParam, spellPatterns[pCat][entry.pattern][1], entry.minHp, entry.maxHp, safe, entry.monsters) or 0
+          -- sweep hits only the side player is facing
+          if (pattern ~= 8 and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count)) or (pattern == 8 and facingCount >= entry.count and (not currentSettings.PvpSafe or getPlayers(2) == 0)) then
             if (not currentSettings.BlackListSafe or not isBlackListedPlayerInRange(currentSettings.AntiRsRange)) and (not currentSettings.Kills or killsToRs() > currentSettings.KillsAmount) then
               return executeAttackBotAction(entry.category, attackData, entry.cooldown)
             end
@@ -1237,14 +1280,17 @@ macro(100, function()
           local safe = currentSettings.PvpSafe and spellPatterns[pCat][entry.pattern][2] or false
           local data = getBestTileByPattern(spellPatterns[pCat][entry.pattern][1], entry.minHp, entry.maxHp, safe, entry.monsters)
           local monsterAmount
-          local pos
+          local runePos
           if data then
             monsterAmount = data.amount
-            pos = data.pos
+            runePos = data.pos
           end
           if monsterAmount and (entry.orMore and monsterAmount >= entry.count or not entry.orMore and monsterAmount == entry.count) then
             if (not currentSettings.BlackListSafe or not isBlackListedPlayerInRange(currentSettings.AntiRsRange)) and (not currentSettings.Kills or killsToRs() > currentSettings.KillsAmount) then
-              return useWith(attackData, g_map.getTile(pos):getTopUseThing())
+              local tile = g_map.getTile(runePos)
+              if tile and tile:getTopUseThing() then
+                return useWith(attackData, tile:getTopUseThing())
+              end
             end
           end
         end

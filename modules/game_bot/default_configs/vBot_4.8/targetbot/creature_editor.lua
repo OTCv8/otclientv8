@@ -88,6 +88,8 @@ TargetBot.Creature.edit = function(config, callback) -- callback = function(newC
   addScrollBar("delayFrom", "Start delay when monsters", 1, 29, 2)
   addScrollBar("rePositionAmount", "Min tiles to rePosition", 0, 7, 5)
   addScrollBar("closeLureAmount", "Close Pull Until", 0, 8, 3)
+  addScrollBar("switchThreshold", "Target switch threshold", 0, 20, 5)
+  addScrollBar("dangerHp", "Danger priority below HP%", 0, 100, 50)
 
   addCheckBox("chase", "Chase", true)
   addCheckBox("keepDistance", "Keep Distance", false)

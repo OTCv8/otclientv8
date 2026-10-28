@@ -503,6 +503,14 @@ CaveBot.registerAction("say", "#FF55FF", function(value, retries, prev)
   say(value)
   return true
 end)
+CaveBot.registerAction("stop", "#FF4040", function(value, retries, prev)
+  if value and value:len() > 0 then
+    print("CaveBot[stop]: " .. value)
+  end
+  schedule(1, function() CaveBot.setOff() end)
+  return true
+end)
+
 CaveBot.registerAction("npcsay", "#FF55FF", function(value, retries, prev)
   NPC.say(value)
   return true

@@ -185,7 +185,7 @@ macro(100, function()
   end
 
   if config.lowMana.enabled then
-    if hppercent() < config.lowMana.value then
+    if manapercent() < config.lowMana.value then
       return alarm("/sounds/Low_Mana.ogg", "Low Mana!")
     end
   end

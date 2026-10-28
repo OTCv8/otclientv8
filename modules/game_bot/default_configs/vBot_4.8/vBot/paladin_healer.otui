@@ -1,0 +1,146 @@
+PaladinHealRow < Panel
+  height: 20
+  margin-top: 2
+
+  CheckBox
+    id: tick
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    width: 95
+    margin-top: 4
+    font: verdana-11px-rounded
+    text-offset: 17 -3
+
+  BotTextEdit
+    id: text
+    anchors.left: tick.right
+    anchors.right: value.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    margin-right: 3
+    font: terminus-10px
+    margin-top: 1
+    margin-bottom: 1
+
+  SpinBox
+    id: value
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-top: 1
+    margin-bottom: 1
+    width: 40
+    minimum: 1
+    maximum: 99
+    step: 1
+    editable: true
+    focusable: true
+
+PaladinHealerWindow < MainWindow
+  !text: tr('Paladin Healer')
+  size: 340 520
+  padding: 15
+  @onEscape: self:hide()
+
+  FlatPanel
+    id: spells
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    padding: 5
+    padding-left: 10
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  Label
+    anchors.verticalCenter: spells.top
+    anchors.left: spells.left
+    margin-left: 5
+    width: 250
+    text: Healing spells (spell / HP %)
+    font: verdana-11px-rounded
+    color: #9f5031
+
+  FlatPanel
+    id: potions
+    anchors.top: spells.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 20
+    padding: 5
+    padding-left: 10
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  Label
+    anchors.verticalCenter: potions.top
+    anchors.left: potions.left
+    margin-left: 5
+    width: 250
+    text: Potions (item ids, best first / %)
+    font: verdana-11px-rounded
+    color: #9f5031
+
+  FlatPanel
+    id: smart
+    anchors.top: potions.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 20
+    padding: 5
+    padding-left: 10
+    layout:
+      type: verticalBox
+      fit-children: true
+
+  Label
+    anchors.verticalCenter: smart.top
+    anchors.left: smart.left
+    margin-left: 5
+    width: 200
+    text: Smart options
+    font: verdana-11px-rounded
+    color: #9f5031
+
+  Label
+    id: status
+    anchors.top: smart.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: separator.top
+    margin-top: 8
+    margin-bottom: 5
+    text-wrap: true
+    text-align: center
+    font: verdana-11px-rounded
+
+  HorizontalSeparator
+    id: separator
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.bottom: closeButton.top
+    margin-bottom: 8
+
+  Button
+    id: resetButton
+    !text: tr('Defaults')
+    !tooltip: tr('Put every setting back to its default value.')
+    font: cipsoftFont
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 55 21
+    margin-left: 5
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    font: cipsoftFont
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    margin-right: 5
+    @onClick: self:getParent():hide()

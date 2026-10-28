@@ -231,7 +231,7 @@ end
 
 function g_keyboard.isInUse()
   for i = FirstKey, LastKey do
-    if g_window.isKeyPressed(key) then
+    if g_window.isKeyPressed(i) then
       return true
     end
   end

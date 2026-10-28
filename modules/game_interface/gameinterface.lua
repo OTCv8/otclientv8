@@ -406,6 +406,10 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
   if not classic and not g_app.isMobile() then shortcut = '(Shift)' else shortcut = nil end
   if lookThing then
     menu:addOption(tr('Look'), function() g_game.look(lookThing) end, shortcut)
+    if lookThing:isItem() and modules.game_containers then
+      local value = modules.game_containers.getItemValueText(lookThing)
+      if value then menu:addOption(tr('Value') .. ': ' .. value, function() end) end
+    end
   end
 
   if not classic and not g_app.isMobile() then shortcut = '(Ctrl)' else shortcut = nil end

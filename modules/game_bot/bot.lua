@@ -80,7 +80,9 @@ function clear()
   removeEvent(checkEvent)
 
   -- optimization, callback is not used when not needed
-  g_game.enableTileThingLuaCallback(false)
+  -- (still needed when game effects are turned off in options)
+  local effectsOff = modules.client_options and modules.client_options.getOption('showEffects') == false
+  g_game.enableTileThingLuaCallback(effectsOff and true or false)
 
   botTabs:clearTabs()  
   botTabs:setOn(false)
@@ -292,40 +294,43 @@ function edit()
   editWindow:raise()
 end
 
+-- script files that always come from the client folder (modules/game_bot/default_configs)
+-- everything else in /bot (storage, vBot_configs, cavebot_configs, targetbot_configs) is user data and is never touched
+local syncedExtensions = {lua = true, otui = true, ui = true, txt = true}
+
+local function syncDefaultConfigDir(sourceDir, targetDir)
+  if not g_resources.directoryExists(targetDir) then
+    g_resources.makeDir(targetDir)
+    if not g_resources.directoryExists(targetDir) then
+      return onError("Can't create " .. targetDir .. " directory in " .. g_resources.getWriteDir())
+    end
+  end
+  for i, file in ipairs(g_resources.listDirectoryFiles(sourceDir, true, false)) do
+    local baseName = file:split("/")
+    baseName = baseName[#baseName]
+    if g_resources.directoryExists(file) then
+      syncDefaultConfigDir(sourceDir .. "/" .. baseName, targetDir .. "/" .. baseName)
+    else
+      local ext = baseName:split(".")
+      if syncedExtensions[ext[#ext]:lower()] then
+        local contents = g_resources.readFileContents(file)
+        local target = targetDir .. "/" .. baseName
+        if contents:len() > 0 and (not g_resources.fileExists(target) or g_resources.readFileContents(target) ~= contents) then
+          g_resources.writeFileContents(target, contents)
+        end
+      end
+    end
+  end
+end
+
+-- copies default configs from the client folder to /bot and keeps their scripts up to date,
+-- so updating the client folder (e.g. git pull) updates the bot that runs.
+-- put an empty file named "no_update" in /bot/<config>/ to keep your own edited scripts
 function createDefaultConfigs()
   local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs", false, false)
   for i, config_name in ipairs(defaultConfigFiles) do
-    if not g_resources.directoryExists("/bot/" .. config_name) then
-      g_resources.makeDir("/bot/" .. config_name)
-      if not g_resources.directoryExists("/bot/" .. config_name) then
-        return onError("Can't create /bot/" .. config_name .. " directory in " .. g_resources.getWriteDir())
-      end
-
-      local defaultConfigFiles = g_resources.listDirectoryFiles("default_configs/" .. config_name, true, false)
-      for i, file in ipairs(defaultConfigFiles) do
-        local baseName = file:split("/")
-        baseName = baseName[#baseName]
-        if g_resources.directoryExists(file) then
-          g_resources.makeDir("/bot/" .. config_name .. "/" .. baseName)
-          if not g_resources.directoryExists("/bot/" .. config_name .. "/" .. baseName) then
-            return onError("Can't create /bot/" .. config_name  .. "/" .. baseName .. " directory in " .. g_resources.getWriteDir())
-          end
-          local defaultConfigFiles2 = g_resources.listDirectoryFiles("default_configs/" .. config_name .. "/" .. baseName, true, false)
-          for i, file in ipairs(defaultConfigFiles2) do
-            local baseName2 = file:split("/")
-            baseName2 = baseName2[#baseName2]
-            local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
-            if contents:len() > 0 then
-              g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName .. "/" .. baseName2, contents)
-            end  
-          end
-        else
-          local contents = g_resources.fileExists(file) and g_resources.readFileContents(file) or ""
-          if contents:len() > 0 then
-            g_resources.writeFileContents("/bot/" .. config_name .. "/" .. baseName, contents)
-          end
-        end
-      end
+    if not g_resources.fileExists("/bot/" .. config_name .. "/no_update") then
+      syncDefaultConfigDir("default_configs/" .. config_name, "/bot/" .. config_name)
     end
   end
 end

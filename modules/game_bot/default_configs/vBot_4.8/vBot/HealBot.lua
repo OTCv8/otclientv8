@@ -651,7 +651,7 @@ macro(100, function()
           return
         end
       elseif entry.origin == "HP" then
-        if entry.sign == "=" and hp() == tonumberentry.value then
+        if entry.sign == "=" and hp() == entry.value then
           g_game.useInventoryItemWith(entry.item, player)
           return
         elseif entry.sign == ">" and hp() >= entry.value then

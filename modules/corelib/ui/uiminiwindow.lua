@@ -75,7 +75,7 @@ function UIMiniWindow:lock(dontSave)
     lockButton:setOn(true)
   end
   self:setDraggable(false)
-  if not dontsave then
+  if not dontSave then
     self:setSettings({locked = true})
   end
 
@@ -88,7 +88,7 @@ function UIMiniWindow:unlock(dontSave)
     lockButton:setOn(false)
   end
   self:setDraggable(true)
-  if not dontsave then
+  if not dontSave then
     self:setSettings({locked = false})
   end
   signalcall(self.onLockChange, self)
@@ -414,9 +414,9 @@ function UIMiniWindow:fitOnParent()
   end
 end
 
-function UIMiniWindow:setParent(parent, dontsave)
+function UIMiniWindow:setParent(parent, dontSave)
   UIWidget.setParent(self, parent)
-  if not dontsave then
+  if not dontSave then
     self:saveParent(parent)
   end
   self:fitOnParent()

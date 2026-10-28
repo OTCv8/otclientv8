@@ -27,6 +27,11 @@ OptionPanel
     !text: tr('Enable lights')
 
   OptionCheckBox
+    id: showEffects
+    !text: tr('Show game effects')
+    !tooltip: tr('Magic effects and missiles on the map (spells, hits, runes, arrows)')
+
+  OptionCheckBox
     id: fullscreen
     !text: tr('Fullscreen')
     tooltip: Ctrl+Shift+F

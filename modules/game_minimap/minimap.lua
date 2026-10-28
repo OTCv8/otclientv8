@@ -105,7 +105,12 @@ function loadMap()
   local minimapFile = '/minimap.otmm'
   local dataMinimapFile = '/data' .. minimapFile
   local versionedMinimapFile = '/minimap' .. clientVersion .. '.otmm'
-  if g_resources.fileExists(dataMinimapFile) then
+  local dataVersionedMinimapFile = '/data' .. versionedMinimapFile
+  -- maps shipped in the client folder (data/) win over the one saved in the user folder
+  if g_resources.fileExists(dataVersionedMinimapFile) then
+    loaded = g_minimap.loadOtmm(dataVersionedMinimapFile)
+  end
+  if not loaded and g_resources.fileExists(dataMinimapFile) then
     loaded = g_minimap.loadOtmm(dataMinimapFile)
   end
   if not loaded and g_resources.fileExists(versionedMinimapFile) then
